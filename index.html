@@ -415,153 +415,133 @@
             if (nova === 'dashboard') setTimeout(initCharts, 100);
         }
         
-        function gerarPDFBlob() {
-            return new Promise((resolve, reject) => {
-                try {
-                    const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-                    
-                    doc.setFontSize(18);
-                    doc.setTextColor(0, 0, 0);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text('RELATÓRIO DE PONTO ELETRÔNICO', 105, 20, { align: 'center' });
-                    
-                    doc.setFontSize(10);
-                    doc.setFont('helvetica', 'normal');
-                    doc.text('Mês/Ano: ' + mesesNomes[mes] + ' ' + ano, 105, 32, { align: 'center' });
-                    doc.text('Jornada Diária: ' + Math.floor(jornadaDiaria / 60) + ' horas', 105, 40, { align: 'center' });
-                    doc.text('Valor da Hora: R$ ' + valorHoraNormal.toFixed(2), 105, 48, { align: 'center' });
-                    
-                    const td = diasNoMes(ano, mes);
-                    let dadosTabela = [];
-                    
-                    for (let d = 1; d <= td; d++) {
-                        const dt = new Date(ano, mes, d);
-                        const sem = dt.getDay();
-                        const k = ano + '-' + mes + '-' + d;
-                        const st = calcularValoresDia(k, sem, mes, d, ano);
-                        const reg = registros[k] || {};
-                        const fer = isFeriado(mes, d, ano);
-                        let diaNome = diasNomes[sem];
-                        if (fer) diaNome = diaNome + ' (' + fer + ')';
-                        const dataStr = d.toString().padStart(2, '0') + '/' + (mes + 1).toString().padStart(2, '0');
-                        
-                        dadosTabela.push([
-                            dataStr, diaNome.substring(0, 18),
-                            reg.ent1 || '--:--', reg.sai1 || '--:--',
-                            reg.ent2 || '--:--', reg.sai2 || '--:--',
-                            minToHora(st.trab), minToHora(st.normal),
-                            minToHora(st.extra50), minToHora(st.extra100)
-                        ]);
-                    }
-                    
-                    dadosTabela.push([
-                        'TOTAIS', '', '', '', '', '',
-                        minToHora(cacheTotais.trab),
-                        minToHora(cacheTotais.normal),
-                        minToHora(cacheTotais.extra50),
-                        minToHora(cacheTotais.extra100)
-                    ]);
-                    
-                    doc.autoTable({
-                        head: [['Data', 'Dia', 'E1', 'S1', 'E2', 'S2', 'Total', 'Normal', '50%', '100%']],
-                        body: dadosTabela,
-                        startY: 55,
-                        theme: 'grid',
-                        headStyles: { fillColor: [60, 60, 60], textColor: [255, 255, 255], fontStyle: 'bold' },
-                        bodyStyles: { textColor: [0, 0, 0] },
-                        alternateRowStyles: { fillColor: [245, 245, 245] },
-                        styles: { fontSize: 8, cellPadding: 2 }
-                    });
-                    
-                    let finalY = doc.lastAutoTable.finalY + 10;
-                    
-                    const valorNormal = (cacheTotais.normal / 60) * valorHoraNormal;
-                    const valorExtra50 = (cacheTotais.extra50 / 60) * valorHoraNormal * 1.5;
-                    const valorExtra100 = (cacheTotais.extra100 / 60) * valorHoraNormal * 2;
-                    const valorTotal = valorNormal + valorExtra50 + valorExtra100;
-                    
-                    doc.setFontSize(12);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text('RESUMO FINANCEIRO', 105, finalY, { align: 'center' });
-                    finalY += 10;
-                    
-                    doc.setFontSize(10);
-                    doc.setFont('helvetica', 'normal');
-                    doc.text('Horas Normais: ' + minToHora(cacheTotais.normal) + 'h = R$ ' + valorNormal.toFixed(2), 20, finalY);
-                    finalY += 7;
-                    doc.text('Horas Extras 50%: ' + minToHora(cacheTotais.extra50) + 'h = R$ ' + valorExtra50.toFixed(2), 20, finalY);
-                    finalY += 7;
-                    doc.text('Horas Extras 100%: ' + minToHora(cacheTotais.extra100) + 'h = R$ ' + valorExtra100.toFixed(2), 20, finalY);
-                    finalY += 10;
-                    
-                    doc.setFont('helvetica', 'bold');
-                    doc.text('VALOR TOTAL DO MÊS: R$ ' + valorTotal.toFixed(2), 20, finalY);
-                    
-                    resolve(doc.output('blob'));
-                } catch (error) {
-                    reject(error);
-                }
-            });
-        }
-        
+        // FUNÇÃO OFICIAL DE EXPORTAÇÃO PDF - ESTILO APK
         async function exportarPDF() {
-            mostrarToast('Preparando PDF...');
+            mostrarToast('Gerando PDF oficial...');
             
             try {
-                const pdfBlob = await gerarPDFBlob();
-                const fileName = 'Relatorio_Ponto_' + mesesNomes[mes] + '_' + ano + '.pdf';
-                const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
                 
-                // Verificar se o dispositivo suporta a API de compartilhamento (Android/iOS)
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    // No celular/APK: mostra opções de compartilhamento (WhatsApp, Drive, etc.)
-                    await navigator.share({
-                        title: 'Relatório de Ponto',
-                        text: 'Relatório do mês de ' + mesesNomes[mes] + ' ' + ano,
-                        files: [file]
-                    });
-                    mostrarToast('PDF compartilhado!');
-                } else if (window.showSaveFilePicker) {
-                    // No navegador moderno (Chrome/Edge): mostra diálogo para escolher onde salvar
-                    try {
-                        const handle = await window.showSaveFilePicker({
-                            suggestedName: fileName,
-                            types: [{
-                                description: 'PDF File',
-                                accept: { 'application/pdf': ['.pdf'] }
-                            }]
-                        });
-                        const writable = await handle.createWritable();
-                        await writable.write(pdfBlob);
-                        await writable.close();
-                        mostrarToast('PDF salvo com sucesso!');
-                    } catch (err) {
-                        if (err.name !== 'AbortError') {
-                            // Fallback: salvar diretamente
-                            const link = document.createElement('a');
-                            const url = URL.createObjectURL(pdfBlob);
-                            link.href = url;
-                            link.download = fileName;
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                            URL.revokeObjectURL(url);
-                            mostrarToast('PDF salvo!');
-                        }
+                // CABEÇALHO
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(18);
+                doc.text("CHECK PONTO", 70, 20);
+                
+                doc.setFontSize(12);
+                doc.setFont("helvetica", "normal");
+                doc.text("Relatorio oficial de ponto eletronico", 20, 35);
+                doc.text("Mes/Ano: " + mesesNomes[mes] + " " + ano, 20, 45);
+                doc.text("Jornada: " + Math.floor(jornadaDiaria/60) + "h | Valor Hora: R$ " + valorHoraNormal.toFixed(2), 20, 55);
+                
+                // LINHA
+                doc.line(20, 62, 190, 62);
+                
+                // TITULOS DA TABELA
+                let y = 72;
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(9);
+                doc.text("Data", 20, y);
+                doc.text("Dia", 45, y);
+                doc.text("E1", 75, y);
+                doc.text("S1", 90, y);
+                doc.text("E2", 105, y);
+                doc.text("S2", 120, y);
+                doc.text("Total", 140, y);
+                doc.text("Normal", 155, y);
+                doc.text("50%", 170, y);
+                doc.text("100%", 185, y);
+                
+                y += 8;
+                doc.line(20, y-2, 190, y-2);
+                
+                // DADOS
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(8);
+                
+                const td = diasNoMes(ano, mes);
+                
+                for (let d = 1; d <= td; d++) {
+                    const dt = new Date(ano, mes, d);
+                    const sem = dt.getDay();
+                    const k = ano + '-' + mes + '-' + d;
+                    const st = calcularValoresDia(k, sem, mes, d, ano);
+                    const reg = registros[k] || {};
+                    const fer = isFeriado(mes, d, ano);
+                    let diaNome = diasNomes[sem].substring(0, 3);
+                    if (fer) diaNome = diaNome + "*";
+                    const dataStr = d.toString().padStart(2, '0') + '/' + (mes + 1).toString().padStart(2, '0');
+                    
+                    doc.text(dataStr, 20, y);
+                    doc.text(diaNome, 45, y);
+                    doc.text(reg.ent1 || '--:--', 75, y);
+                    doc.text(reg.sai1 || '--:--', 90, y);
+                    doc.text(reg.ent2 || '--:--', 105, y);
+                    doc.text(reg.sai2 || '--:--', 120, y);
+                    doc.text(minToHora(st.trab), 140, y);
+                    doc.text(minToHora(st.normal), 155, y);
+                    doc.text(minToHora(st.extra50), 170, y);
+                    doc.text(minToHora(st.extra100), 185, y);
+                    
+                    y += 6;
+                    
+                    // Nova página automática
+                    if (y > 270) {
+                        doc.addPage();
+                        y = 20;
+                        doc.setFont("helvetica", "bold");
+                        doc.text("CHECK PONTO - Continuacao", 70, 15);
+                        doc.setFontSize(8);
+                        doc.setFont("helvetica", "normal");
                     }
-                } else {
-                    // Fallback para navegadores antigos
-                    const link = document.createElement('a');
-                    const url = URL.createObjectURL(pdfBlob);
-                    link.href = url;
-                    link.download = fileName;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    URL.revokeObjectURL(url);
-                    mostrarToast('PDF salvo na pasta de Downloads!');
                 }
+                
+                // LINHA FINAL
+                doc.line(20, y-2, 190, y-2);
+                
+                // TOTAIS
+                y += 6;
+                doc.setFont("helvetica", "bold");
+                doc.text("TOTAIS:", 20, y);
+                doc.text(minToHora(cacheTotais.trab), 140, y);
+                doc.text(minToHora(cacheTotais.normal), 155, y);
+                doc.text(minToHora(cacheTotais.extra50), 170, y);
+                doc.text(minToHora(cacheTotais.extra100), 185, y);
+                
+                y += 10;
+                
+                // RESUMO FINANCEIRO
+                doc.setFontSize(10);
+                doc.text("RESUMO FINANCEIRO", 20, y);
+                y += 7;
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(9);
+                
+                const valorNormal = (cacheTotais.normal / 60) * valorHoraNormal;
+                const valorExtra50 = (cacheTotais.extra50 / 60) * valorHoraNormal * 1.5;
+                const valorExtra100 = (cacheTotais.extra100 / 60) * valorHoraNormal * 2;
+                const valorTotal = valorNormal + valorExtra50 + valorExtra100;
+                
+                doc.text("Horas Normais: " + minToHora(cacheTotais.normal) + "h = R$ " + valorNormal.toFixed(2), 20, y);
+                y += 6;
+                doc.text("Horas Extras 50%: " + minToHora(cacheTotais.extra50) + "h = R$ " + valorExtra50.toFixed(2), 20, y);
+                y += 6;
+                doc.text("Horas Extras 100%: " + minToHora(cacheTotais.extra100) + "h = R$ " + valorExtra100.toFixed(2), 20, y);
+                y += 8;
+                
+                doc.setFont("helvetica", "bold");
+                doc.text("VALOR TOTAL DO MES: R$ " + valorTotal.toFixed(2), 20, y);
+                
+                // RODAPÉ
+                doc.setFontSize(8);
+                doc.setFont("helvetica", "italic");
+                doc.text("Documento gerado oficialmente pelo Check Ponto v2.6", 20, 285);
+                doc.text("Data da emissao: " + new Date().toLocaleDateString('pt-PT'), 20, 292);
+                
+                // SALVAR O PDF
+                const nomeArquivo = 'CheckPonto_' + mesesNomes[mes] + '_' + ano + '.pdf';
+                doc.save(nomeArquivo);
+                mostrarToast('PDF oficial salvo com sucesso!');
                 
             } catch (error) {
                 console.error('Erro:', error);
@@ -704,7 +684,7 @@
                                     <button class="btn-nav" onclick="mudarMes(1)">▶</button>
                                 </div>
                                 <button class="btn-primary" onclick="salvar()">💾 SALVAR</button>
-                                <button class="btn-secondary" onclick="exportarPDF()">📄 PDF</button>
+                                <button class="btn-secondary" onclick="exportarPDF()">📄 PDF OFICIAL</button>
                             </div>
                             <div>
                                 <button class="btn-config" onclick="configJornada()">⚙️ Jornada</button>
