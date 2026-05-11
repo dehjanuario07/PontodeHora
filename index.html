@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-PT">
 <head>
@@ -269,217 +268,11 @@
             font-weight: 700;
         }
 
-        /* ========================= */
-        /* CONFIGURAÇÃO OTIMIZADA PARA PDF - GARANTE QUE TODOS OS LANÇAMENTOS APAREÇAM */
-        /* ========================= */
-        @media print {
-            /* Reset completo para impressão - fundo branco, texto escuro legível */
-            * {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                color-adjust: exact !important;
-            }
-            
-            body { 
-                background: white !important; 
-                color: black !important; 
-                padding: 0 !important; 
-                margin: 0 !important;
-            }
-            body::before { display: none !important; }
-            
-            /* Esconder elementos interativos e de UI que não são necessários no PDF */
-            .tabs-nav, .controls-area, .btn-ghost, .btn-primary, .btn-nav, .btn-config, 
-            .date-controls button, .config-row, button, .toast, .header-card::before,
-            .creator-info br + span, .footer .creator-info br {
-                display: none !important; 
-            }
-            
-            /* Cabeçalho estilizado para impressão - mantém a identidade visual mas em preto/branco */
-            .header-card { 
-                background: white !important; 
-                backdrop-filter: none !important;
-                box-shadow: none !important; 
-                border: 1px solid #ccc !important; 
-                color: black !important; 
-                padding: 12px 20px !important;
-                border-radius: 8px !important;
-                justify-content: space-between !important;
-                margin-bottom: 20px !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-            
-            .brand-section { 
-                gap: 15px !important; 
-            }
-            
-            .brand-section h1 {
-                background: none !important;
-                -webkit-text-fill-color: black !important;
-                color: black !important;
-                text-shadow: none !important;
-                font-size: 22pt !important;
-                letter-spacing: normal !important;
-            }
-            
-            .version-tag {
-                background: #e0e0e0 !important;
-                color: #333 !important;
-                border: 1px solid #aaa !important;
-                box-shadow: none !important;
-            }
-            
-            .brand-info div {
-                color: #555 !important;
-                font-weight: bold !important;
-            }
-
-            .futuristic-logo svg {
-                filter: grayscale(1) contrast(0.8) !important;
-                opacity: 0.6 !important;
-                width: 70px !important;
-                height: 70px !important;
-            }
-            
-            .futuristic-logo {
-                filter: none !important;
-                animation: none !important;
-            }
-
-            /* TABELA DE LANÇAMENTOS - GARANTIA DE VISIBILIDADE COMPLETA */
-            .table-container {
-                background: white !important;
-                box-shadow: none !important;
-                border: 1px solid #ddd !important;
-                color: black !important;
-                overflow: visible !important;
-                padding: 0 !important;
-                margin-top: 20px !important;
-                break-inside: avoid !important;
-                page-break-inside: avoid !important;
-            }
-            
-            .scroll-area {
-                overflow: visible !important;
-            }
-            
-            table {
-                min-width: 100% !important;
-                width: 100% !important;
-                border-collapse: collapse !important;
-                border: 1px solid #000 !important;
-                font-size: 10pt !important;
-                background: white !important;
-            }
-            
-            th {
-                background: #f0f0f0 !important;
-                color: black !important;
-                border: 1px solid #aaa !important;
-                font-weight: bold !important;
-                padding: 8px !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-            
-            td {
-                border: 1px solid #ccc !important;
-                color: black !important;
-                padding: 6px 8px !important;
-                background: white !important;
-            }
-            
-            /* Garantir que todos os inputs se tornem texto legível no PDF */
-            input {
-                border: none !important;
-                background: transparent !important;
-                color: black !important;
-                font-size: 10pt !important;
-                font-weight: normal !important;
-                width: auto !important;
-                padding: 0 !important;
-                text-align: center !important;
-                box-shadow: none !important;
-                -webkit-appearance: none !important;
-                appearance: none !important;
-            }
-            
-            /* Forçar exibição do conteúdo dos inputs como texto */
-            input[value] {
-                display: inline-block !important;
-            }
-            
-            /* Cores de texto específicas da tabela no PDF */
-            .col-normal, .col-e50, .col-e100, .col-total {
-                font-weight: bold !important;
-            }
-            
-            .col-normal { color: #0066cc !important; }
-            .col-e50 { color: #9933cc !important; }
-            .col-e100 { color: #cc3300 !important; }
-            
-            tfoot {
-                background: #f5f5f5 !important;
-                color: black !important;
-                border-top: 2px solid #333 !important;
-                font-weight: bold !important;
-            }
-            
-            tfoot td {
-                background: #f5f5f5 !important;
-                border: 1px solid #aaa !important;
-            }
-            
-            .weekend-sun, .weekend-sat, .weekday {
-                background: white !important;
-            }
-
-            /* Cards de estatísticas - esconder no PDF da aba de lançamentos, mas manter no dashboard? 
-               Como o foco é LANÇAMENTOS, garantimos que ao estar na aba lançamentos, só a tabela aparece */
-            .stats-grid, .chart-card, .dashboard-layout {
-                display: none !important;
-            }
-            
-            /* Garantir que o container principal fique full width */
-            .container { 
-                max-width: 100%; 
-                width: 100%; 
-                margin: 0; 
-                padding: 10px;
-            }
-            
-            /* Forçar quebra de página antes do rodapé se necessário */
-            .footer {
-                margin-top: 30px;
-                border-top: 1px solid #ccc;
-                padding: 15px;
-                font-size: 9pt;
-                color: #666;
-            }
-            
-            /* Mostrar apenas o conteúdo da aba LANÇAMENTOS ao imprimir */
-            .tabs-nav {
-                display: none !important;
-            }
-            
-            /* Botões de ação não aparecem */
-            .btn-ghost, .btn-primary {
-                display: none !important;
-            }
-        }
-
         @media (max-width: 992px) { .dashboard-layout { grid-template-columns: 1fr; } }
         @media (max-width: 768px) {
             .header-card { flex-direction: column; text-align: center; padding: 20px; }
             .brand-section { flex-direction: row; justify-content: center; }
             .controls-area { align-items: center; width: 100%; }
-        }
-        
-        /* Garantia extra: impressão da tabela mesmo se houver overflow */
-        @media print and (orientation: landscape) {
-            table { font-size: 9pt; }
-            td, th { padding: 4px 6px; }
         }
     </style>
 </head>
@@ -509,7 +302,7 @@
         let ano = new Date().getFullYear();
         let mes = new Date().getMonth();
         let registros = {};
-        let abaAtiva = 'lancamentos'; // ALTERADO: agora inicia na aba de LANÇAMENTOS para facilitar impressão imediata
+        let abaAtiva = 'lancamentos'; 
         let cacheTotais = { trab:0, normal:0, extra50:0, extra100:0 };
         let chartDist = null, chartEvol = null;
 
@@ -568,35 +361,6 @@
 
         function salvar() { localStorage.setItem('folhaPonto', JSON.stringify({ registros, jornadaDiaria, valorHoraNormal })); mostrarToast('✅ Dados guardados!'); }
         
-        // Função de exportação PDF melhorada - força visualização correta dos lançamentos
-        function exportarPDF() { 
-            // Antes de imprimir, garantir que estamos na aba de lançamentos
-            const estavaAba = abaAtiva;
-            if (abaAtiva !== 'lancamentos') {
-                abaAtiva = 'lancamentos';
-                renderizar();
-                // Pequeno delay para garantir renderização completa antes do print
-                setTimeout(() => {
-                    window.print();
-                    // Restaurar aba anterior após impressão (opcional)
-                    // abaAtiva = estavaAba;
-                    // renderizar();
-                }, 100);
-            } else {
-                window.print();
-            }
-        }
-
-        function limpar() { 
-            if (confirm(`Limpar todos os lançamentos de ${mesesNomes[mes]}?`)) { 
-                for (let d=1; d<=31; d++) delete registros[`${ano}-${mes}-${d}`]; 
-                recalcularTotais(); 
-                salvar();
-                renderizar(); 
-                mostrarToast('🗑️ Mês limpo.');
-            } 
-        }
-
         function validarEAtualizar(chave, campo, input) {
             let v = input.value, f = v.replace(/\D/g, ''); 
             if (f.length > 4) f = f.slice(0,4);
@@ -666,10 +430,6 @@
                     </tr>`;
                 }
                 corpo = `
-                <div style="display:flex;gap:10px;margin-bottom:15px">
-                    <button class="btn-ghost" onclick="exportarPDF()">🖨️ Exportar PDF</button>
-                    <button class="btn-ghost" onclick="limpar()" style="margin-left:auto;color:var(--danger)">🗑️ Limpar Mês</button>
-                </div>
                 <div class="table-container"><div class="scroll-area"><table><thead><tr><th>Data</th><th>Dia</th><th>E1</th><th>S1</th><th>E2</th><th>S2</th><th>Total</th><th>Normal</th><th>50%</th><th>100%</th></tr></thead><tbody>${rows}</tbody>
                 <tfoot style="background: rgba(57, 198, 255, 0.1); font-weight: bold;">
                     <tr>
@@ -742,8 +502,6 @@
         window.configJornada = configJornada; 
         window.configHora = configHora; 
         window.mudarAba = mudarAba;
-        window.exportarPDF = exportarPDF;
-        window.limpar = limpar;
 
         recalcularTotais(); renderizar(); if (abaAtiva === 'dashboard') setTimeout(initCharts, 100);
     })();
