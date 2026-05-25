@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Check Ponto v2.9 - Premium Edition</title>
-    <!-- Bibliotecas Externas -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
@@ -233,12 +232,32 @@
         function calcularValoresDia(chave, semNum, mesNum, diaNum, anoNum) {
             const d = registros[chave] || {};
             const e1 = horaToMin(d.ent1), s1 = horaToMin(d.sai1), e2 = horaToMin(d.ent2), s2 = horaToMin(d.sai2);
-            let trab = 0; if (s1 > e1) trab += s1 - e1; if (s2 > e2) trab += s2 - e2;
+            let trab = 0; 
+            if (s1 > e1) trab += s1 - e1; 
+            if (s2 > e2) trab += s2 - e2;
+            
             let normal = 0, e50 = 0, e100 = 0;
             const feriado = isFeriado(mesNum, diaNum, anoNum);
-            if (semNum === 0 || feriado) e100 = trab;
-            else if (semNum === 6) { normal = Math.min(trab, 240); e50 = Math.max(0, trab - 240); }
-            else { normal = Math.min(trab, jornadaDiaria); e50 = Math.max(0, trab - jornadaDiaria); }
+            
+            // Domingos ou Feriados (100% extra em todo o período trabalhado)
+            if (semNum === 0 || feriado) {
+                e100 = trab;
+            } 
+            // Sábados (Normal: 4h ou 240min)
+            else if (semNum === 6) { 
+                normal = Math.min(trab, 240); 
+                let excesso = trab - 240;
+                // Só considera hora extra se passar de 10 minutos
+                e50 = excesso > 10 ? excesso : 0; 
+            } 
+            // Segunda a Sexta (Normal: 8h ou jornadaDiaria)
+            else { 
+                normal = Math.min(trab, jornadaDiaria); 
+                let excesso = trab - jornadaDiaria;
+                // Só considera hora extra se passar de 10 minutos
+                e50 = excesso > 10 ? excesso : 0; 
+            }
+            
             return { trab, normal, extra50: e50, extra100: e100 };
         }
 
@@ -437,7 +456,6 @@
 
             document.getElementById('app').innerHTML = `<div class="container">
                 <header class="header-card">
-                    <!-- LINHA 1: LOGO E NOME -->
                     <div class="header-row-1">
                         <div class="futuristic-logo">
                             <svg viewBox="0 0 1024 620" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -459,7 +477,6 @@
                         <h1 class="brand-title">Check Ponto <span class="version-tag">v2.9</span></h1>
                     </div>
 
-                    <!-- LINHA 2: NAVEGAÇÃO MÊS -->
                     <div class="header-row-2">
                         <div class="date-stepper">
                             <button class="btn-nav" onclick="mudarMes(-1)">❮</button>
@@ -468,13 +485,11 @@
                         </div>
                     </div>
 
-                    <!-- LINHA 3: JORNADA E VALOR HORA (EDITÁVEIS) -->
                     <div class="header-row-3">
                         <button class="btn-config" onclick="configJornada()">⚙️ JORNADA: ${Math.floor(jornadaDiaria/60)}H</button>
                         <button class="btn-config" onclick="configHora()">💰 HORA: R$ ${valorHoraNormal.toFixed(2)}</button>
                     </div>
 
-                    <!-- LINHA 4: SALVAR E PDF -->
                     <div class="header-row-4">
                         <button class="btn-primary" onclick="salvar()">💾 SALVAR</button>
                         <button class="btn-pdf" onclick="exportarPDF()">📄 PDF</button>
