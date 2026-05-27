@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Check Ponto v2.9 - Premium Edition</title>
+    <title>Check Ponto v3.0 - Biometric Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <!-- Adicionado FontAwesome para os ícones -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
             --primary: #39C6FF;
@@ -73,7 +75,6 @@
 
         @keyframes shineSweep { 0% { left: -150%; } 40%, 100% { left: 150%; } }
 
-        /* ESTRUTURA DE LINHAS DO CABEÇALHO */
         .header-row-1 { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; }
         .header-row-2 { display: flex; align-items: center; justify-content: center; width: 100%; }
         .header-row-3 { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; flex-wrap: wrap; }
@@ -157,13 +158,67 @@
         }
 
         .tabs-nav { display: flex; background: rgba(255,255,255,.03); padding: 5px; border-radius: 14px; gap: 5px; margin-bottom: 20px; }
-        .tab-btn { flex: 1; padding: 12px; border-radius: 10px; font-weight: 700; background: transparent; color: #64748b; }
+        .tab-btn { flex: 1; padding: 12px; border-radius: 10px; font-weight: 700; background: transparent; color: #64748b; font-size: 0.8rem;}
         .tab-btn.active { background: rgba(57, 198, 255, 0.15); color: white; }
 
         .dashboard-layout { display: grid; grid-template-columns: 400px 1fr; gap: 20px; }
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
 
-        /* RODAPÉ PREMIUM v2.9 */
+        /* BIOMETRIA (Novos Estilos) */
+        .bio-container {
+            max-width: 500px; margin: 0 auto;
+        }
+        .fingerprint-btn {
+            background: rgba(57, 198, 255, 0.05);
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            width: 130px; height: 130px;
+            display: flex; justify-content: center; align-items: center;
+            color: var(--primary);
+            font-size: 4rem;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(57, 198, 255, 0.2);
+            transition: all 0.3s ease;
+            margin: 30px auto;
+        }
+        .fingerprint-btn:active { transform: scale(0.95); }
+        .fingerprint-btn.pulse { animation: neonPulse 2s infinite; }
+        .fingerprint-btn:disabled { 
+            border-color: #475569; color: #475569; 
+            box-shadow: none; animation: none; cursor: not-allowed; 
+            background: rgba(255,255,255,0.02);
+        }
+        
+        @keyframes neonPulse {
+            0% { box-shadow: 0 0 0 0 rgba(57, 198, 255, 0.4); }
+            70% { box-shadow: 0 0 0 25px rgba(57, 198, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(57, 198, 255, 0); }
+        }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
+            display: none; justify-content: center; align-items: center; z-index: 9999;
+        }
+        .modal-content {
+            background: rgba(11, 16, 38, 0.95);
+            border: 1px solid var(--primary);
+            border-radius: var(--radius);
+            padding: 30px; text-align: center; width: 320px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        }
+        .progress-bar-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin: 20px 0; overflow: hidden; }
+        .progress-bar-fill { height: 100%; width: 0%; background: var(--primary); transition: width 1.5s ease-in-out; }
+
+        .punch-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0.03); padding: 12px 15px;
+            border-radius: 12px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05);
+        }
+        .punch-row.filled { border-left: 4px solid var(--primary); }
+        .punch-row.empty { border-left: 4px solid #475569; opacity: 0.6; }
+
+        /* RODAPÉ PREMIUM */
         .footer { padding: 40px 20px; text-align: center; margin-top: 50px; position: relative; border-top: 1px solid rgba(255, 255, 255, 0.05); }
         .footer-content {
             background: rgba(20, 25, 55, 0.6); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
@@ -183,6 +238,7 @@
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
             background: linear-gradient(135deg, #39C6FF, #7B2EFF); color: white;
             padding: 12px 30px; border-radius: 50px; display: none; z-index: 1000; font-weight: 700;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
         }
 
         @media (max-width: 768px) {
@@ -190,11 +246,26 @@
             .header-row-3 { flex-direction: column; width: 100%; }
             .btn-config { width: 100%; }
             .dashboard-layout { grid-template-columns: 1fr; }
+            .tabs-nav { flex-wrap: wrap; }
+            .tab-btn { flex: 1 1 30%; font-size: 0.7rem; padding: 10px 5px;}
         }
     </style>
 </head>
 <body>
 <div id="app"></div>
+
+<!-- Modal Biométrica do Sistema (Escondida por padrão) -->
+<div id="biometric-modal" class="modal-overlay">
+    <div class="modal-content">
+        <i id="modal-icon" class="fa-solid fa-fingerprint animate-pulse" style="font-size: 4rem; color: var(--primary);"></i>
+        <h3 style="margin: 15px 0 5px 0; font-size: 1.2rem;">Autenticação Biométrica</h3>
+        <p style="color: #94a3b8; font-size: 0.85rem; margin: 0;" id="auth-status">Toque no sensor...</p>
+        <div class="progress-bar-bg">
+            <div id="auth-progress" class="progress-bar-fill"></div>
+        </div>
+        <p style="font-size: 0.7rem; color: #475569;">O horário será registrado através do servidor central.</p>
+    </div>
+</div>
 
 <script>
     (function() {
@@ -219,7 +290,7 @@
         let ano = new Date().getFullYear();
         let mes = new Date().getMonth();
         let registros = {};
-        let abaAtiva = 'lancamentos'; 
+        let abaAtiva = 'bater_ponto'; // Aba padrão alterada para Bater Ponto
         let cacheTotais = { trab:0, normal:0, extra50:0, extra100:0 };
         let chartDist = null, chartEvol = null;
 
@@ -239,25 +310,17 @@
             let normal = 0, e50 = 0, e100 = 0;
             const feriado = isFeriado(mesNum, diaNum, anoNum);
             
-            // Domingos ou Feriados (100% extra em todo o período trabalhado)
             if (semNum === 0 || feriado) {
                 e100 = trab;
-            } 
-            // Sábados (Normal: 4h ou 240min)
-            else if (semNum === 6) { 
+            } else if (semNum === 6) { 
                 normal = Math.min(trab, 240); 
                 let excesso = trab - 240;
-                // Só considera hora extra se passar de 10 minutos
                 e50 = excesso > 10 ? excesso : 0; 
-            } 
-            // Segunda a Sexta (Normal: 8h ou jornadaDiaria)
-            else { 
+            } else { 
                 normal = Math.min(trab, jornadaDiaria); 
                 let excesso = trab - jornadaDiaria;
-                // Só considera hora extra se passar de 10 minutos
                 e50 = excesso > 10 ? excesso : 0; 
             }
-            
             return { trab, normal, extra50: e50, extra100: e100 };
         }
 
@@ -271,22 +334,18 @@
         }
 
         async function exportarPDF() {
-            recalcularTotais(); // Garante que os totais usados no PDF são os mais recentes
+            recalcularTotais();
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
 
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(22);
-            doc.setTextColor(57, 198, 255);
+            doc.setFont("helvetica", "bold"); doc.setFontSize(22); doc.setTextColor(57, 198, 255);
             doc.text("CHECK PONTO", 20, 20);
 
-            doc.setFontSize(10);
-            doc.setTextColor(100, 100, 100);
-            doc.text(`Relatório Oficial Premium v2.9 • Gerado em ${new Date().toLocaleDateString()}`, 20, 28);
+            doc.setFontSize(10); doc.setTextColor(100, 100, 100);
+            doc.text(`Relatório Oficial Premium v3.0 • Gerado em ${new Date().toLocaleDateString()}`, 20, 28);
             doc.line(20, 32, 190, 32);
 
-            doc.setFontSize(11);
-            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(11); doc.setTextColor(0, 0, 0);
             doc.text(`Período: ${mesesNomes[mes]} de ${ano}`, 20, 42);
             doc.text(`Jornada: ${Math.floor(jornadaDiaria/60)}h | Valor Hora: R$ ${valorHoraNormal.toFixed(2)}`, 110, 42);
 
@@ -303,7 +362,6 @@
                 ]);
             }
 
-            // Cálculo dos saldos em dinheiro
             const val50 = (cacheTotais.extra50 / 60 * valorHoraNormal * 1.5).toFixed(2);
             const val100 = (cacheTotais.extra100 / 60 * valorHoraNormal * 2.0).toFixed(2);
 
@@ -315,19 +373,13 @@
                 headStyles: { fillColor: [57, 198, 255], halign: 'center', textColor: 255 },
                 styles: { fontSize: 8, halign: 'center' },
                 foot: [
-                    [
-                        { content: 'TOTAIS (HORAS)', colSpan: 6, styles: { halign: 'right', fontStyle: 'bold' } },
-                        minToHora(cacheTotais.trab), minToHora(cacheTotais.extra50), minToHora(cacheTotais.extra100)
-                    ],
-                    [
-                        { content: 'SALDO EM DINHEIRO (R$)', colSpan: 6, styles: { halign: 'right', fontStyle: 'bold' } },
-                        '-', `R$ ${val50}`, `R$ ${val100}`
-                    ]
+                    [ { content: 'TOTAIS (HORAS)', colSpan: 6, styles: { halign: 'right', fontStyle: 'bold' } }, minToHora(cacheTotais.trab), minToHora(cacheTotais.extra50), minToHora(cacheTotais.extra100) ],
+                    [ { content: 'SALDO EM DINHEIRO (R$)', colSpan: 6, styles: { halign: 'right', fontStyle: 'bold' } }, '-', `R$ ${val50}`, `R$ ${val100}` ]
                 ],
                 footStyles: { fillColor: [240, 240, 240], textColor: 0, lineWidth: 0.1 }
             });
 
-            doc.save(`CheckPonto_v29_${mesesNomes[mes]}_${ano}.pdf`);
+            doc.save(`CheckPonto_v30_${mesesNomes[mes]}_${ano}.pdf`);
             mostrarToast("📄 PDF Exportado com Saldo!");
         }
 
@@ -335,8 +387,7 @@
             if (abaAtiva !== 'dashboard') return;
             const distCtx = document.getElementById('chartDist'), evolCtx = document.getElementById('chartEvol');
             if (!distCtx || !evolCtx) return;
-            if (chartDist) chartDist.destroy();
-            if (chartEvol) chartEvol.destroy();
+            if (chartDist) chartDist.destroy(); if (chartEvol) chartEvol.destroy();
 
             chartDist = new Chart(distCtx.getContext('2d'), {
                 type: 'bar',
@@ -357,7 +408,7 @@
             });
         }
 
-        function salvar() { localStorage.setItem('folhaPonto_v2.9', JSON.stringify({ registros, jornadaDiaria, valorHoraNormal })); mostrarToast('✅ Dados guardados!'); }
+        function salvar(silencioso = false) { localStorage.setItem('folhaPonto_v2.9', JSON.stringify({ registros, jornadaDiaria, valorHoraNormal })); if(!silencioso) mostrarToast('✅ Dados guardados!'); }
         
         function validarEAtualizar(chave, campo, input) {
             let v = input.value, f = v.replace(/\D/g, ''); 
@@ -387,25 +438,90 @@
             }
         }
 
-        function configJornada() { 
-            const v = prompt("Nova Jornada Diária em horas (ex: 8):", (jornadaDiaria/60)); 
-            if (v !== null && v !== "") { 
-                jornadaDiaria = Math.round(parseFloat(v.replace(',', '.')) * 60); 
-                recalcularTotais(); renderizar(); salvar(); 
-            } 
-        }
-
-        function configHora() { 
-            const v = prompt("Novo Valor da Hora (R$):", valorHoraNormal.toFixed(2)); 
-            if (v !== null && v !== "") { 
-                valorHoraNormal = parseFloat(v.replace(',', '.')); 
-                recalcularTotais(); renderizar(); salvar(); 
-            } 
-        }
-
+        function configJornada() { const v = prompt("Nova Jornada Diária em horas (ex: 8):", (jornadaDiaria/60)); if (v !== null && v !== "") { jornadaDiaria = Math.round(parseFloat(v.replace(',', '.')) * 60); recalcularTotais(); renderizar(); salvar(); } }
+        function configHora() { const v = prompt("Novo Valor da Hora (R$):", valorHoraNormal.toFixed(2)); if (v !== null && v !== "") { valorHoraNormal = parseFloat(v.replace(',', '.')); recalcularTotais(); renderizar(); salvar(); } }
         function mudarMes(delta) { mes += delta; if (mes<0){mes=11;ano--;} if (mes>11){mes=0;ano++;} recalcularTotais(); renderizar(); if (abaAtiva === 'dashboard') setTimeout(initCharts, 50); }
-        function mostrarToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 2500); }
+        function mostrarToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3000); }
         function mudarAba(nova) { abaAtiva = nova; renderizar(); if (nova === 'dashboard') setTimeout(initCharts, 100); }
+
+        // --- SISTEMA BIOMÉTRICO ---
+        function requestBiometrics() {
+            const modal = document.getElementById('biometric-modal');
+            const progress = document.getElementById('auth-progress');
+            const status = document.getElementById('auth-status');
+            const icon = document.getElementById('modal-icon');
+            
+            modal.style.display = 'flex';
+            progress.style.width = '0%';
+            progress.style.transition = 'none';
+            status.innerText = "Lendo digital...";
+            status.style.color = "#94a3b8";
+            icon.className = "fa-solid fa-fingerprint animate-pulse";
+            icon.style.color = "var(--primary)";
+
+            // Simulação de processamento
+            setTimeout(() => {
+                progress.style.transition = 'width 1.5s ease-in-out';
+                progress.style.width = '100%';
+                status.innerText = "Autenticando no servidor...";
+                status.style.color = "var(--primary)";
+                
+                setTimeout(() => {
+                    status.innerText = "Sucesso!";
+                    status.style.color = "#10b981";
+                    icon.className = "fa-solid fa-check-circle";
+                    icon.style.color = "#10b981";
+                    
+                    setTimeout(() => {
+                        modal.style.display = 'none';
+                        registrarPontoAutomatico(); 
+                    }, 800);
+                }, 1500);
+            }, 300);
+        }
+
+        function registrarPontoAutomatico() {
+            const hoje = new Date();
+            const d = hoje.getDate();
+            const m = hoje.getMonth();
+            const a = hoje.getFullYear();
+            const chaveHoje = `${a}-${m}-${d}`;
+            
+            // Pega a hora exata do sistema para evitar fraudes do usuário editando campo manual
+            const horaAtual = hoje.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+            if (!registros[chaveHoje]) registros[chaveHoje] = {};
+            let r = registros[chaveHoje];
+
+            let msg = "";
+            if (!r.ent1) { r.ent1 = horaAtual; msg = "Entrada 1 registrada"; }
+            else if (!r.sai1) { r.sai1 = horaAtual; msg = "Início de Pausa registrado"; }
+            else if (!r.ent2) { r.ent2 = horaAtual; msg = "Retorno de Pausa registrado"; }
+            else if (!r.sai2) { r.sai2 = horaAtual; msg = "Saída Final registrada"; }
+            
+            mostrarToast(`✅ ${msg} às ${horaAtual}`);
+            
+            // Força a visualização para o mês atual para ver o ponto que acabou de bater
+            ano = a;
+            mes = m;
+            
+            salvar(true); // Salva silenciosamente
+            recalcularTotais();
+            renderizar();
+        }
+
+        // Loop para o relógio em tempo real da aba Biometria
+        setInterval(() => {
+            const clockElem = document.getElementById('bio-clock');
+            const dateElem = document.getElementById('bio-date');
+            if (clockElem && dateElem) {
+                const now = new Date();
+                clockElem.innerText = now.toLocaleTimeString('pt-BR', { hour12: false });
+                const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+                let ds = now.toLocaleDateString('pt-BR', options);
+                dateElem.innerText = ds.charAt(0).toUpperCase() + ds.slice(1);
+            }
+        }, 1000);
 
         function renderizar() {
             let corpo = '';
@@ -424,7 +540,7 @@
                     </div>
                     <div class="chart-card" style="height: 380px;"><canvas id="chartEvol"></canvas></div>
                 </div>`;
-            } else {
+            } else if (abaAtiva === 'lancamentos') {
                 let rows = '';
                 for (let d = 1; d <= td; d++) {
                     const dt = new Date(ano, mes, d), sem = dt.getDay(), k = `${ano}-${mes}-${d}`, st = calcularValoresDia(k, sem, mes, d, ano), fer = isFeriado(mes, d, ano);
@@ -452,6 +568,61 @@
                         <td class="tot-trab">${minToHora(cacheTotais.trab)}</td><td class="tot-norm" style="color:#39C6FF">${minToHora(cacheTotais.normal)}</td><td class="tot-50" style="color:#C77DFF">${minToHora(cacheTotais.extra50)}</td><td class="tot-100" style="color:#7B2EFF">${minToHora(cacheTotais.extra100)}</td></tr>
                     </tfoot>
                 </table></div></div>`;
+            } else if (abaAtiva === 'bater_ponto') {
+                // Recupera os dados de HOJE
+                const hoje = new Date();
+                const chaveHoje = `${hoje.getFullYear()}-${hoje.getMonth()}-${hoje.getDate()}`;
+                const regHoje = registros[chaveHoje] || {};
+                
+                // Verifica quantas batidas já foram dadas hoje
+                const totalBatidas = (regHoje.ent1?1:0) + (regHoje.sai1?1:0) + (regHoje.ent2?1:0) + (regHoje.sai2?1:0);
+                const isBloqueado = totalBatidas >= 4;
+                
+                let textStatus = "Pressione para bater o ponto";
+                if (totalBatidas === 1) textStatus = "Pressione para registrar Início da Pausa";
+                if (totalBatidas === 2) textStatus = "Pressione para registrar Retorno da Pausa";
+                if (totalBatidas === 3) textStatus = "Pressione para registrar Saída Final";
+                if (isBloqueado) textStatus = "Expediente de hoje concluído!";
+
+                corpo = `<div class="chart-card bio-container">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <h2 style="font-size: 1.5rem; margin-bottom: 5px; background: linear-gradient(90deg, #3ACDFF 0%, #B15CFF 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Ponto Biométrico</h2>
+                        <p style="color: #94a3b8; font-size: 0.9rem;" id="bio-date">Carregando data...</p>
+                        <div style="font-size: 3.5rem; font-weight: 800; margin: 15px 0; font-variant-numeric: tabular-nums; letter-spacing: 2px;" id="bio-clock">--:--:--</div>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button id="fingerprint-btn" onclick="requestBiometrics()" class="fingerprint-btn ${isBloqueado ? '' : 'pulse'}" ${isBloqueado ? 'disabled' : ''}>
+                            <i class="fa-solid fa-fingerprint"></i>
+                        </button>
+                        <p id="bio-status" style="margin-top: 15px; color: ${isBloqueado ? '#10b981' : 'var(--primary)'}; font-weight: bold; font-size: 1.1rem;">
+                            ${isBloqueado ? '<i class="fa-solid fa-check"></i> ' : ''}${textStatus}
+                        </p>
+                    </div>
+
+                    <div style="margin-top: 40px;">
+                        <h3 style="margin: 0 0 15px 0; font-size: 0.9rem; text-transform: uppercase; color: #94a3b8; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
+                            Registros de Hoje <span style="float:right; color: #fff;">${totalBatidas}/4</span>
+                        </h3>
+                        
+                        <div class="punch-row ${regHoje.ent1 ? 'filled' : 'empty'}">
+                            <span><i class="fa-solid fa-arrow-right-to-bracket" style="color: #10b981; margin-right: 10px;"></i> Entrada 1</span>
+                            <strong style="font-size: 1.1rem;">${regHoje.ent1 || '--:--'}</strong>
+                        </div>
+                        <div class="punch-row ${regHoje.sai1 ? 'filled' : 'empty'}">
+                            <span><i class="fa-solid fa-mug-hot" style="color: #f59e0b; margin-right: 10px;"></i> Saída (Pausa)</span>
+                            <strong style="font-size: 1.1rem;">${regHoje.sai1 || '--:--'}</strong>
+                        </div>
+                        <div class="punch-row ${regHoje.ent2 ? 'filled' : 'empty'}">
+                            <span><i class="fa-solid fa-briefcase" style="color: #3b82f6; margin-right: 10px;"></i> Retorno (Pausa)</span>
+                            <strong style="font-size: 1.1rem;">${regHoje.ent2 || '--:--'}</strong>
+                        </div>
+                        <div class="punch-row ${regHoje.sai2 ? 'filled' : 'empty'}">
+                            <span><i class="fa-solid fa-arrow-right-from-bracket" style="color: #ef4444; margin-right: 10px;"></i> Saída Final</span>
+                            <strong style="font-size: 1.1rem;">${regHoje.sai2 || '--:--'}</strong>
+                        </div>
+                    </div>
+                </div>`;
             }
 
             document.getElementById('app').innerHTML = `<div class="container">
@@ -474,7 +645,7 @@
                               <path d="M650 530 Q760 570 880 515" stroke="url(#neonBlue)" stroke-width="10" fill="none" stroke-linecap="round" filter="url(#glow)"/>
                             </svg>
                         </div>
-                        <h1 class="brand-title">Check Ponto <span class="version-tag">v2.9</span></h1>
+                        <h1 class="brand-title">Check Ponto <span class="version-tag">v3.0</span></h1>
                     </div>
 
                     <div class="header-row-2">
@@ -497,8 +668,9 @@
                 </header>
 
                 <nav class="tabs-nav">
-                    <button class="tab-btn ${abaAtiva==='dashboard'?'active':''}" onclick="mudarAba('dashboard')">📊 DASHBOARD</button>
-                    <button class="tab-btn ${abaAtiva==='lancamentos'?'active':''}" onclick="mudarAba('lancamentos')">✍️ LANÇAMENTOS</button>
+                    <button class="tab-btn ${abaAtiva==='bater_ponto'?'active':''}" onclick="mudarAba('bater_ponto')"><i class="fa-solid fa-fingerprint"></i> BATER PONTO</button>
+                    <button class="tab-btn ${abaAtiva==='lancamentos'?'active':''}" onclick="mudarAba('lancamentos')"><i class="fa-solid fa-pen-to-square"></i> LANÇAMENTOS</button>
+                    <button class="tab-btn ${abaAtiva==='dashboard'?'active':''}" onclick="mudarAba('dashboard')"><i class="fa-solid fa-chart-pie"></i> DASHBOARD</button>
                 </nav>
 
                 ${corpo}
@@ -506,7 +678,7 @@
                 <footer class="footer">
                     <div class="footer-content">
                         <span class="footer-text">Criado por <b>Deh Januário</b></span>
-                        <span class="footer-brand">Check Ponto • v2.9 Premium</span>
+                        <span class="footer-brand">Check Ponto • v3.0 Premium</span>
                     </div>
                 </footer>
                 <div id="toast" class="toast"></div>
@@ -521,6 +693,7 @@
         window.configHora = configHora; 
         window.mudarAba = mudarAba; 
         window.exportarPDF = exportarPDF;
+        window.requestBiometrics = requestBiometrics; // Expor função da digital
 
         recalcularTotais(); renderizar(); 
     })();
