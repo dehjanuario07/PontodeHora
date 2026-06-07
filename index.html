@@ -7,7 +7,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    <!-- Adicionado FontAwesome para os ícones -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -46,7 +45,7 @@
 
         .container { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; }
 
-        /* HEADER ORGANIZADO EM 4 LINHAS */
+        /* HEADER */
         .header-card {
             background: rgba(11, 16, 38, 0.65) !important;
             backdrop-filter: blur(18px);
@@ -164,7 +163,7 @@
         .dashboard-layout { display: grid; grid-template-columns: 400px 1fr; gap: 20px; }
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
 
-        /* BIOMETRIA (Novos Estilos) */
+        /* BIOMETRIA */
         .bio-container {
             max-width: 500px; margin: 0 auto;
         }
@@ -241,6 +240,59 @@
             box-shadow: 0 5px 20px rgba(0,0,0,0.5);
         }
 
+        /* OBSERVAÇÕES */
+        .obs-container {
+            padding: 15px 20px;
+            margin-bottom: 24px;
+            margin-top: 10px;
+            background: rgba(20, 25, 55, 0.7); 
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255,255,255,0.05); 
+            border-radius: var(--radius);
+        }
+        .obs-title { 
+            margin: 0 0 10px 0; 
+            font-size: 0.85rem; 
+            text-transform: uppercase; 
+            color: #94a3b8; 
+            font-weight: 800; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
+        .obs-textarea {
+            width: 100%; 
+            background: rgba(255,255,255,.04); 
+            border: 1px solid rgba(255,255,255,.08);
+            color: white; 
+            padding: 12px; 
+            border-radius: 12px; 
+            font-family: inherit; 
+            font-size: 0.9rem;
+            resize: vertical; 
+            min-height: 120px;
+            transition: border-color 0.3s;
+        }
+        .obs-textarea:focus { outline: none; border-color: var(--primary); }
+
+        .obs-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        .btn-save-obs {
+            background: rgba(57, 198, 255, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 6px 15px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+        .btn-save-obs:hover {
+            background: rgba(57, 198, 255, 0.2);
+        }
+
         @media (max-width: 768px) {
             .brand-title { font-size: 1.3rem; }
             .header-row-3 { flex-direction: column; width: 100%; }
@@ -254,7 +306,6 @@
 <body>
 <div id="app"></div>
 
-<!-- Modal Biométrica do Sistema (Escondida por padrão) -->
 <div id="biometric-modal" class="modal-overlay">
     <div class="modal-content">
         <i id="modal-icon" class="fa-solid fa-fingerprint animate-pulse" style="font-size: 4rem; color: var(--primary);"></i>
@@ -271,7 +322,9 @@
     (function() {
         let jornadaDiaria = 480; 
         let valorHoraNormal = 10.32; 
-        const feriadosFixos = { '0-1': 'Ano Novo', '3-21': 'Tiradentes', '4-1': 'Dia do Trabalho', '8-7': 'Independência', '9-12': 'N. Sra Aparecida', '10-2': 'Finados', '10-15': 'Proclamação', '10-20': 'Consc. Negra', '11-25': 'Natal' };
+        
+        // Feriados fixos (incluindo o Santo Antônio que havíamos adicionado como exemplo)
+        const feriadosFixos = { '0-1': 'Ano Novo', '3-21': 'Tiradentes', '4-1': 'Dia do Trabalho', '5-13': 'Santo Antônio', '8-7': 'Independência', '9-12': 'N. Sra Aparecida', '10-2': 'Finados', '10-15': 'Proclamação', '10-20': 'Consc. Negra', '11-25': 'Natal' };
         
         function calcularPascoa(ano) {
             const a = ano % 19, b = Math.floor(ano / 100), c = ano % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
@@ -290,12 +343,21 @@
         let ano = new Date().getFullYear();
         let mes = new Date().getMonth();
         let registros = {};
-        let abaAtiva = 'bater_ponto'; // Aba padrão alterada para Bater Ponto
+        let observacoes = {};
+        let abaAtiva = 'bater_ponto';
         let cacheTotais = { trab:0, normal:0, extra50:0, extra100:0 };
         let chartDist = null, chartEvol = null;
 
         const salvo = localStorage.getItem('folhaPonto_v2.9');
-        if (salvo) { try { const p = JSON.parse(salvo); registros = p.registros || {}; jornadaDiaria = p.jornadaDiaria || 480; valorHoraNormal = p.valorHoraNormal || 10.32; } catch(e) {} }
+        if (salvo) { 
+            try { 
+                const p = JSON.parse(salvo); 
+                registros = p.registros || {}; 
+                jornadaDiaria = p.jornadaDiaria || 480; 
+                valorHoraNormal = p.valorHoraNormal || 10.32; 
+                observacoes = p.observacoes || {};
+            } catch(e) {} 
+        }
         
         const mesesNomes = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
         const diasNomes = ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'];
@@ -309,8 +371,10 @@
             
             let normal = 0, e50 = 0, e100 = 0;
             const feriado = isFeriado(mesNum, diaNum, anoNum);
+            const feriadoManual = d.feriadoManual === true; // NOVO: Verifica tag de 100% manual
             
-            if (semNum === 0 || feriado) {
+            // NOVO: Adicionado feriadoManual na condição para calcular tudo como 100%
+            if (semNum === 0 || feriado || feriadoManual) {
                 e100 = trab;
             } else if (semNum === 6) { 
                 normal = Math.min(trab, 240); 
@@ -355,9 +419,16 @@
                 const dt = new Date(ano, mes, d);
                 const st = calcularValoresDia(k, dt.getDay(), mes, d, ano);
                 const reg = registros[k] || {};
+                
+                // NOVO: Adicionar indicativo visual no PDF se for feriado manual
+                let nomeDiaStr = diasNomes[dt.getDay()];
+                const fer = isFeriado(mes, d, ano);
+                if (fer) nomeDiaStr += ` (${fer})`;
+                else if (reg.feriadoManual) nomeDiaStr += ` (100% Man.)`;
+
                 tableBody.push([
                     `${d.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')}`,
-                    diasNomes[dt.getDay()], reg.ent1 || '-', reg.sai1 || '-', reg.ent2 || '-', reg.sai2 || '-',
+                    nomeDiaStr, reg.ent1 || '-', reg.sai1 || '-', reg.ent2 || '-', reg.sai2 || '-',
                     minToHora(st.trab), minToHora(st.extra50), minToHora(st.extra100)
                 ]);
             }
@@ -378,6 +449,25 @@
                 ],
                 footStyles: { fillColor: [240, 240, 240], textColor: 0, lineWidth: 0.1 }
             });
+
+            const obsKey = `${ano}-${mes}`;
+            const obsText = observacoes[obsKey];
+            if (obsText && obsText.trim() !== '') {
+                let finalY = doc.lastAutoTable.finalY || 250;
+                if (finalY > 260) { doc.addPage(); finalY = 20; } 
+                else { finalY += 15; }
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(10);
+                doc.setTextColor(0, 0, 0);
+                doc.text("Observações:", 20, finalY);
+                
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(9);
+                doc.setTextColor(80, 80, 80);
+                const splitObs = doc.splitTextToSize(obsText, 170);
+                doc.text(splitObs, 20, finalY + 6);
+            }
 
             doc.save(`CheckPonto_v30_${mesesNomes[mes]}_${ano}.pdf`);
             mostrarToast("📄 PDF Exportado com Saldo!");
@@ -408,8 +498,21 @@
             });
         }
 
-        function salvar(silencioso = false) { localStorage.setItem('folhaPonto_v2.9', JSON.stringify({ registros, jornadaDiaria, valorHoraNormal })); if(!silencioso) mostrarToast('✅ Dados guardados!'); }
+        function salvar(silencioso = false) { 
+            localStorage.setItem('folhaPonto_v2.9', JSON.stringify({ registros, jornadaDiaria, valorHoraNormal, observacoes })); 
+            if(!silencioso) mostrarToast('✅ Dados guardados!'); 
+        }
         
+        function salvarObservacao() {
+            const textarea = document.getElementById('obs-textarea');
+            if (textarea) {
+                const obsKey = `${ano}-${mes}`;
+                observacoes[obsKey] = textarea.value;
+                salvar(true);
+                mostrarToast('✅ Observação salva com sucesso!');
+            }
+        }
+
         function validarEAtualizar(chave, campo, input) {
             let v = input.value, f = v.replace(/\D/g, ''); 
             if (f.length > 4) f = f.slice(0,4);
@@ -438,13 +541,21 @@
             }
         }
 
+        // NOVO: Função para ativar/desativar 100% manual
+        function toggleFeriadoManual(chave) {
+            if (!registros[chave]) registros[chave] = {};
+            registros[chave].feriadoManual = !registros[chave].feriadoManual; 
+            salvar(true); 
+            recalcularTotais();
+            renderizar();
+        }
+
         function configJornada() { const v = prompt("Nova Jornada Diária em horas (ex: 8):", (jornadaDiaria/60)); if (v !== null && v !== "") { jornadaDiaria = Math.round(parseFloat(v.replace(',', '.')) * 60); recalcularTotais(); renderizar(); salvar(); } }
         function configHora() { const v = prompt("Novo Valor da Hora (R$):", valorHoraNormal.toFixed(2)); if (v !== null && v !== "") { valorHoraNormal = parseFloat(v.replace(',', '.')); recalcularTotais(); renderizar(); salvar(); } }
         function mudarMes(delta) { mes += delta; if (mes<0){mes=11;ano--;} if (mes>11){mes=0;ano++;} recalcularTotais(); renderizar(); if (abaAtiva === 'dashboard') setTimeout(initCharts, 50); }
         function mostrarToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3000); }
         function mudarAba(nova) { abaAtiva = nova; renderizar(); if (nova === 'dashboard') setTimeout(initCharts, 100); }
 
-        // --- SISTEMA BIOMÉTRICO ---
         function requestBiometrics() {
             const modal = document.getElementById('biometric-modal');
             const progress = document.getElementById('auth-progress');
@@ -459,7 +570,6 @@
             icon.className = "fa-solid fa-fingerprint animate-pulse";
             icon.style.color = "var(--primary)";
 
-            // Simulação de processamento
             setTimeout(() => {
                 progress.style.transition = 'width 1.5s ease-in-out';
                 progress.style.width = '100%';
@@ -487,7 +597,6 @@
             const a = hoje.getFullYear();
             const chaveHoje = `${a}-${m}-${d}`;
             
-            // Pega a hora exata do sistema para evitar fraudes do usuário editando campo manual
             const horaAtual = hoje.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
             if (!registros[chaveHoje]) registros[chaveHoje] = {};
@@ -501,16 +610,14 @@
             
             mostrarToast(`✅ ${msg} às ${horaAtual}`);
             
-            // Força a visualização para o mês atual para ver o ponto que acabou de bater
             ano = a;
             mes = m;
             
-            salvar(true); // Salva silenciosamente
+            salvar(true); 
             recalcularTotais();
             renderizar();
         }
 
-        // Loop para o relógio em tempo real da aba Biometria
         setInterval(() => {
             const clockElem = document.getElementById('bio-clock');
             const dateElem = document.getElementById('bio-date');
@@ -547,9 +654,15 @@
                     const reg = registros[k] || {};
                     let rowClass = (sem === 6) ? 'weekend-sat' : (sem === 0) ? 'weekend-sun' : 'weekday';
 
+                    // NOVO: Gerando botão de 100% manual (só exibe se não for domingo)
+                    const isFeriadoManual = reg.feriadoManual ? true : false;
+                    const btn100 = `<span onclick="toggleFeriadoManual('${k}')" style="cursor:pointer; display:inline-block; margin-left:6px; padding: 2px 5px; border-radius:6px; font-size:0.6rem; font-weight:800; background:${isFeriadoManual ? '#C77DFF' : 'rgba(255,255,255,0.05)'}; color:${isFeriadoManual ? '#fff' : '#64748b'}; border: 1px solid ${isFeriadoManual ? '#C77DFF' : '#475569'}; transition: all 0.2s;" title="Ativar/Desativar 100% Manual">100%</span>`;
+
                     rows += `<tr class="${rowClass}">
                         <td style="font-weight:800">${d.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')}</td>
-                        <td style="color:${sem===0?'#7B2EFF':(sem===6?'#39C6FF':'#94a3b8')}">${diasNomes[sem]}${fer ? ' (' + fer + ')' : ''}</td>
+                        <td style="color:${sem===0?'#7B2EFF':(sem===6?'#39C6FF':'#94a3b8')}">
+                            ${diasNomes[sem]}${fer ? ' (' + fer + ')' : ''} ${sem !== 0 ? btn100 : ''}
+                        </td>
                         <td><input type="text" inputmode="numeric" value="${reg.ent1||''}" oninput="validarEAtualizar('${k}','ent1',this)"></td>
                         <td><input type="text" inputmode="numeric" value="${reg.sai1||''}" oninput="validarEAtualizar('${k}','sai1',this)"></td>
                         <td><input type="text" inputmode="numeric" value="${reg.ent2||''}" oninput="validarEAtualizar('${k}','ent2',this)"></td>
@@ -560,6 +673,10 @@
                         <td class="col-100" style="color:#7B2EFF">${minToHora(st.extra100)}</td>
                     </tr>`;
                 }
+                
+                const obsKey = `${ano}-${mes}`;
+                const obsValue = observacoes[obsKey] || '';
+
                 corpo = `<div class="table-container"><div class="scroll-area"><table>
                     <thead><tr><th>Data</th><th>Dia</th><th>E1</th><th>S1</th><th>E2</th><th>S2</th><th>Total</th><th>Norm</th><th>50%</th><th>100%</th></tr></thead>
                     <tbody>${rows}</tbody>
@@ -567,14 +684,26 @@
                         <tr><td colspan="6" style="text-align: right; padding-right: 15px;">TOTAIS</td>
                         <td class="tot-trab">${minToHora(cacheTotais.trab)}</td><td class="tot-norm" style="color:#39C6FF">${minToHora(cacheTotais.normal)}</td><td class="tot-50" style="color:#C77DFF">${minToHora(cacheTotais.extra50)}</td><td class="tot-100" style="color:#7B2EFF">${minToHora(cacheTotais.extra100)}</td></tr>
                     </tfoot>
-                </table></div></div>`;
+                </table></div></div>
+                
+                <div class="obs-container">
+                    <div class="obs-title">
+                        <i class="fa-regular fa-note-sticky"></i>
+                        Observações do Mês
+                        <span style="font-size: 0.7rem; color: #64748b;">(salva automaticamente)</span>
+                    </div>
+                    <textarea id="obs-textarea" class="obs-textarea" placeholder="Digite suas observações sobre este mês... Ex: Faltas justificadas, horas extras autorizadas, banco de horas, etc." onchange="salvarObservacao()">${obsValue}</textarea>
+                    <div class="obs-footer">
+                        <button class="btn-save-obs" onclick="salvarObservacao()">
+                            <i class="fa-regular fa-floppy-disk"></i> Salvar Observação
+                        </button>
+                    </div>
+                </div>`;
             } else if (abaAtiva === 'bater_ponto') {
-                // Recupera os dados de HOJE
                 const hoje = new Date();
                 const chaveHoje = `${hoje.getFullYear()}-${hoje.getMonth()}-${hoje.getDate()}`;
                 const regHoje = registros[chaveHoje] || {};
                 
-                // Verifica quantas batidas já foram dadas hoje
                 const totalBatidas = (regHoje.ent1?1:0) + (regHoje.sai1?1:0) + (regHoje.ent2?1:0) + (regHoje.sai2?1:0);
                 const isBloqueado = totalBatidas >= 4;
                 
@@ -678,14 +807,13 @@
                 <footer class="footer">
                     <div class="footer-content">
                         <span class="footer-text">Criado por <b>Deh Januário</b></span>
-                        <span class="footer-brand">Check Ponto • v3.0 Premium</span>
+                        <span class="footer-brand">Check Ponto • v3.2 Premium</span>
                     </div>
                 </footer>
                 <div id="toast" class="toast"></div>
             </div>`;
         }
 
-        // Expor funções globais
         window.validarEAtualizar = validarEAtualizar; 
         window.mudarMes = mudarMes; 
         window.salvar = salvar; 
@@ -693,7 +821,9 @@
         window.configHora = configHora; 
         window.mudarAba = mudarAba; 
         window.exportarPDF = exportarPDF;
-        window.requestBiometrics = requestBiometrics; // Expor função da digital
+        window.requestBiometrics = requestBiometrics;
+        window.salvarObservacao = salvarObservacao;
+        window.toggleFeriadoManual = toggleFeriadoManual; // NOVO: Exportado
 
         recalcularTotais(); renderizar(); 
     })();
