@@ -485,12 +485,14 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
 
-            let labels = [], d50 = [], d100 = [], ac50 = 0, ac100 = 0;
+            let labels = [], d50 = [], d100 = [];
             for (let d = 1; d <= diasNoMes(ano, mes); d++) {
                 const s = calcularValoresDia(`${ano}-${mes}-${d}`, new Date(ano, mes, d).getDay(), mes, d, ano);
-                ac50 += s.extra50 / 60; ac100 += s.extra100 / 60;
-                labels.push(d); d50.push(ac50.toFixed(1)); d100.push(ac100.toFixed(1));
+                labels.push(d); 
+                d50.push((s.extra50 / 60).toFixed(1)); 
+                d100.push((s.extra100 / 60).toFixed(1));
             }
+            
             chartEvol = new Chart(evolCtx.getContext('2d'), {
                 type: 'line',
                 data: { labels: labels, datasets: [{ label: '50%', data: d50, borderColor: '#39C6FF', tension: 0.3 }, { label: '100%', data: d100, borderColor: '#7B2EFF', tension: 0.3 }] },
@@ -823,7 +825,7 @@
         window.exportarPDF = exportarPDF;
         window.requestBiometrics = requestBiometrics;
         window.salvarObservacao = salvarObservacao;
-        window.toggleFeriadoManual = toggleFeriadoManual; // NOVO: Exportado
+        window.toggleFeriadoManual = toggleFeriadoManual; 
 
         recalcularTotais(); renderizar(); 
     })();
