@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Check Ponto v3.3 - Biometric Edition</title>
+    <title>Check Ponto v3.0 - Biometric Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
@@ -489,14 +489,78 @@
             for (let d = 1; d <= diasNoMes(ano, mes); d++) {
                 const s = calcularValoresDia(`${ano}-${mes}-${d}`, new Date(ano, mes, d).getDay(), mes, d, ano);
                 labels.push(d); 
-                d50.push((s.extra50 / 60).toFixed(1)); 
-                d100.push((s.extra100 / 60).toFixed(1));
+                // Passamos o valor em MINUTOS exatos (sem dividir por 60)
+                d50.push(s.extra50); 
+                d100.push(s.extra100);
             }
             
             chartEvol = new Chart(evolCtx.getContext('2d'), {
                 type: 'line',
-                data: { labels: labels, datasets: [{ label: '50%', data: d50, borderColor: '#39C6FF', tension: 0.3 }, { label: '100%', data: d100, borderColor: '#7B2EFF', tension: 0.3 }] },
-                options: { responsive: true, maintainAspectRatio: false }
+                data: { 
+                    labels: labels, 
+                    datasets: [
+                        { 
+                            label: '50%', 
+                            data: d50, 
+                            borderColor: '#39C6FF', 
+                            backgroundColor: '#39C6FF',
+                            tension: 0.3,
+                            pointRadius: 4
+                        },
+                        { 
+                            label: '100%', 
+                            data: d100, 
+                            borderColor: '#7B2EFF', 
+                            backgroundColor: '#7B2EFF',
+                            tension: 0.3,
+                            pointRadius: 4
+                        }
+                    ] 
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Dia', color: '#94a3b8', font: { weight: 'bold' } },
+                            ticks: { 
+                                autoSkip: false, // OBRIGA a mostrar todos os dias
+                                color: '#94a3b8' 
+                            }
+                        },
+                        y: {
+                            title: { display: true, text: 'Hora', color: '#94a3b8', font: { weight: 'bold' } },
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 30, // Força a escala de 30 em 30 min para ficar visualmente bonito
+                                color: '#94a3b8',
+                                callback: function(value) {
+                                    // Converte os minutos de volta para formato de HH:MM
+                                    const h = Math.floor(value / 60);
+                                    const m = Math.round(value % 60);
+                                    return h.toString().padStart(2,'0') + ':' + m.toString().padStart(2,'0');
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { 
+                            display: true, // Ativado para você saber qual linha é qual
+                            labels: { color: '#94a3b8', boxWidth: 12 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const val = context.raw;
+                                    const h = Math.floor(val / 60);
+                                    const m = val % 60;
+                                    // Pega o nome do dataset (50% ou 100%) para exibir no balãozinho
+                                    return ' ' + context.dataset.label + ': ' + h.toString().padStart(2,'0') + ':' + m.toString().padStart(2,'0') + 'h';
+                                }
+                            }
+                        }
+                    }
+                }
             });
         }
 
@@ -809,7 +873,7 @@
                 <footer class="footer">
                     <div class="footer-content">
                         <span class="footer-text">Criado por <b>Deh Januário</b></span>
-                        <span class="footer-brand">Check Ponto • v3.3 Premium</span>
+                        <span class="footer-brand">Check Ponto • v3.2 Premium</span>
                     </div>
                 </footer>
                 <div id="toast" class="toast"></div>
