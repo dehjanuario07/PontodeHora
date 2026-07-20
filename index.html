@@ -246,43 +246,42 @@
 
         /* TABELAS */
         .table-container { padding: 0; overflow: hidden; }
-        .scroll-area { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
-        th { background: rgba(57, 198, 255, 0.1); padding: 14px; font-size: 0.75rem; text-transform: uppercase; font-weight: 800; }
-        td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,.04); text-align: center; }
+        .scroll-area { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th { background: rgba(57, 198, 255, 0.1); padding: 10px 8px; font-size: 0.7rem; text-transform: uppercase; font-weight: 800; white-space: nowrap; }
+        td { padding: 8px 6px; border-bottom: 1px solid rgba(255,255,255,.04); text-align: center; font-size: 0.8rem; }
 
         .weekend-sat { background: rgba(57, 198, 255, 0.04); }
         .weekend-sun { background: rgba(123, 46, 255, 0.05); }
 
         input {
             background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); color: white;
-            width: 70px; padding: 6px 2px; text-align: center; font-weight: 700; border-radius: 8px;
+            width: 60px; padding: 4px 2px; text-align: center; font-weight: 700; border-radius: 6px;
+            font-size: 0.75rem;
         }
 
-        /* NAVEGAÇÃO DE ABAS */
+        /* NAVEGAÇÃO DE ABAS - FIXA SEM SCROLL */
         .tabs-nav {
             display: flex;
             background: rgba(255,255,255,.03);
             padding: 6px;
             border-radius: 16px;
-            gap: 6px;
+            gap: 4px;
             margin-bottom: 20px;
             border: 1px solid rgba(255,255,255,0.04);
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+            flex-wrap: wrap;
+            justify-content: center;
         }
-        .tabs-nav::-webkit-scrollbar { height: 0; }
         
         .tab-btn {
             flex: 1 1 0;
-            min-width: 0;
-            padding: 12px 16px;
+            min-width: 60px;
+            padding: 10px 12px;
             border-radius: 12px;
             font-weight: 700;
             background: transparent;
             color: #64748b;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             white-space: nowrap;
             transition: all 0.3s ease;
             border: 1px solid transparent;
@@ -290,7 +289,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 4px;
         }
         .tab-btn i { display: none; }
         .tab-btn.active {
@@ -307,7 +306,7 @@
         .chart-grid-3 {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 16px;
             margin-top: 20px;
         }
 
@@ -320,7 +319,7 @@
             backdrop-filter: blur(14px);
             border: 1px solid rgba(255,255,255,0.05);
             border-radius: var(--radius);
-            padding: 20px;
+            padding: 16px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
@@ -330,14 +329,14 @@
             background: rgba(57, 198, 255, 0.05);
             border: 2px solid var(--primary);
             border-radius: 50%;
-            width: 130px; height: 130px;
+            width: 120px; height: 120px;
             display: flex; justify-content: center; align-items: center;
             color: var(--primary);
-            font-size: 4rem;
+            font-size: 3.5rem;
             cursor: pointer;
             box-shadow: 0 0 20px rgba(57, 198, 255, 0.2);
             transition: all 0.3s ease;
-            margin: 30px auto;
+            margin: 20px auto;
         }
         .fingerprint-btn:active { transform: scale(0.95); }
         .fingerprint-btn.pulse { animation: neonPulse 2s infinite; }
@@ -370,11 +369,13 @@
 
         .punch-row {
             display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255,255,255,0.03); padding: 12px 15px;
-            border-radius: 12px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.03); padding: 10px 14px;
+            border-radius: 12px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.05);
         }
         .punch-row.filled { border-left: 4px solid var(--primary); }
         .punch-row.empty { border-left: 4px solid #475569; opacity: 0.6; }
+        .punch-row span { font-size: 0.85rem; }
+        .punch-row strong { font-size: 1rem; }
 
         /* OBSERVAÇÕES */
         .obs-container {
@@ -404,7 +405,7 @@
             font-family: inherit; 
             font-size: 0.9rem;
             resize: vertical; 
-            min-height: 120px;
+            min-height: 100px;
             transition: border-color 0.3s;
         }
         .obs-textarea:focus { outline: none; border-color: var(--primary); }
@@ -420,17 +421,17 @@
         .btn-save-obs:hover { background: rgba(57, 198, 255, 0.2); }
 
         /* RODAPÉ */
-        .footer { padding: 40px 20px; text-align: center; margin-top: 30px; position: relative; border-top: 1px solid rgba(255, 255, 255, 0.05); }
+        .footer { padding: 30px 20px; text-align: center; margin-top: 30px; position: relative; border-top: 1px solid rgba(255, 255, 255, 0.05); }
         .footer-content {
             background: rgba(20, 25, 55, 0.6); backdrop-filter: blur(15px);
-            display: inline-block; padding: 15px 40px; border-radius: 50px;
+            display: inline-block; padding: 12px 30px; border-radius: 50px;
             border: 1px solid rgba(58, 205, 255, 0.2);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 0 15px rgba(58, 205, 255, 0.1);
         }
-        .footer-text { color: #94a3b8; font-size: 0.9rem; font-weight: 500; letter-spacing: 0.5px; }
+        .footer-text { color: #94a3b8; font-size: 0.85rem; font-weight: 500; letter-spacing: 0.5px; }
         .footer-text b { color: #fff; text-shadow: 0 0 10px rgba(255, 255, 255, 0.3); }
         .footer-brand {
-            display: block; margin-top: 5px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase;
+            display: block; margin-top: 5px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
             background: linear-gradient(90deg, #3ACDFF 0%, #B15CFF 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
@@ -440,23 +441,173 @@
             background: linear-gradient(135deg, #39C6FF, #7B2EFF); color: white;
             padding: 12px 30px; border-radius: 50px; display: none; z-index: 1000; font-weight: 700;
             box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            font-size: 0.85rem;
+        }
+
+        /* ============================================ */
+        /* RESPONSIVO - MANTENDO O MESMO LAYOUT DA WEB */
+        /* ============================================ */
+
+        /* Tablet e Mobile */
+        @media (max-width: 992px) {
+            .stats-grid { 
+                grid-template-columns: repeat(2, 1fr); 
+            }
+            .relatorio-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .chart-grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .chart-grid-3 .chart-card-full {
+                grid-column: 1;
+            }
+            .chart-card {
+                padding: 14px;
+            }
         }
 
         @media (max-width: 768px) {
-            .brand-title { font-size: 1.3rem; }
-            .header-row-3 { flex-direction: column; width: 100%; }
-            .btn-config { width: 100%; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .tabs-nav { flex-wrap: nowrap; overflow-x: auto; gap: 4px; padding: 4px; }
-            .tab-btn { flex: 0 0 auto; padding: 10px 14px; font-size: 0.7rem; min-width: 80px; }
-            .relatorio-grid { grid-template-columns: repeat(2, 1fr); }
-            .chart-grid-3 { grid-template-columns: 1fr; }
+            body { padding: 8px; }
+            
+            .header-card { padding: 15px; gap: 12px; }
+            .brand-title { font-size: 1.2rem; }
+            .futuristic-logo { width: 45px; height: 45px; }
+            .header-row-3 { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+            .header-row-3 .btn-config { 
+                font-size: 0.65rem; 
+                padding: 6px 12px; 
+                flex: 1 1 auto;
+                min-width: 80px;
+            }
+            .header-row-4 button { 
+                font-size: 0.7rem; 
+                padding: 8px 14px; 
+            }
+            .date-display { 
+                font-size: 0.85rem; 
+                min-width: 100px; 
+            }
+            
+            .tab-btn { 
+                font-size: 0.65rem; 
+                padding: 8px 10px; 
+                min-width: 50px;
+                flex: 1 1 0;
+            }
+            
+            .aba-card { padding: 14px; }
+            .aba-card .aba-title { font-size: 0.65rem; }
+            
+            .stats-grid { 
+                grid-template-columns: repeat(2, 1fr); 
+                gap: 8px;
+            }
+            .stat-box { padding: 10px 12px; }
+            .stat-val { font-size: 1.2rem; }
+            .stat-label { font-size: 0.55rem; }
+            .stat-money { font-size: 0.7rem; }
+            
+            .relatorio-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            .relatorio-card { padding: 12px 8px; }
+            .relatorio-card .q-total { font-size: 1.3rem; }
+            .relatorio-card .q-label { font-size: 0.6rem; }
+            .relatorio-card .q-money { font-size: 0.7rem; }
+            
+            .chart-card { padding: 12px; }
+            
+            .bio-container { max-width: 100%; }
+            .fingerprint-btn { width: 100px; height: 100px; font-size: 3rem; }
+            .punch-row { padding: 8px 12px; }
+            .punch-row span { font-size: 0.75rem; }
+            .punch-row strong { font-size: 0.9rem; }
+            
+            .obs-container { padding: 12px 16px; }
+            .obs-textarea { min-height: 80px; font-size: 0.8rem; }
+            
+            .footer-content { padding: 10px 20px; }
+            .footer-text { font-size: 0.75rem; }
+            
+            table { min-width: 600px; }
+            th { font-size: 0.6rem; padding: 8px 5px; }
+            td { font-size: 0.7rem; padding: 6px 4px; }
+            input { width: 50px; font-size: 0.65rem; padding: 3px 2px; }
         }
 
         @media (max-width: 480px) {
-            .tab-btn { padding: 8px 12px; font-size: 0.6rem; min-width: 60px; }
-            .relatorio-grid { grid-template-columns: 1fr 1fr; }
-            .stats-grid { grid-template-columns: 1fr; }
+            body { padding: 6px; }
+            
+            .header-card { padding: 12px; gap: 10px; }
+            .brand-title { font-size: 1rem; }
+            .futuristic-logo { width: 38px; height: 38px; }
+            .version-tag { font-size: 0.5rem; padding: 1px 6px; }
+            
+            .header-row-3 .btn-config { 
+                font-size: 0.55rem; 
+                padding: 4px 8px; 
+                min-width: 60px;
+            }
+            .header-row-4 button { 
+                font-size: 0.6rem; 
+                padding: 6px 10px; 
+            }
+            .date-display { 
+                font-size: 0.7rem; 
+                min-width: 80px; 
+            }
+            .btn-nav { font-size: 1rem; padding: 3px 10px; }
+            
+            .tab-btn { 
+                font-size: 0.55rem; 
+                padding: 6px 6px; 
+                min-width: 40px;
+            }
+            
+            .aba-card { padding: 10px; }
+            .aba-card .aba-title { font-size: 0.55rem; margin-bottom: 10px; padding-bottom: 6px; }
+            
+            .stats-grid { 
+                grid-template-columns: 1fr 1fr; 
+                gap: 6px;
+            }
+            .stat-box { padding: 8px 10px; }
+            .stat-val { font-size: 1rem; }
+            .stat-label { font-size: 0.5rem; }
+            .stat-money { font-size: 0.6rem; }
+            
+            .relatorio-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+            .relatorio-card { padding: 10px 6px; }
+            .relatorio-card .q-total { font-size: 1.1rem; }
+            .relatorio-card .q-label { font-size: 0.5rem; }
+            .relatorio-card .q-money { font-size: 0.6rem; }
+            
+            .chart-card { padding: 10px; }
+            
+            .fingerprint-btn { width: 80px; height: 80px; font-size: 2.5rem; margin: 15px auto; }
+            .punch-row { padding: 6px 10px; }
+            .punch-row span { font-size: 0.65rem; }
+            .punch-row strong { font-size: 0.8rem; }
+            
+            .footer-content { padding: 8px 16px; }
+            .footer-text { font-size: 0.65rem; }
+            .footer-brand { font-size: 0.6rem; }
+            
+            .toast { font-size: 0.7rem; padding: 8px 16px; bottom: 15px; }
+            
+            .obs-container { padding: 10px 12px; }
+            .obs-textarea { min-height: 60px; font-size: 0.7rem; padding: 8px; }
+            .btn-save-obs { font-size: 0.6rem; padding: 4px 12px; }
+            
+            table { min-width: 500px; }
+            th { font-size: 0.5rem; padding: 6px 4px; }
+            td { font-size: 0.6rem; padding: 4px 3px; }
+            input { width: 40px; font-size: 0.55rem; padding: 2px 2px; }
         }
     </style>
 </head>
@@ -553,7 +704,6 @@
             return n;
         }
 
-        // Trimestres personalizados: Dez-Jan-Fev, Mar-Abr-Mai, Jun-Jul-Ago, Set-Out-Nov
         function getMesesTrimestre(trimestre, anoParam) {
             const map = [
                 [11, 0, 1],   // Dez, Jan, Fev
@@ -676,7 +826,6 @@
         }
 
         function initCharts() {
-            // Gráficos da aba DASHBOARD - apenas o de distribuição
             if (abaAtiva === 'dashboard') {
                 const distCtx = document.getElementById('chartDist');
                 if (!distCtx) return;
@@ -708,14 +857,12 @@
                 });
             }
 
-            // Gráficos da aba RELATÓRIO - com 50% e 100%
             if (abaAtiva === 'relatorio') {
                 const trimCtx = document.getElementById('chartTrimestre');
                 const mensalCtx = document.getElementById('chartMensal');
                 const semanalCtx = document.getElementById('chartSemanal');
                 const diarioCtx = document.getElementById('chartDiario');
                 
-                // Gráfico Trimestral
                 if (trimCtx) {
                     if (chartTrimestre) chartTrimestre.destroy();
                     const dados = getDadosTrimestres(ano);
@@ -748,7 +895,6 @@
                     });
                 }
 
-                // Gráfico Mensal (Últimos 3 meses)
                 if (mensalCtx) {
                     if (chartMensal) chartMensal.destroy();
                     const mesesLabels = [];
@@ -800,7 +946,6 @@
                     });
                 }
 
-                // Gráfico Semanal
                 if (semanalCtx) {
                     if (chartSemanal) chartSemanal.destroy();
                     const semanas = [];
@@ -845,7 +990,7 @@
                     });
                 }
 
-                // GRÁFICO DIÁRIO - COM TODOS OS DIAS E RÓTULOS LEGÍVEIS
+                // GRÁFICO DIÁRIO
                 if (diarioCtx) {
                     if (chartDiario) chartDiario.destroy();
                     const diasMes = diasNoMes(ano, mes);
