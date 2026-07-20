@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Check Ponto v3.3 - Biometric Edition</title>
+    <title>Check Ponto v3.4 - Relatório Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
@@ -127,22 +127,125 @@
         .btn-pdf { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
         .btn-nav { background: transparent; color: var(--primary); font-size: 1.2rem; padding: 5px 15px; }
 
-        /* DASHBOARD & STATS */
-        .chart-card, .stat-box, .table-container {
-            background: rgba(20, 25, 55, 0.7); backdrop-filter: blur(14px);
-            border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius);
-            padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        /* CARDS DAS ABAS */
+        .aba-card {
+            background: rgba(20, 25, 55, 0.7);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
         }
 
-        .stat-box { border-bottom: 4px solid rgba(255,255,255,0.1); }
+        .aba-card .aba-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #94a3b8;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin: 0 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .aba-card .aba-title i {
+            color: var(--primary);
+            font-size: 1rem;
+        }
+
+        /* STATS */
+        .stat-box { border-bottom: 4px solid rgba(255,255,255,0.1); padding: 12px 15px; border-radius: 12px; background: rgba(255,255,255,0.02); }
         .stat-box.blue { border-bottom-color: #39C6FF; }
         .stat-box.purple { border-bottom-color: #7B2EFF; }
+        .stat-box.green { border-bottom-color: #10b981; }
+        .stat-box.orange { border-bottom-color: #f59e0b; }
+        .stat-box.pink { border-bottom-color: #ec4899; }
         .stat-val { font-size: 1.6rem; font-weight: 900; }
         .stat-label { color: #94a3b8; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; }
         .stat-money { font-size: 0.85rem; color: #10b981; font-weight: 800; margin-top: 4px; }
 
+        /* DASHBOARD LAYOUT */
+        .dashboard-layout { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+
+        /* RELATÓRIO - CARDS 50% */
+        .relatorio-wrapper {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .relatorio-section {
+            background: rgba(255,255,255,0.02);
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .relatorio-section .section-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: #ec4899;
+            font-weight: 800;
+            text-align: center;
+            letter-spacing: 0.5px;
+            margin: 0 0 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(236, 72, 153, 0.15);
+        }
+
+        .relatorio-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .relatorio-card {
+            background: rgba(20, 25, 55, 0.5);
+            border-radius: 14px;
+            padding: 16px 12px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s ease;
+        }
+        .relatorio-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255,255,255,0.1);
+            background: rgba(20, 25, 55, 0.7);
+        }
+
+        .relatorio-card .q-label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .relatorio-card .q-total {
+            font-size: 1.6rem;
+            font-weight: 900;
+            margin: 4px 0;
+            color: #ec4899;
+        }
+        .relatorio-card .q-money {
+            font-size: 0.8rem;
+            color: #10b981;
+            font-weight: 700;
+            margin-top: 3px;
+        }
+
+        .relatorio-card.r1 { border-bottom: 3px solid #39C6FF; }
+        .relatorio-card.r2 { border-bottom: 3px solid #7B2EFF; }
+        .relatorio-card.r3 { border-bottom: 3px solid #C77DFF; }
+        .relatorio-card.r4 { border-bottom: 3px solid #f59e0b; }
+
         /* TABELAS */
-        .table-container { padding: 0; overflow: hidden; margin-bottom: 24px; }
+        .table-container { padding: 0; overflow: hidden; }
         .scroll-area { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 1000px; }
         th { background: rgba(57, 198, 255, 0.1); padding: 14px; font-size: 0.75rem; text-transform: uppercase; font-weight: 800; }
@@ -156,17 +259,73 @@
             width: 70px; padding: 6px 2px; text-align: center; font-weight: 700; border-radius: 8px;
         }
 
-        .tabs-nav { display: flex; background: rgba(255,255,255,.03); padding: 5px; border-radius: 14px; gap: 5px; margin-bottom: 20px; }
-        .tab-btn { flex: 1; padding: 12px; border-radius: 10px; font-weight: 700; background: transparent; color: #64748b; font-size: 0.8rem;}
-        .tab-btn.active { background: rgba(57, 198, 255, 0.15); color: white; }
+        /* NAVEGAÇÃO DE ABAS */
+        .tabs-nav {
+            display: flex;
+            background: rgba(255,255,255,.03);
+            padding: 6px;
+            border-radius: 16px;
+            gap: 6px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.04);
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .tabs-nav::-webkit-scrollbar { height: 0; }
+        
+        .tab-btn {
+            flex: 1 1 0;
+            min-width: 0;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            background: transparent;
+            color: #64748b;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .tab-btn i { display: none; }
+        .tab-btn.active {
+            background: rgba(57, 198, 255, 0.12);
+            color: #fff;
+            border-color: rgba(57, 198, 255, 0.2);
+            box-shadow: 0 0 20px rgba(57, 198, 255, 0.05);
+        }
+        .tab-btn:hover:not(.active) {
+            background: rgba(255,255,255,0.04);
+            color: #94a3b8;
+        }
 
-        .dashboard-layout { display: grid; grid-template-columns: 400px 1fr; gap: 20px; }
-        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
+        .chart-grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .chart-grid-3 .chart-card-full {
+            grid-column: 1 / -1;
+        }
+
+        .chart-card {
+            background: rgba(20, 25, 55, 0.7);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
 
         /* BIOMETRIA */
-        .bio-container {
-            max-width: 500px; margin: 0 auto;
-        }
+        .bio-container { max-width: 500px; margin: 0 auto; }
         .fingerprint-btn {
             background: rgba(57, 198, 255, 0.05);
             border: 2px solid var(--primary);
@@ -217,38 +376,13 @@
         .punch-row.filled { border-left: 4px solid var(--primary); }
         .punch-row.empty { border-left: 4px solid #475569; opacity: 0.6; }
 
-        /* RODAPÉ PREMIUM */
-        .footer { padding: 40px 20px; text-align: center; margin-top: 50px; position: relative; border-top: 1px solid rgba(255, 255, 255, 0.05); }
-        .footer-content {
-            background: rgba(20, 25, 55, 0.6); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            display: inline-block; padding: 15px 40px; border-radius: 50px;
-            border: 1px solid rgba(58, 205, 255, 0.2);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 0 15px rgba(58, 205, 255, 0.1);
-        }
-        .footer-text { color: #94a3b8; font-size: 0.9rem; font-weight: 500; letter-spacing: 0.5px; }
-        .footer-text b { color: #fff; text-shadow: 0 0 10px rgba(255, 255, 255, 0.3); }
-        .footer-brand {
-            display: block; margin-top: 5px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase;
-            background: linear-gradient(90deg, #3ACDFF 0%, #B15CFF 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-
-        .toast {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: linear-gradient(135deg, #39C6FF, #7B2EFF); color: white;
-            padding: 12px 30px; border-radius: 50px; display: none; z-index: 1000; font-weight: 700;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-        }
-
         /* OBSERVAÇÕES */
         .obs-container {
             padding: 15px 20px;
-            margin-bottom: 24px;
             margin-top: 10px;
-            background: rgba(20, 25, 55, 0.7); 
-            backdrop-filter: blur(14px);
-            border: 1px solid rgba(255,255,255,0.05); 
+            background: rgba(255,255,255,0.02);
             border-radius: var(--radius);
+            border: 1px solid rgba(255,255,255,0.05);
         }
         .obs-title { 
             margin: 0 0 10px 0; 
@@ -274,13 +408,7 @@
             transition: border-color 0.3s;
         }
         .obs-textarea:focus { outline: none; border-color: var(--primary); }
-
-        .obs-footer {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 10px;
-        }
-
+        .obs-footer { display: flex; justify-content: flex-end; margin-top: 10px; }
         .btn-save-obs {
             background: rgba(57, 198, 255, 0.1);
             border: 1px solid var(--primary);
@@ -289,17 +417,46 @@
             font-size: 0.75rem;
             cursor: pointer;
         }
-        .btn-save-obs:hover {
-            background: rgba(57, 198, 255, 0.2);
+        .btn-save-obs:hover { background: rgba(57, 198, 255, 0.2); }
+
+        /* RODAPÉ */
+        .footer { padding: 40px 20px; text-align: center; margin-top: 30px; position: relative; border-top: 1px solid rgba(255, 255, 255, 0.05); }
+        .footer-content {
+            background: rgba(20, 25, 55, 0.6); backdrop-filter: blur(15px);
+            display: inline-block; padding: 15px 40px; border-radius: 50px;
+            border: 1px solid rgba(58, 205, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 0 15px rgba(58, 205, 255, 0.1);
+        }
+        .footer-text { color: #94a3b8; font-size: 0.9rem; font-weight: 500; letter-spacing: 0.5px; }
+        .footer-text b { color: #fff; text-shadow: 0 0 10px rgba(255, 255, 255, 0.3); }
+        .footer-brand {
+            display: block; margin-top: 5px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase;
+            background: linear-gradient(90deg, #3ACDFF 0%, #B15CFF 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(135deg, #39C6FF, #7B2EFF); color: white;
+            padding: 12px 30px; border-radius: 50px; display: none; z-index: 1000; font-weight: 700;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
         }
 
         @media (max-width: 768px) {
             .brand-title { font-size: 1.3rem; }
             .header-row-3 { flex-direction: column; width: 100%; }
             .btn-config { width: 100%; }
-            .dashboard-layout { grid-template-columns: 1fr; }
-            .tabs-nav { flex-wrap: wrap; }
-            .tab-btn { flex: 1 1 30%; font-size: 0.7rem; padding: 10px 5px;}
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .tabs-nav { flex-wrap: nowrap; overflow-x: auto; gap: 4px; padding: 4px; }
+            .tab-btn { flex: 0 0 auto; padding: 10px 14px; font-size: 0.7rem; min-width: 80px; }
+            .relatorio-grid { grid-template-columns: repeat(2, 1fr); }
+            .chart-grid-3 { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 480px) {
+            .tab-btn { padding: 8px 12px; font-size: 0.6rem; min-width: 60px; }
+            .relatorio-grid { grid-template-columns: 1fr 1fr; }
+            .stats-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -323,7 +480,6 @@
         let jornadaDiaria = 480; 
         let valorHoraNormal = 10.32; 
         
-        // Feriados fixos (incluindo o Santo Antônio que havíamos adicionado como exemplo)
         const feriadosFixos = { '0-1': 'Ano Novo', '3-21': 'Tiradentes', '4-1': 'Dia do Trabalho', '5-13': 'Santo Antônio', '8-7': 'Independência', '9-12': 'N. Sra Aparecida', '10-2': 'Finados', '10-15': 'Proclamação', '10-20': 'Consc. Negra', '11-25': 'Natal' };
         
         function calcularPascoa(ano) {
@@ -346,7 +502,7 @@
         let observacoes = {};
         let abaAtiva = 'bater_ponto';
         let cacheTotais = { trab:0, normal:0, extra50:0, extra100:0 };
-        let chartDist = null, chartEvol = null;
+        let chartDist = null, chartTrimestre = null, chartMensal = null, chartSemanal = null, chartDiario = null;
 
         const salvo = localStorage.getItem('folhaPonto_v2.9');
         if (salvo) { 
@@ -371,9 +527,8 @@
             
             let normal = 0, e50 = 0, e100 = 0;
             const feriado = isFeriado(mesNum, diaNum, anoNum);
-            const feriadoManual = d.feriadoManual === true; // NOVO: Verifica tag de 100% manual
+            const feriadoManual = d.feriadoManual === true;
             
-            // NOVO: Adicionado feriadoManual na condição para calcular tudo como 100%
             if (semNum === 0 || feriado || feriadoManual) {
                 e100 = trab;
             } else if (semNum === 6) { 
@@ -386,6 +541,54 @@
                 e50 = excesso > 10 ? excesso : 0; 
             }
             return { trab, normal, extra50: e50, extra100: e100 };
+        }
+
+        function calcularMes(mesParam, anoParam) {
+            let n = { trab:0, normal:0, extra50:0, extra100:0 };
+            const dias = diasNoMes(anoParam, mesParam);
+            for (let d = 1; d <= dias; d++) {
+                const s = calcularValoresDia(`${anoParam}-${mesParam}-${d}`, new Date(anoParam, mesParam, d).getDay(), mesParam, d, anoParam);
+                n.trab += s.trab; n.normal += s.normal; n.extra50 += s.extra50; n.extra100 += s.extra100;
+            }
+            return n;
+        }
+
+        // Trimestres personalizados: Dez-Jan-Fev, Mar-Abr-Mai, Jun-Jul-Ago, Set-Out-Nov
+        function getMesesTrimestre(trimestre, anoParam) {
+            const map = [
+                [11, 0, 1],   // Dez, Jan, Fev
+                [2, 3, 4],    // Mar, Abr, Mai
+                [5, 6, 7],    // Jun, Jul, Ago
+                [8, 9, 10]    // Set, Out, Nov
+            ];
+            const meses = map[trimestre] || [];
+            return meses.map(m => {
+                let anoAjustado = anoParam;
+                if (m === 11) anoAjustado = anoParam - 1;
+                return { mes: m, ano: anoAjustado };
+            });
+        }
+
+        function calcularTrimestrePersonalizado(trimestre, anoParam) {
+            const meses = getMesesTrimestre(trimestre, anoParam);
+            let n = { trab:0, normal:0, extra50:0, extra100:0 };
+            meses.forEach(({mes, ano}) => {
+                const r = calcularMes(mes, ano);
+                n.trab += r.trab; n.normal += r.normal; n.extra50 += r.extra50; n.extra100 += r.extra100;
+            });
+            return n;
+        }
+
+        function getDadosTrimestres(anoParam) {
+            const trimestres = [];
+            for (let i = 0; i < 4; i++) {
+                trimestres.push(calcularTrimestrePersonalizado(i, anoParam));
+            }
+            return trimestres;
+        }
+
+        function getLabelsTrimestres() {
+            return ['Dez-Jan-Fev', 'Mar-Abr-Mai', 'Jun-Jul-Ago', 'Set-Out-Nov'];
         }
 
         function recalcularTotais() {
@@ -406,7 +609,7 @@
             doc.text("CHECK PONTO", 20, 20);
 
             doc.setFontSize(10); doc.setTextColor(100, 100, 100);
-            doc.text(`Relatório Oficial Premium v3.0 • Gerado em ${new Date().toLocaleDateString()}`, 20, 28);
+            doc.text(`Relatório Oficial Premium v3.4 • Gerado em ${new Date().toLocaleDateString()}`, 20, 28);
             doc.line(20, 32, 190, 32);
 
             doc.setFontSize(11); doc.setTextColor(0, 0, 0);
@@ -420,7 +623,6 @@
                 const st = calcularValoresDia(k, dt.getDay(), mes, d, ano);
                 const reg = registros[k] || {};
                 
-                // NOVO: Adicionar indicativo visual no PDF se for feriado manual
                 let nomeDiaStr = diasNomes[dt.getDay()];
                 const fer = isFeriado(mes, d, ano);
                 if (fer) nomeDiaStr += ` (${fer})`;
@@ -469,99 +671,297 @@
                 doc.text(splitObs, 20, finalY + 6);
             }
 
-            doc.save(`CheckPonto_v30_${mesesNomes[mes]}_${ano}.pdf`);
+            doc.save(`CheckPonto_v34_${mesesNomes[mes]}_${ano}.pdf`);
             mostrarToast("📄 PDF Exportado com Saldo!");
         }
 
         function initCharts() {
-            if (abaAtiva !== 'dashboard') return;
-            const distCtx = document.getElementById('chartDist'), evolCtx = document.getElementById('chartEvol');
-            if (!distCtx || !evolCtx) return;
-            if (chartDist) chartDist.destroy(); if (chartEvol) chartEvol.destroy();
+            // Gráficos da aba DASHBOARD - apenas o de distribuição
+            if (abaAtiva === 'dashboard') {
+                const distCtx = document.getElementById('chartDist');
+                if (!distCtx) return;
+                if (chartDist) chartDist.destroy();
 
-            chartDist = new Chart(distCtx.getContext('2d'), {
-                type: 'bar',
-                data: { labels: ['Normal', '50%', '100%'], datasets: [{ data: [cacheTotais.normal/60, cacheTotais.extra50/60, cacheTotais.extra100/60], backgroundColor: ['#39C6FF', '#7B2EFF', '#C77DFF'], borderRadius: 6 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-            });
-
-            let labels = [], d50 = [], d100 = [];
-            for (let d = 1; d <= diasNoMes(ano, mes); d++) {
-                const s = calcularValoresDia(`${ano}-${mes}-${d}`, new Date(ano, mes, d).getDay(), mes, d, ano);
-                labels.push(d); 
-                // Passamos o valor em MINUTOS exatos (sem dividir por 60)
-                d50.push(s.extra50); 
-                d100.push(s.extra100);
-            }
-            
-            chartEvol = new Chart(evolCtx.getContext('2d'), {
-                type: 'line',
-                data: { 
-                    labels: labels, 
-                    datasets: [
-                        { 
-                            label: '50%', 
-                            data: d50, 
-                            borderColor: '#39C6FF', 
-                            backgroundColor: '#39C6FF',
-                            tension: 0.3,
-                            pointRadius: 4
-                        },
-                        { 
-                            label: '100%', 
-                            data: d100, 
-                            borderColor: '#7B2EFF', 
-                            backgroundColor: '#7B2EFF',
-                            tension: 0.3,
-                            pointRadius: 4
-                        }
-                    ] 
-                },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            title: { display: true, text: 'Dia', color: '#94a3b8', font: { weight: 'bold' } },
-                            ticks: { 
-                                autoSkip: false, // OBRIGA a mostrar todos os dias
-                                color: '#94a3b8' 
-                            }
-                        },
-                        y: {
-                            title: { display: true, text: 'Hora', color: '#94a3b8', font: { weight: 'bold' } },
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 30, // Força a escala de 30 em 30 min para ficar visualmente bonito
-                                color: '#94a3b8',
-                                callback: function(value) {
-                                    // Converte os minutos de volta para formato de HH:MM
-                                    const h = Math.floor(value / 60);
-                                    const m = Math.round(value % 60);
-                                    return h.toString().padStart(2,'0') + ':' + m.toString().padStart(2,'0');
-                                }
-                            }
-                        }
+                chartDist = new Chart(distCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: { 
+                        labels: ['Normal', '50%', '100%'], 
+                        datasets: [{ 
+                            data: [cacheTotais.normal/60, cacheTotais.extra50/60, cacheTotais.extra100/60], 
+                            backgroundColor: ['#39C6FF', '#ec4899', '#8b5cf6'], 
+                            borderRadius: 6 
+                        }] 
                     },
-                    plugins: {
-                        legend: { 
-                            display: true, // Ativado para você saber qual linha é qual
-                            labels: { color: '#94a3b8', boxWidth: 12 }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const val = context.raw;
-                                    const h = Math.floor(val / 60);
-                                    const m = val % 60;
-                                    // Pega o nome do dataset (50% ou 100%) para exibir no balãozinho
-                                    return ' ' + context.dataset.label + ': ' + h.toString().padStart(2,'0') + ':' + m.toString().padStart(2,'0') + 'h';
-                                }
-                            }
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { 
+                                beginAtZero: true, 
+                                title: { display: true, text: 'Horas', color: '#94a3b8' },
+                                ticks: { color: '#94a3b8' }
+                            },
+                            x: { ticks: { color: '#94a3b8' } }
                         }
                     }
+                });
+            }
+
+            // Gráficos da aba RELATÓRIO - com 50% e 100%
+            if (abaAtiva === 'relatorio') {
+                const trimCtx = document.getElementById('chartTrimestre');
+                const mensalCtx = document.getElementById('chartMensal');
+                const semanalCtx = document.getElementById('chartSemanal');
+                const diarioCtx = document.getElementById('chartDiario');
+                
+                // Gráfico Trimestral
+                if (trimCtx) {
+                    if (chartTrimestre) chartTrimestre.destroy();
+                    const dados = getDadosTrimestres(ano);
+                    const labelsTrim = getLabelsTrimestres();
+                    const extra50 = dados.map(d => d.extra50 / 60);
+                    const extra100 = dados.map(d => d.extra100 / 60);
+
+                    chartTrimestre = new Chart(trimCtx.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: labelsTrim,
+                            datasets: [
+                                { label: '50%', data: extra50, backgroundColor: '#ec4899' },
+                                { label: '100%', data: extra100, backgroundColor: '#8b5cf6' }
+                            ]
+                        },
+                        options: {
+                            responsive: true, 
+                            maintainAspectRatio: false,
+                            scales: { 
+                                x: { ticks: { color: '#94a3b8' } }, 
+                                y: { 
+                                    beginAtZero: true, 
+                                    title: { display: true, text: 'Horas', color: '#94a3b8' },
+                                    ticks: { color: '#94a3b8' }
+                                } 
+                            },
+                            plugins: { legend: { labels: { color: '#94a3b8' } } }
+                        }
+                    });
                 }
-            });
+
+                // Gráfico Mensal (Últimos 3 meses)
+                if (mensalCtx) {
+                    if (chartMensal) chartMensal.destroy();
+                    const mesesLabels = [];
+                    const dadosMeses = [];
+                    for (let i = 0; i < 3; i++) {
+                        let m = mes - i;
+                        let a = ano;
+                        if (m < 0) { m += 12; a--; }
+                        mesesLabels.unshift(`${mesesNomes[m].substring(0,3)}/${a}`);
+                        dadosMeses.unshift(calcularMes(m, a));
+                    }
+
+                    chartMensal = new Chart(mensalCtx.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: mesesLabels,
+                            datasets: [
+                                { 
+                                    label: '50%', 
+                                    data: dadosMeses.map(d => d.extra50 / 60), 
+                                    borderColor: '#ec4899', 
+                                    backgroundColor: '#ec4899', 
+                                    tension: 0.3, 
+                                    pointRadius: 6 
+                                },
+                                { 
+                                    label: '100%', 
+                                    data: dadosMeses.map(d => d.extra100 / 60), 
+                                    borderColor: '#8b5cf6', 
+                                    backgroundColor: '#8b5cf6', 
+                                    tension: 0.3, 
+                                    pointRadius: 6 
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true, 
+                            maintainAspectRatio: false,
+                            scales: { 
+                                y: { 
+                                    beginAtZero: true, 
+                                    title: { display: true, text: 'Horas', color: '#94a3b8' },
+                                    ticks: { color: '#94a3b8' }
+                                },
+                                x: { ticks: { color: '#94a3b8' } }
+                            },
+                            plugins: { legend: { labels: { color: '#94a3b8' } } }
+                        }
+                    });
+                }
+
+                // Gráfico Semanal
+                if (semanalCtx) {
+                    if (chartSemanal) chartSemanal.destroy();
+                    const semanas = [];
+                    const diasMes = diasNoMes(ano, mes);
+                    let semanaAtual = [];
+                    for (let d = 1; d <= diasMes; d++) {
+                        const dt = new Date(ano, mes, d);
+                        const s = calcularValoresDia(`${ano}-${mes}-${d}`, dt.getDay(), mes, d, ano);
+                        semanaAtual.push(s);
+                        if (dt.getDay() === 6 || d === diasMes) {
+                            semanas.push(semanaAtual);
+                            semanaAtual = [];
+                        }
+                    }
+
+                    const labelsSemana = semanas.map((s, i) => `Sem ${i+1}`);
+                    const data50 = semanas.map(s => s.reduce((acc, v) => acc + v.extra50, 0) / 60);
+                    const data100 = semanas.map(s => s.reduce((acc, v) => acc + v.extra100, 0) / 60);
+
+                    chartSemanal = new Chart(semanalCtx.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: labelsSemana,
+                            datasets: [
+                                { label: '50%', data: data50, backgroundColor: '#ec4899' },
+                                { label: '100%', data: data100, backgroundColor: '#8b5cf6' }
+                            ]
+                        },
+                        options: {
+                            responsive: true, 
+                            maintainAspectRatio: false,
+                            scales: { 
+                                x: { ticks: { color: '#94a3b8' } }, 
+                                y: { 
+                                    beginAtZero: true, 
+                                    title: { display: true, text: 'Horas', color: '#94a3b8' },
+                                    ticks: { color: '#94a3b8' }
+                                } 
+                            },
+                            plugins: { legend: { labels: { color: '#94a3b8' } } }
+                        }
+                    });
+                }
+
+                // GRÁFICO DIÁRIO - COM TODOS OS DIAS E RÓTULOS LEGÍVEIS
+                if (diarioCtx) {
+                    if (chartDiario) chartDiario.destroy();
+                    const diasMes = diasNoMes(ano, mes);
+                    const labelsDias = [];
+                    const data50 = [];
+                    const data100 = [];
+                    
+                    for (let d = 1; d <= diasMes; d++) {
+                        const dt = new Date(ano, mes, d);
+                        const s = calcularValoresDia(`${ano}-${mes}-${d}`, dt.getDay(), mes, d, ano);
+                        labelsDias.push(`${d}`);
+                        data50.push(s.extra50 / 60);
+                        data100.push(s.extra100 / 60);
+                    }
+
+                    chartDiario = new Chart(diarioCtx.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: labelsDias,
+                            datasets: [
+                                { 
+                                    label: '50%', 
+                                    data: data50, 
+                                    borderColor: '#ec4899', 
+                                    backgroundColor: 'rgba(236, 72, 153, 0.15)',
+                                    fill: true,
+                                    tension: 0.4, 
+                                    pointRadius: 4,
+                                    pointBackgroundColor: '#ec4899',
+                                    pointBorderColor: '#fff',
+                                    pointBorderWidth: 1,
+                                    borderWidth: 2.5
+                                },
+                                { 
+                                    label: '100%', 
+                                    data: data100, 
+                                    borderColor: '#8b5cf6', 
+                                    backgroundColor: 'rgba(139, 92, 246, 0.15)',
+                                    fill: true,
+                                    tension: 0.4, 
+                                    pointRadius: 4,
+                                    pointBackgroundColor: '#8b5cf6',
+                                    pointBorderColor: '#fff',
+                                    pointBorderWidth: 1,
+                                    borderWidth: 2.5
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true, 
+                            maintainAspectRatio: false,
+                            scales: { 
+                                x: { 
+                                    title: { 
+                                        display: true, 
+                                        text: 'Dias do Mês', 
+                                        color: '#94a3b8',
+                                        font: { weight: 'bold', size: 12 }
+                                    },
+                                    ticks: { 
+                                        color: '#94a3b8',
+                                        stepSize: 1,
+                                        autoSkip: false,
+                                        maxRotation: 90,
+                                        minRotation: 45,
+                                        font: { size: 9 }
+                                    },
+                                    grid: { color: 'rgba(255,255,255,0.05)' }
+                                }, 
+                                y: { 
+                                    beginAtZero: true, 
+                                    title: { 
+                                        display: true, 
+                                        text: 'Horas Extras', 
+                                        color: '#94a3b8',
+                                        font: { weight: 'bold', size: 12 }
+                                    },
+                                    ticks: { 
+                                        color: '#94a3b8',
+                                        callback: function(value) {
+                                            return value.toFixed(1) + 'h';
+                                        }
+                                    },
+                                    grid: { color: 'rgba(255,255,255,0.05)' }
+                                } 
+                            },
+                            plugins: { 
+                                legend: { 
+                                    labels: { 
+                                        color: '#94a3b8',
+                                        font: { size: 12, weight: 'bold' },
+                                        boxWidth: 15,
+                                        padding: 15
+                                    } 
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(11, 16, 38, 0.9)',
+                                    titleColor: '#fff',
+                                    bodyColor: '#fff',
+                                    borderColor: 'rgba(255,255,255,0.1)',
+                                    borderWidth: 1,
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + 'h';
+                                        }
+                                    }
+                                }
+                            },
+                            interaction: {
+                                intersect: false,
+                                mode: 'index'
+                            }
+                        }
+                    });
+                }
+            }
         }
 
         function salvar(silencioso = false) { 
@@ -607,7 +1007,6 @@
             }
         }
 
-        // NOVO: Função para ativar/desativar 100% manual
         function toggleFeriadoManual(chave) {
             if (!registros[chave]) registros[chave] = {};
             registros[chave].feriadoManual = !registros[chave].feriadoManual; 
@@ -618,9 +1017,9 @@
 
         function configJornada() { const v = prompt("Nova Jornada Diária em horas (ex: 8):", (jornadaDiaria/60)); if (v !== null && v !== "") { jornadaDiaria = Math.round(parseFloat(v.replace(',', '.')) * 60); recalcularTotais(); renderizar(); salvar(); } }
         function configHora() { const v = prompt("Novo Valor da Hora (R$):", valorHoraNormal.toFixed(2)); if (v !== null && v !== "") { valorHoraNormal = parseFloat(v.replace(',', '.')); recalcularTotais(); renderizar(); salvar(); } }
-        function mudarMes(delta) { mes += delta; if (mes<0){mes=11;ano--;} if (mes>11){mes=0;ano++;} recalcularTotais(); renderizar(); if (abaAtiva === 'dashboard') setTimeout(initCharts, 50); }
+        function mudarMes(delta) { mes += delta; if (mes<0){mes=11;ano--;} if (mes>11){mes=0;ano++;} recalcularTotais(); renderizar(); if (abaAtiva === 'dashboard' || abaAtiva === 'relatorio') setTimeout(initCharts, 50); }
         function mostrarToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3000); }
-        function mudarAba(nova) { abaAtiva = nova; renderizar(); if (nova === 'dashboard') setTimeout(initCharts, 100); }
+        function mudarAba(nova) { abaAtiva = nova; renderizar(); if (nova === 'dashboard' || nova === 'relatorio') setTimeout(initCharts, 100); }
 
         function requestBiometrics() {
             const modal = document.getElementById('biometric-modal');
@@ -701,17 +1100,68 @@
             const td = diasNoMes(ano, mes);
 
             if (abaAtiva === 'dashboard') {
-                corpo = `<div class="dashboard-layout">
-                    <div class="stats-column">
-                        <div class="stats-grid">
-                            <div class="stat-box blue"><span class="stat-label">Normal</span><div class="stat-val">${minToHora(cacheTotais.normal)}h</div></div>
-                            <div class="stat-box cyan"><span class="stat-label">Extra 50%</span><div class="stat-val">${minToHora(cacheTotais.extra50)}</div><div class="stat-money">R$ ${(cacheTotais.extra50/60 * valorHoraNormal * 1.5).toFixed(2)}</div></div>
-                            <div class="stat-box purple"><span class="stat-label">Extra 100%</span><div class="stat-val">${minToHora(cacheTotais.extra100)}</div><div class="stat-money">R$ ${(cacheTotais.extra100/60 * valorHoraNormal * 2.0).toFixed(2)}</div></div>
-                            <div class="stat-box"><span class="stat-label">Total Geral</span><div class="stat-val">${minToHora(cacheTotais.trab)}h</div></div>
+                corpo = `
+                <div class="aba-card">
+                    <div class="aba-title"><i class="fa-solid fa-chart-pie"></i> Dashboard do Mês</div>
+                    <div class="dashboard-layout">
+                        <div>
+                            <div class="stats-grid">
+                                <div class="stat-box blue"><span class="stat-label">Normal</span><div class="stat-val">${minToHora(cacheTotais.normal)}h</div></div>
+                                <div class="stat-box pink"><span class="stat-label">Extra 50%</span><div class="stat-val">${minToHora(cacheTotais.extra50)}</div><div class="stat-money">R$ ${(cacheTotais.extra50/60 * valorHoraNormal * 1.5).toFixed(2)}</div></div>
+                                <div class="stat-box purple"><span class="stat-label">Extra 100%</span><div class="stat-val">${minToHora(cacheTotais.extra100)}</div><div class="stat-money">R$ ${(cacheTotais.extra100/60 * valorHoraNormal * 2.0).toFixed(2)}</div></div>
+                                <div class="stat-box orange"><span class="stat-label">Total Geral</span><div class="stat-val">${minToHora(cacheTotais.trab)}h</div></div>
+                            </div>
+                            <div class="chart-card" style="height: 250px;"><canvas id="chartDist"></canvas></div>
                         </div>
-                        <div class="chart-card" style="height: 200px;"><canvas id="chartDist"></canvas></div>
                     </div>
-                    <div class="chart-card" style="height: 380px;"><canvas id="chartEvol"></canvas></div>
+                </div>`;
+            } else if (abaAtiva === 'relatorio') {
+                const dados = getDadosTrimestres(ano);
+                const labels = getLabelsTrimestres();
+                const cores = ['r1', 'r2', 'r3', 'r4'];
+                
+                let cards50 = dados.map((d, i) => {
+                    const totalHoras = (d.extra50 / 60).toFixed(1);
+                    return `<div class="relatorio-card ${cores[i]}">
+                        <div class="q-label">${labels[i]}</div>
+                        <div class="q-total">${totalHoras}h</div>
+                        <div class="q-money">R$ ${(d.extra50/60 * valorHoraNormal * 1.5).toFixed(2)}</div>
+                    </div>`;
+                }).join('');
+
+                const mesAtual = calcularMes(mes, ano);
+                const mesMoney = (mesAtual.trab / 60 * valorHoraNormal).toFixed(2);
+
+                corpo = `
+                <div class="aba-card">
+                    <div class="aba-title"><i class="fa-solid fa-calendar-alt"></i> Relatório</div>
+                    
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px;">
+                        <div class="stat-box blue" style="flex:1; min-width:150px;">
+                            <span class="stat-label">📅 ${mesesNomes[mes]}</span>
+                            <div class="stat-val" style="font-size: 1.2rem;">${(mesAtual.trab/60).toFixed(1)}h</div>
+                            <div class="stat-money">R$ ${mesMoney}</div>
+                        </div>
+                        <div class="stat-box purple" style="flex:1; min-width:150px;">
+                            <span class="stat-label">📊 Ano ${ano}</span>
+                            <div class="stat-val" style="font-size: 1.2rem;">${(dados.reduce((acc, d) => acc + d.trab, 0)/60).toFixed(1)}h</div>
+                            <div class="stat-money">R$ ${(dados.reduce((acc, d) => acc + d.trab, 0)/60 * valorHoraNormal).toFixed(2)}</div>
+                        </div>
+                    </div>
+
+                    <div class="relatorio-wrapper">
+                        <div class="relatorio-section">
+                            <div class="section-title"><i class="fa-regular fa-clock"></i> Horas Extras 50%</div>
+                            <div class="relatorio-grid">${cards50}</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-grid-3">
+                        <div class="chart-card"><canvas id="chartTrimestre"></canvas></div>
+                        <div class="chart-card"><canvas id="chartMensal"></canvas></div>
+                        <div class="chart-card"><canvas id="chartSemanal"></canvas></div>
+                        <div class="chart-card chart-card-full" style="height: 350px;"><canvas id="chartDiario"></canvas></div>
+                    </div>
                 </div>`;
             } else if (abaAtiva === 'lancamentos') {
                 let rows = '';
@@ -720,7 +1170,6 @@
                     const reg = registros[k] || {};
                     let rowClass = (sem === 6) ? 'weekend-sat' : (sem === 0) ? 'weekend-sun' : 'weekday';
 
-                    // NOVO: Gerando botão de 100% manual (só exibe se não for domingo)
                     const isFeriadoManual = reg.feriadoManual ? true : false;
                     const btn100 = `<span onclick="toggleFeriadoManual('${k}')" style="cursor:pointer; display:inline-block; margin-left:6px; padding: 2px 5px; border-radius:6px; font-size:0.6rem; font-weight:800; background:${isFeriadoManual ? '#C77DFF' : 'rgba(255,255,255,0.05)'}; color:${isFeriadoManual ? '#fff' : '#64748b'}; border: 1px solid ${isFeriadoManual ? '#C77DFF' : '#475569'}; transition: all 0.2s;" title="Ativar/Desativar 100% Manual">100%</span>`;
 
@@ -743,26 +1192,24 @@
                 const obsKey = `${ano}-${mes}`;
                 const obsValue = observacoes[obsKey] || '';
 
-                corpo = `<div class="table-container"><div class="scroll-area"><table>
-                    <thead><tr><th>Data</th><th>Dia</th><th>E1</th><th>S1</th><th>E2</th><th>S2</th><th>Total</th><th>Norm</th><th>50%</th><th>100%</th></tr></thead>
-                    <tbody>${rows}</tbody>
-                    <tfoot style="background: rgba(57, 198, 255, 0.1); font-weight: bold;">
-                        <tr><td colspan="6" style="text-align: right; padding-right: 15px;">TOTAIS</td>
-                        <td class="tot-trab">${minToHora(cacheTotais.trab)}</td><td class="tot-norm" style="color:#39C6FF">${minToHora(cacheTotais.normal)}</td><td class="tot-50" style="color:#C77DFF">${minToHora(cacheTotais.extra50)}</td><td class="tot-100" style="color:#7B2EFF">${minToHora(cacheTotais.extra100)}</td></tr>
-                    </tfoot>
-                </table></div></div>
-                
-                <div class="obs-container">
-                    <div class="obs-title">
-                        <i class="fa-regular fa-note-sticky"></i>
-                        Observações do Mês
-                        <span style="font-size: 0.7rem; color: #64748b;">(salva automaticamente)</span>
-                    </div>
-                    <textarea id="obs-textarea" class="obs-textarea" placeholder="Digite suas observações sobre este mês... Ex: Faltas justificadas, horas extras autorizadas, banco de horas, etc." onchange="salvarObservacao()">${obsValue}</textarea>
-                    <div class="obs-footer">
-                        <button class="btn-save-obs" onclick="salvarObservacao()">
-                            <i class="fa-regular fa-floppy-disk"></i> Salvar Observação
-                        </button>
+                corpo = `
+                <div class="aba-card">
+                    <div class="aba-title"><i class="fa-solid fa-pen-to-square"></i> Lançamentos</div>
+                    <div class="table-container"><div class="scroll-area"><table>
+                        <thead><tr><th>Data</th><th>Dia</th><th>E1</th><th>S1</th><th>E2</th><th>S2</th><th>Total</th><th>Norm</th><th>50%</th><th>100%</th></tr></thead>
+                        <tbody>${rows}</tbody>
+                        <tfoot style="background: rgba(57, 198, 255, 0.1); font-weight: bold;">
+                            <tr><td colspan="6" style="text-align: right; padding-right: 15px;">TOTAIS</td>
+                            <td class="tot-trab">${minToHora(cacheTotais.trab)}</td><td class="tot-norm" style="color:#39C6FF">${minToHora(cacheTotais.normal)}</td><td class="tot-50" style="color:#C77DFF">${minToHora(cacheTotais.extra50)}</td><td class="tot-100" style="color:#7B2EFF">${minToHora(cacheTotais.extra100)}</td></tr>
+                        </tfoot>
+                    </table></div></div>
+                    
+                    <div class="obs-container">
+                        <div class="obs-title"><i class="fa-regular fa-note-sticky"></i> Observações do Mês</div>
+                        <textarea id="obs-textarea" class="obs-textarea" placeholder="Digite suas observações sobre este mês..." onchange="salvarObservacao()">${obsValue}</textarea>
+                        <div class="obs-footer">
+                            <button class="btn-save-obs" onclick="salvarObservacao()"><i class="fa-regular fa-floppy-disk"></i> Salvar</button>
+                        </div>
                     </div>
                 </div>`;
             } else if (abaAtiva === 'bater_ponto') {
@@ -779,42 +1226,45 @@
                 if (totalBatidas === 3) textStatus = "Pressione para registrar Saída Final";
                 if (isBloqueado) textStatus = "Expediente de hoje concluído!";
 
-                corpo = `<div class="chart-card bio-container">
-                    <div style="text-align: center; margin-bottom: 20px;">
-                        <h2 style="font-size: 1.5rem; margin-bottom: 5px; background: linear-gradient(90deg, #3ACDFF 0%, #B15CFF 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Ponto Biométrico</h2>
-                        <p style="color: #94a3b8; font-size: 0.9rem;" id="bio-date">Carregando data...</p>
-                        <div style="font-size: 3.5rem; font-weight: 800; margin: 15px 0; font-variant-numeric: tabular-nums; letter-spacing: 2px;" id="bio-clock">--:--:--</div>
-                    </div>
-                    
-                    <div style="text-align: center;">
-                        <button id="fingerprint-btn" onclick="requestBiometrics()" class="fingerprint-btn ${isBloqueado ? '' : 'pulse'}" ${isBloqueado ? 'disabled' : ''}>
-                            <i class="fa-solid fa-fingerprint"></i>
-                        </button>
-                        <p id="bio-status" style="margin-top: 15px; color: ${isBloqueado ? '#10b981' : 'var(--primary)'}; font-weight: bold; font-size: 1.1rem;">
-                            ${isBloqueado ? '<i class="fa-solid fa-check"></i> ' : ''}${textStatus}
-                        </p>
-                    </div>
-
-                    <div style="margin-top: 40px;">
-                        <h3 style="margin: 0 0 15px 0; font-size: 0.9rem; text-transform: uppercase; color: #94a3b8; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
-                            Registros de Hoje <span style="float:right; color: #fff;">${totalBatidas}/4</span>
-                        </h3>
+                corpo = `
+                <div class="aba-card">
+                    <div class="aba-title"><i class="fa-solid fa-fingerprint"></i> Bater Ponto</div>
+                    <div class="bio-container">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <p style="color: #94a3b8; font-size: 0.9rem;" id="bio-date">Carregando data...</p>
+                            <div style="font-size: 3.5rem; font-weight: 800; margin: 15px 0; font-variant-numeric: tabular-nums; letter-spacing: 2px;" id="bio-clock">--:--:--</div>
+                        </div>
                         
-                        <div class="punch-row ${regHoje.ent1 ? 'filled' : 'empty'}">
-                            <span><i class="fa-solid fa-arrow-right-to-bracket" style="color: #10b981; margin-right: 10px;"></i> Entrada 1</span>
-                            <strong style="font-size: 1.1rem;">${regHoje.ent1 || '--:--'}</strong>
+                        <div style="text-align: center;">
+                            <button id="fingerprint-btn" onclick="requestBiometrics()" class="fingerprint-btn ${isBloqueado ? '' : 'pulse'}" ${isBloqueado ? 'disabled' : ''}>
+                                <i class="fa-solid fa-fingerprint"></i>
+                            </button>
+                            <p id="bio-status" style="margin-top: 15px; color: ${isBloqueado ? '#10b981' : 'var(--primary)'}; font-weight: bold; font-size: 1.1rem;">
+                                ${isBloqueado ? '<i class="fa-solid fa-check"></i> ' : ''}${textStatus}
+                            </p>
                         </div>
-                        <div class="punch-row ${regHoje.sai1 ? 'filled' : 'empty'}">
-                            <span><i class="fa-solid fa-mug-hot" style="color: #f59e0b; margin-right: 10px;"></i> Saída (Pausa)</span>
-                            <strong style="font-size: 1.1rem;">${regHoje.sai1 || '--:--'}</strong>
-                        </div>
-                        <div class="punch-row ${regHoje.ent2 ? 'filled' : 'empty'}">
-                            <span><i class="fa-solid fa-briefcase" style="color: #3b82f6; margin-right: 10px;"></i> Retorno (Pausa)</span>
-                            <strong style="font-size: 1.1rem;">${regHoje.ent2 || '--:--'}</strong>
-                        </div>
-                        <div class="punch-row ${regHoje.sai2 ? 'filled' : 'empty'}">
-                            <span><i class="fa-solid fa-arrow-right-from-bracket" style="color: #ef4444; margin-right: 10px;"></i> Saída Final</span>
-                            <strong style="font-size: 1.1rem;">${regHoje.sai2 || '--:--'}</strong>
+
+                        <div style="margin-top: 40px;">
+                            <h3 style="margin: 0 0 15px 0; font-size: 0.9rem; text-transform: uppercase; color: #94a3b8; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
+                                Registros de Hoje <span style="float:right; color: #fff;">${totalBatidas}/4</span>
+                            </h3>
+                            
+                            <div class="punch-row ${regHoje.ent1 ? 'filled' : 'empty'}">
+                                <span><i class="fa-solid fa-arrow-right-to-bracket" style="color: #10b981; margin-right: 10px;"></i> Entrada 1</span>
+                                <strong style="font-size: 1.1rem;">${regHoje.ent1 || '--:--'}</strong>
+                            </div>
+                            <div class="punch-row ${regHoje.sai1 ? 'filled' : 'empty'}">
+                                <span><i class="fa-solid fa-mug-hot" style="color: #f59e0b; margin-right: 10px;"></i> Saída (Pausa)</span>
+                                <strong style="font-size: 1.1rem;">${regHoje.sai1 || '--:--'}</strong>
+                            </div>
+                            <div class="punch-row ${regHoje.ent2 ? 'filled' : 'empty'}">
+                                <span><i class="fa-solid fa-briefcase" style="color: #3b82f6; margin-right: 10px;"></i> Retorno (Pausa)</span>
+                                <strong style="font-size: 1.1rem;">${regHoje.ent2 || '--:--'}</strong>
+                            </div>
+                            <div class="punch-row ${regHoje.sai2 ? 'filled' : 'empty'}">
+                                <span><i class="fa-solid fa-arrow-right-from-bracket" style="color: #ef4444; margin-right: 10px;"></i> Saída Final</span>
+                                <strong style="font-size: 1.1rem;">${regHoje.sai2 || '--:--'}</strong>
+                            </div>
                         </div>
                     </div>
                 </div>`;
@@ -840,7 +1290,7 @@
                               <path d="M650 530 Q760 570 880 515" stroke="url(#neonBlue)" stroke-width="10" fill="none" stroke-linecap="round" filter="url(#glow)"/>
                             </svg>
                         </div>
-                        <h1 class="brand-title">Check Ponto <span class="version-tag">v3.0</span></h1>
+                        <h1 class="brand-title">Check Ponto <span class="version-tag">v3.4</span></h1>
                     </div>
 
                     <div class="header-row-2">
@@ -863,9 +1313,18 @@
                 </header>
 
                 <nav class="tabs-nav">
-                    <button class="tab-btn ${abaAtiva==='bater_ponto'?'active':''}" onclick="mudarAba('bater_ponto')"><i class="fa-solid fa-fingerprint"></i> BATER PONTO</button>
-                    <button class="tab-btn ${abaAtiva==='lancamentos'?'active':''}" onclick="mudarAba('lancamentos')"><i class="fa-solid fa-pen-to-square"></i> LANÇAMENTOS</button>
-                    <button class="tab-btn ${abaAtiva==='dashboard'?'active':''}" onclick="mudarAba('dashboard')"><i class="fa-solid fa-chart-pie"></i> DASHBOARD</button>
+                    <button class="tab-btn ${abaAtiva==='bater_ponto'?'active':''}" onclick="mudarAba('bater_ponto')">
+                        PONTO
+                    </button>
+                    <button class="tab-btn ${abaAtiva==='lancamentos'?'active':''}" onclick="mudarAba('lancamentos')">
+                        LANÇAMENTOS
+                    </button>
+                    <button class="tab-btn ${abaAtiva==='dashboard'?'active':''}" onclick="mudarAba('dashboard')">
+                        DASHBOARD
+                    </button>
+                    <button class="tab-btn ${abaAtiva==='relatorio'?'active':''}" onclick="mudarAba('relatorio')">
+                        RELATÓRIO
+                    </button>
                 </nav>
 
                 ${corpo}
@@ -873,7 +1332,7 @@
                 <footer class="footer">
                     <div class="footer-content">
                         <span class="footer-text">Criado por <b>Deh Januário</b></span>
-                        <span class="footer-brand">Check Ponto • v3.3 Premium</span>
+                        <span class="footer-brand">Check Ponto • v3.4 Premium</span>
                     </div>
                 </footer>
                 <div id="toast" class="toast"></div>
