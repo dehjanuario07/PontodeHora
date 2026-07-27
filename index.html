@@ -1690,7 +1690,7 @@
         const currencyConfig = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
         const isMobile = window.innerWidth < 768;
 
-        // ============ EXPORTAÇÃO PARA PDF (ESTILO CHECK PONTO) ============
+        // ============ EXPORTAÇÃO PARA PDF (CORRIGIDA) ============
         function exportarParaPDF() {
             const loading = document.getElementById('pdfLoading');
             const progress = document.getElementById('pdfProgress');
@@ -1836,7 +1836,19 @@
 
                 progress.style.width = '60%';
 
-                // Configurar opções do PDF
+                // CORREÇÃO 1: Criar um elemento DOM temporário para o html2canvas conseguir "ver"
+                const tempContainer = document.createElement('div');
+                tempContainer.innerHTML = finalHtmlWrapper;
+                
+                // Esconder o elemento fora da tela (mas mantendo no DOM para poder ser lido)
+                tempContainer.style.position = 'absolute';
+                tempContainer.style.left = '-9999px';
+                tempContainer.style.top = '0';
+                tempContainer.style.width = '1100px';
+                tempContainer.style.backgroundColor = '#ffffff';
+                document.body.appendChild(tempContainer);
+
+                // CORREÇÃO 2: Configurar opções do PDF (removidos scrollY e windowY)
                 const opt = {
                     margin: [8, 8, 8, 8],
                     filename: `Finwise_Relatorio_${new Date().toISOString().slice(0,10)}.pdf`,
@@ -1846,8 +1858,7 @@
                         useCORS: true,
                         logging: false,
                         backgroundColor: '#ffffff',
-                        scrollY: 0,
-                        windowY: 0
+                        width: 1100
                     },
                     jsPDF: {
                         unit: 'mm',
@@ -1858,8 +1869,12 @@
 
                 progress.style.width = '80%';
 
-                // Gerar o PDF
-                html2pdf().set(opt).from(finalHtmlWrapper).save().then(() => {
+                // CORREÇÃO 3: Gerar o PDF a partir do elemento DOM e limpá-lo depois
+                html2pdf().set(opt).from(tempContainer).save().then(() => {
+                    // Remove o elemento escondido
+                    if (document.body.contains(tempContainer)) {
+                        document.body.removeChild(tempContainer);
+                    }
                     progress.style.width = '100%';
                     setTimeout(() => {
                         loading.classList.remove('active');
@@ -1867,6 +1882,10 @@
                     }, 500);
                 }).catch((err) => {
                     console.error('Erro ao gerar PDF:', err);
+                    // Garantir que o elemento seja limpo mesmo em caso de erro
+                    if (document.body.contains(tempContainer)) {
+                        document.body.removeChild(tempContainer);
+                    }
                     loading.classList.remove('active');
                     showToast('❌ Erro ao gerar PDF. Tente novamente.', 'error');
                 });
