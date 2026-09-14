@@ -807,7 +807,7 @@
             doc.text("CHECK PONTO", 20, 20);
 
             doc.setFontSize(10); doc.setTextColor(100, 100, 100);
-            doc.text(`Relatório Oficial Premium v3.4 • Gerado em ${new Date().toLocaleDateString()}`, 20, 28);
+            doc.text(`Relatório Oficial Premium v3.8 • Gerado em ${new Date().toLocaleDateString()}`, 20, 28);
             doc.line(20, 32, 190, 32);
 
             doc.setFontSize(11); doc.setTextColor(0, 0, 0);
@@ -1314,16 +1314,17 @@
                 const cores = ['r1', 'r2', 'r3', 'r4'];
                 
                 let cards50 = dados.map((d, i) => {
-                    const totalHoras = (d.extra50 / 60).toFixed(1);
                     return `<div class="relatorio-card ${cores[i]}">
                         <div class="q-label">${labels[i]}</div>
-                        <div class="q-total">${totalHoras}h</div>
+                        <div class="q-total">${minToHora(d.extra50)}</div>
                         <div class="q-money">R$ ${(d.extra50/60 * valorHoraNormal * 1.5).toFixed(2)}</div>
                     </div>`;
                 }).join('');
 
                 const mesAtual = calcularMes(mes, ano);
                 const mesMoney = (mesAtual.trab / 60 * valorHoraNormal).toFixed(2);
+                const anoTotalMin = dados.reduce((acc, d) => acc + d.trab, 0);
+                const anoMoney = (anoTotalMin / 60 * valorHoraNormal).toFixed(2);
 
                 corpo = `
                 <div class="aba-card">
@@ -1332,13 +1333,13 @@
                     <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px;">
                         <div class="stat-box blue" style="flex:1; min-width:150px;">
                             <span class="stat-label">📅 ${mesesNomes[mes]}</span>
-                            <div class="stat-val" style="font-size: 1.2rem;">${(mesAtual.trab/60).toFixed(1)}h</div>
+                            <div class="stat-val" style="font-size: 1.2rem;">${minToHora(mesAtual.trab)}</div>
                             <div class="stat-money">R$ ${mesMoney}</div>
                         </div>
                         <div class="stat-box purple" style="flex:1; min-width:150px;">
                             <span class="stat-label">📊 Ano ${ano}</span>
-                            <div class="stat-val" style="font-size: 1.2rem;">${(dados.reduce((acc, d) => acc + d.trab, 0)/60).toFixed(1)}h</div>
-                            <div class="stat-money">R$ ${(dados.reduce((acc, d) => acc + d.trab, 0)/60 * valorHoraNormal).toFixed(2)}</div>
+                            <div class="stat-val" style="font-size: 1.2rem;">${minToHora(anoTotalMin)}</div>
+                            <div class="stat-money">R$ ${anoMoney}</div>
                         </div>
                     </div>
 
@@ -1541,7 +1542,7 @@
                 <footer class="footer">
                     <div class="footer-content">
                         <span class="footer-text">Criado por <b>Deh Januário</b></span>
-                        <span class="footer-brand">Check Ponto • v3.4 Premium</span>
+                        <span class="footer-brand">Check Ponto • v3.8 Premium</span>
                     </div>
                 </footer>
                 <div id="toast" class="toast"></div>
