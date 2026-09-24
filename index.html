@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Check Ponto v3.4 - Relatório Edition</title>
+    <title>Check Ponto v3.8 - Relatório Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
@@ -254,13 +254,17 @@
         .weekend-sat { background: rgba(57, 198, 255, 0.04); }
         .weekend-sun { background: rgba(123, 46, 255, 0.05); }
 
-        input {
-            background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); color: white;
-            width: 60px; padding: 4px 2px; text-align: center; font-weight: 700; border-radius: 6px;
-            font-size: 0.75rem;
+        .hora-cell {
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            color: #fff;
+        }
+        .hora-cell.vazia {
+            color: #475569;
+            font-weight: 500;
         }
 
-        /* NAVEGAÇÃO DE ABAS - FIXA SEM SCROLL */
+        /* NAVEGAÇÃO DE ABAS */
         .tabs-nav {
             display: flex;
             background: rgba(255,255,255,.03);
@@ -377,7 +381,412 @@
         .punch-row span { font-size: 0.85rem; }
         .punch-row strong { font-size: 1rem; }
 
-        /* SALDO DO DIA (ABA PONTO) */
+        /* ============================================
+           DAY PICKER COMPACTO
+           ============================================ */
+        .day-picker {
+            position: relative;
+            display: flex;
+            align-items: stretch;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .day-picker .day-nav-btn {
+            background: linear-gradient(135deg, rgba(57, 198, 255, 0.08), rgba(123, 46, 255, 0.08));
+            color: var(--primary);
+            border: 1px solid rgba(57, 198, 255, 0.2);
+            border-radius: 14px;
+            width: 52px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+            transition: all 0.25s ease;
+        }
+
+        .day-picker .day-nav-btn:hover {
+            background: linear-gradient(135deg, rgba(57, 198, 255, 0.18), rgba(123, 46, 255, 0.18));
+            border-color: rgba(57, 198, 255, 0.45);
+            box-shadow: 0 0 20px rgba(57, 198, 255, 0.25);
+        }
+
+        .day-picker .day-nav-btn:active { transform: scale(0.95); }
+
+        /* Card central compacto */
+        .day-picker .day-center {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 12px 16px;
+            border-radius: 14px;
+            transition: all 0.25s ease;
+            position: relative;
+            user-select: none;
+            min-width: 0;
+            background: linear-gradient(135deg, rgba(57, 198, 255, 0.06), rgba(123, 46, 255, 0.06));
+            border: 1px solid rgba(57, 198, 255, 0.2);
+            box-shadow: inset 0 0 20px rgba(57, 198, 255, 0.04), 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .day-picker .day-center::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 14px;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(57, 198, 255, 0.35), transparent 40%, transparent 60%, rgba(199, 125, 255, 0.35));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .day-picker .day-center:hover {
+            background: linear-gradient(135deg, rgba(57, 198, 255, 0.1), rgba(123, 46, 255, 0.1));
+            border-color: rgba(57, 198, 255, 0.4);
+        }
+
+        .day-picker .day-center .day-number {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #3ACDFF 0%, #B15CFF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        .day-picker .day-center .day-number small {
+            font-size: 0.9rem;
+            font-weight: 800;
+            margin-left: 2px;
+        }
+
+        .day-picker .day-center .day-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 3px;
+            min-width: 0;
+        }
+
+        .day-picker .day-center .day-weekday {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .day-picker .day-center .day-badges {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .day-picker .day-center .day-info-icon {
+            color: var(--primary);
+            font-size: 0.7rem;
+            margin-right: 4px;
+        }
+
+        .badge-hoje {
+            display: inline-block;
+            background: linear-gradient(135deg, #39C6FF, #7B2EFF);
+            color: #fff;
+            font-size: 0.55rem;
+            font-weight: 900;
+            padding: 2px 7px;
+            border-radius: 6px;
+            letter-spacing: 1px;
+            box-shadow: 0 0 12px rgba(57, 198, 255, 0.4);
+        }
+
+        .badge-feriado {
+            display: inline-block;
+            background: rgba(199, 125, 255, 0.15);
+            color: #C77DFF;
+            font-size: 0.55rem;
+            font-weight: 900;
+            padding: 2px 7px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(199, 125, 255, 0.3);
+        }
+
+        .day-picker .btn-hoje-quick {
+            background: linear-gradient(135deg, rgba(57, 198, 255, 0.1), rgba(123, 46, 255, 0.1));
+            color: var(--primary);
+            border: 1px solid rgba(57, 198, 255, 0.25);
+            border-radius: 14px;
+            padding: 0 14px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .day-picker .btn-hoje-quick:hover {
+            background: linear-gradient(135deg, rgba(57, 198, 255, 0.2), rgba(123, 46, 255, 0.2));
+            box-shadow: 0 0 20px rgba(57, 198, 255, 0.3);
+        }
+
+        /* BOTÃO 100% NA PALETA NEON */
+        .btn-100-neon {
+            background: linear-gradient(135deg, rgba(57, 198, 255, 0.1), rgba(123, 46, 255, 0.1));
+            color: #fff;
+            border: 1px solid rgba(57, 198, 255, 0.3);
+            border-radius: 14px;
+            padding: 12px 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 auto 18px auto;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(57, 198, 255, 0.1);
+        }
+
+        .btn-100-neon::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 14px;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(57, 198, 255, 0.5), transparent 40%, transparent 60%, rgba(199, 125, 255, 0.5));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .btn-100-neon:hover {
+            background: linear-gradient(135deg, rgba(57, 198, 255, 0.2), rgba(123, 46, 255, 0.2));
+            border-color: rgba(57, 198, 255, 0.5);
+            box-shadow: 0 0 25px rgba(57, 198, 255, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .btn-100-neon .badge-off {
+            font-size: 0.6rem;
+            font-weight: 900;
+            background: rgba(255,255,255,0.08);
+            color: #cbd5e1;
+            padding: 2px 8px;
+            border-radius: 6px;
+            letter-spacing: 1px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-100-neon.active {
+            background: linear-gradient(135deg, #39C6FF, #B15CFF);
+            border-color: transparent;
+            box-shadow: 0 0 25px rgba(177, 92, 255, 0.5), 0 0 50px rgba(57, 198, 255, 0.3);
+            animation: glowPulse100 2.5s ease-in-out infinite;
+        }
+
+        .btn-100-neon.active .badge-off {
+            background: rgba(255,255,255,0.25);
+            color: #fff;
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        @keyframes glowPulse100 {
+            0%, 100% { box-shadow: 0 0 25px rgba(177, 92, 255, 0.5), 0 0 50px rgba(57, 198, 255, 0.3); }
+            50% { box-shadow: 0 0 35px rgba(177, 92, 255, 0.7), 0 0 70px rgba(57, 198, 255, 0.45); }
+        }
+
+        /* POPOVER DE CALENDÁRIO */
+        .calendar-popover {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            width: 300px;
+            max-width: calc(100vw - 30px);
+            background: rgba(11, 16, 38, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(57, 198, 255, 0.25);
+            border-radius: 18px;
+            padding: 14px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7), 0 0 30px rgba(57, 198, 255, 0.1);
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .calendar-popover.open {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .calendar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .calendar-header .cal-month {
+            font-size: 0.85rem;
+            font-weight: 900;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .calendar-header .cal-nav {
+            background: rgba(255,255,255,0.05);
+            color: var(--primary);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .calendar-header .cal-nav:hover {
+            background: rgba(57, 198, 255, 0.15);
+            border-color: rgba(57, 198, 255, 0.3);
+        }
+
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 3px;
+            margin-bottom: 6px;
+        }
+
+        .calendar-weekdays span {
+            text-align: center;
+            font-size: 0.6rem;
+            font-weight: 900;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 4px 0;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 3px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 9px;
+            cursor: pointer;
+            color: #cbd5e1;
+            background: transparent;
+            border: 1px solid transparent;
+            transition: all 0.15s ease;
+            font-variant-numeric: tabular-nums;
+            position: relative;
+        }
+
+        .calendar-day:hover {
+            background: rgba(57, 198, 255, 0.12);
+            color: #fff;
+            border-color: rgba(57, 198, 255, 0.3);
+        }
+
+        .calendar-day.other-month { color: #334155; pointer-events: none; }
+
+        .calendar-day.today {
+            color: var(--primary);
+            font-weight: 900;
+            border-color: rgba(57, 198, 255, 0.4);
+        }
+
+        .calendar-day.today::after {
+            content: '';
+            position: absolute;
+            bottom: 3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 6px var(--primary);
+        }
+
+        .calendar-day.selected {
+            background: linear-gradient(135deg, #39C6FF, #7B2EFF);
+            color: #fff !important;
+            font-weight: 900;
+            border-color: transparent;
+            box-shadow: 0 0 15px rgba(57, 198, 255, 0.5);
+        }
+
+        .calendar-day.selected::after { display: none; }
+
+        .calendar-day.has-record::before {
+            content: '';
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #10b981;
+            box-shadow: 0 0 4px #10b981;
+        }
+
+        .calendar-day.weekend { color: #94a3b8; }
+        .calendar-day.weekend.sunday { color: #C77DFF; }
+
+        .calendar-day.feriado::before {
+            content: '';
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #f59e0b;
+            box-shadow: 0 0 4px #f59e0b;
+        }
+
+        /* SALDO DO DIA */
         .saldo-dia {
             margin-top: 25px;
             padding: 18px 20px;
@@ -405,7 +814,6 @@
             color: #fff;
         }
 
-        /* Destaque roxo quando for 100% */
         .saldo-dia.is-100 {
             border: 1px solid rgba(199, 125, 255, 0.4);
             background: linear-gradient(135deg, rgba(199, 125, 255, 0.1), rgba(123, 46, 255, 0.1));
@@ -460,6 +868,108 @@
         }
         .btn-save-obs:hover { background: rgba(57, 198, 255, 0.2); }
 
+        /* MANUAL ENTRY */
+        .manual-entry {
+            margin-top: 25px;
+            padding: 18px 20px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-left: 4px solid var(--primary);
+        }
+
+        .manual-entry .manual-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #94a3b8;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .manual-entry .manual-title i { color: var(--primary); }
+
+        .manual-fields {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .manual-field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .manual-field label {
+            font-size: 0.65rem;
+            color: #94a3b8;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .manual-field input {
+            width: 100%;
+            padding: 10px 8px;
+            font-size: 0.9rem;
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 10px;
+            text-align: center;
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .manual-field input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(57, 198, 255, 0.2);
+        }
+
+        .manual-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-manual-save {
+            background: linear-gradient(135deg, #39C6FF, #7B2EFF);
+            color: white;
+            padding: 10px 24px;
+            font-size: 0.8rem;
+            box-shadow: 0 5px 15px rgba(57, 198, 255, 0.3);
+        }
+
+        .btn-manual-clear {
+            background: rgba(255,255,255,0.06);
+            color: #94a3b8;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            font-size: 0.8rem;
+        }
+
+        .readonly-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(148, 163, 184, 0.1);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            color: #94a3b8;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 5px 10px;
+            border-radius: 8px;
+            margin-left: auto;
+        }
+
         /* RODAPÉ */
         .footer { padding: 30px 20px; text-align: center; margin-top: 30px; position: relative; border-top: 1px solid rgba(255, 255, 255, 0.05); }
         .footer-content {
@@ -485,26 +995,16 @@
         }
 
         /* ============================================ */
-        /* RESPONSIVO - MANTENDO O MESMO LAYOUT DA WEB */
+        /* RESPONSIVO                                    */
         /* ============================================ */
 
-        /* Tablet e Mobile */
         @media (max-width: 992px) {
-            .stats-grid { 
-                grid-template-columns: repeat(2, 1fr); 
-            }
-            .relatorio-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .chart-grid-3 {
-                grid-template-columns: 1fr;
-            }
-            .chart-grid-3 .chart-card-full {
-                grid-column: 1;
-            }
-            .chart-card {
-                padding: 14px;
-            }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .relatorio-grid { grid-template-columns: repeat(2, 1fr); }
+            .chart-grid-3 { grid-template-columns: 1fr; }
+            .chart-grid-3 .chart-card-full { grid-column: 1; }
+            .chart-card { padding: 14px; }
+            .manual-fields { grid-template-columns: repeat(2, 1fr); }
         }
 
         @media (max-width: 768px) {
@@ -513,45 +1013,22 @@
             .header-card { padding: 15px; gap: 12px; }
             .brand-title { font-size: 1.2rem; }
             .futuristic-logo { width: 45px; height: 45px; }
-            .header-row-3 { flex-direction: row; flex-wrap: wrap; justify-content: center; }
-            .header-row-3 .btn-config { 
-                font-size: 0.65rem; 
-                padding: 6px 12px; 
-                flex: 1 1 auto;
-                min-width: 80px;
-            }
-            .header-row-4 button { 
-                font-size: 0.7rem; 
-                padding: 8px 14px; 
-            }
-            .date-display { 
-                font-size: 0.85rem; 
-                min-width: 100px; 
-            }
+            .header-row-3 .btn-config { font-size: 0.65rem; padding: 6px 12px; flex: 1 1 auto; min-width: 80px; }
+            .header-row-4 button { font-size: 0.7rem; padding: 8px 14px; }
+            .date-display { font-size: 0.85rem; min-width: 100px; }
             
-            .tab-btn { 
-                font-size: 0.65rem; 
-                padding: 8px 10px; 
-                min-width: 50px;
-                flex: 1 1 0;
-            }
+            .tab-btn { font-size: 0.65rem; padding: 8px 10px; min-width: 50px; flex: 1 1 0; }
             
             .aba-card { padding: 14px; }
             .aba-card .aba-title { font-size: 0.65rem; }
             
-            .stats-grid { 
-                grid-template-columns: repeat(2, 1fr); 
-                gap: 8px;
-            }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
             .stat-box { padding: 10px 12px; }
             .stat-val { font-size: 1.2rem; }
             .stat-label { font-size: 0.55rem; }
             .stat-money { font-size: 0.7rem; }
             
-            .relatorio-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
-            }
+            .relatorio-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
             .relatorio-card { padding: 12px 8px; }
             .relatorio-card .q-total { font-size: 1.3rem; }
             .relatorio-card .q-label { font-size: 0.6rem; }
@@ -568,6 +1045,23 @@
             .saldo-dia { padding: 14px 16px; margin-top: 20px; }
             .saldo-dia .valor { font-size: 1.4rem; }
             .saldo-dia .label { font-size: 0.7rem; }
+
+            .day-picker { gap: 6px; }
+            .day-picker .day-nav-btn { width: 44px; font-size: 0.9rem; }
+            .day-picker .day-center { padding: 10px 12px; gap: 8px; }
+            .day-picker .day-center .day-number { font-size: 1.2rem; }
+            .day-picker .day-center .day-number small { font-size: 0.75rem; }
+            .day-picker .day-center .day-weekday { font-size: 0.6rem; }
+            .day-picker .btn-hoje-quick { padding: 0 10px; font-size: 0.55rem; }
+            .btn-100-neon { padding: 10px 16px; font-size: 0.65rem; }
+
+            .calendar-popover { width: 290px; }
+
+            .manual-entry { padding: 14px 16px; }
+            .manual-fields { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .manual-field input { padding: 8px 6px; font-size: 0.8rem; }
+            .manual-actions { flex-direction: column; }
+            .manual-actions button { width: 100%; justify-content: center; }
             
             .obs-container { padding: 12px 16px; }
             .obs-textarea { min-height: 80px; font-size: 0.8rem; }
@@ -578,7 +1072,6 @@
             table { min-width: 600px; }
             th { font-size: 0.6rem; padding: 8px 5px; }
             td { font-size: 0.7rem; padding: 6px 4px; }
-            input { width: 50px; font-size: 0.65rem; padding: 3px 2px; }
         }
 
         @media (max-width: 480px) {
@@ -589,43 +1082,23 @@
             .futuristic-logo { width: 38px; height: 38px; }
             .version-tag { font-size: 0.5rem; padding: 1px 6px; }
             
-            .header-row-3 .btn-config { 
-                font-size: 0.55rem; 
-                padding: 4px 8px; 
-                min-width: 60px;
-            }
-            .header-row-4 button { 
-                font-size: 0.6rem; 
-                padding: 6px 10px; 
-            }
-            .date-display { 
-                font-size: 0.7rem; 
-                min-width: 80px; 
-            }
+            .header-row-3 .btn-config { font-size: 0.55rem; padding: 4px 8px; min-width: 60px; }
+            .header-row-4 button { font-size: 0.6rem; padding: 6px 10px; }
+            .date-display { font-size: 0.7rem; min-width: 80px; }
             .btn-nav { font-size: 1rem; padding: 3px 10px; }
             
-            .tab-btn { 
-                font-size: 0.55rem; 
-                padding: 6px 6px; 
-                min-width: 40px;
-            }
+            .tab-btn { font-size: 0.55rem; padding: 6px 6px; min-width: 40px; }
             
             .aba-card { padding: 10px; }
             .aba-card .aba-title { font-size: 0.55rem; margin-bottom: 10px; padding-bottom: 6px; }
             
-            .stats-grid { 
-                grid-template-columns: 1fr 1fr; 
-                gap: 6px;
-            }
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
             .stat-box { padding: 8px 10px; }
             .stat-val { font-size: 1rem; }
             .stat-label { font-size: 0.5rem; }
             .stat-money { font-size: 0.6rem; }
             
-            .relatorio-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 6px;
-            }
+            .relatorio-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
             .relatorio-card { padding: 10px 6px; }
             .relatorio-card .q-total { font-size: 1.1rem; }
             .relatorio-card .q-label { font-size: 0.5rem; }
@@ -641,6 +1114,31 @@
             .saldo-dia { padding: 12px 14px; margin-top: 18px; }
             .saldo-dia .valor { font-size: 1.2rem; }
             .saldo-dia .label { font-size: 0.6rem; }
+
+            .day-picker { gap: 5px; }
+            .day-picker .day-nav-btn { width: 38px; font-size: 0.8rem; border-radius: 12px; }
+            .day-picker .day-center { padding: 8px 10px; gap: 6px; border-radius: 12px; }
+            .day-picker .day-center .day-number { font-size: 1rem; }
+            .day-picker .day-center .day-number small { font-size: 0.65rem; }
+            .day-picker .day-center .day-weekday { font-size: 0.55rem; letter-spacing: 0.5px; }
+            .day-picker .day-center .day-badges { gap: 3px; }
+            .badge-hoje, .badge-feriado { font-size: 0.5rem; padding: 1px 5px; }
+            .day-picker .btn-hoje-quick { padding: 0 8px; font-size: 0.5rem; border-radius: 12px; }
+            .btn-100-neon { padding: 8px 12px; font-size: 0.6rem; margin-bottom: 14px; }
+            .btn-100-neon .badge-off { font-size: 0.5rem; padding: 1px 6px; }
+
+            .calendar-popover { width: 270px; padding: 12px; }
+            .calendar-day { font-size: 0.7rem; border-radius: 8px; }
+            .calendar-header .cal-month { font-size: 0.75rem; }
+            .calendar-header .cal-nav { width: 26px; height: 26px; font-size: 0.6rem; }
+            .calendar-weekdays span { font-size: 0.55rem; }
+
+            .manual-entry { padding: 10px 12px; margin-top: 18px; }
+            .manual-entry .manual-title { font-size: 0.65rem; margin-bottom: 10px; }
+            .manual-fields { grid-template-columns: 1fr 1fr; gap: 6px; }
+            .manual-field label { font-size: 0.55rem; }
+            .manual-field input { padding: 6px 4px; font-size: 0.7rem; letter-spacing: 0.5px; }
+            .manual-actions button { font-size: 0.65rem; padding: 8px 14px; }
             
             .footer-content { padding: 8px 16px; }
             .footer-text { font-size: 0.65rem; }
@@ -655,7 +1153,8 @@
             table { min-width: 500px; }
             th { font-size: 0.5rem; padding: 6px 4px; }
             td { font-size: 0.6rem; padding: 4px 3px; }
-            input { width: 40px; font-size: 0.55rem; padding: 2px 2px; }
+
+            .readonly-badge { font-size: 0.55rem; padding: 3px 6px; }
         }
     </style>
 </head>
@@ -697,11 +1196,15 @@
 
         let ano = new Date().getFullYear();
         let mes = new Date().getMonth();
+        let diaSelecionado = new Date().getDate();
         let registros = {};
         let observacoes = {};
         let abaAtiva = 'bater_ponto';
         let cacheTotais = { trab:0, normal:0, extra50:0, extra100:0 };
         let chartDist = null, chartTrimestre = null, chartMensal = null, chartSemanal = null, chartDiario = null;
+        
+        let calMesAberto = mes;
+        let calAnoAberto = ano;
 
         const salvo = localStorage.getItem('folhaPonto_v2.9');
         if (salvo) { 
@@ -715,7 +1218,9 @@
         }
         
         const mesesNomes = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+        const mesesNomesCurto = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
         const diasNomes = ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'];
+        const diasNomesLongo = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
 
         function calcularValoresDia(chave, semNum, mesNum, diaNum, anoNum) {
             const d = registros[chave] || {};
@@ -753,12 +1258,7 @@
         }
 
         function getMesesTrimestre(trimestre, anoParam) {
-            const map = [
-                [11, 0, 1],   // Dez, Jan, Fev
-                [2, 3, 4],    // Mar, Abr, Mai
-                [5, 6, 7],    // Jun, Jul, Ago
-                [8, 9, 10]    // Set, Out, Nov
-            ];
+            const map = [[11, 0, 1], [2, 3, 4], [5, 6, 7], [8, 9, 10]];
             const meses = map[trimestre] || [];
             return meses.map(m => {
                 let anoAjustado = anoParam;
@@ -779,15 +1279,11 @@
 
         function getDadosTrimestres(anoParam) {
             const trimestres = [];
-            for (let i = 0; i < 4; i++) {
-                trimestres.push(calcularTrimestrePersonalizado(i, anoParam));
-            }
+            for (let i = 0; i < 4; i++) trimestres.push(calcularTrimestrePersonalizado(i, anoParam));
             return trimestres;
         }
 
-        function getLabelsTrimestres() {
-            return ['Dez-Jan-Fev', 'Mar-Abr-Mai', 'Jun-Jul-Ago', 'Set-Out-Nov'];
-        }
+        function getLabelsTrimestres() { return ['Dez-Jan-Fev', 'Mar-Abr-Mai', 'Jun-Jul-Ago', 'Set-Out-Nov']; }
 
         function recalcularTotais() {
             let n = { trab:0, normal:0, extra50:0, extra100:0 };
@@ -869,7 +1365,7 @@
                 doc.text(splitObs, 20, finalY + 6);
             }
 
-            doc.save(`CheckPonto_v34_${mesesNomes[mes]}_${ano}.pdf`);
+            doc.save(`CheckPonto_v38_${mesesNomes[mes]}_${ano}.pdf`);
             mostrarToast("📄 PDF Exportado com Saldo!");
         }
 
@@ -890,15 +1386,10 @@
                         }] 
                     },
                     options: { 
-                        responsive: true, 
-                        maintainAspectRatio: false, 
+                        responsive: true, maintainAspectRatio: false, 
                         plugins: { legend: { display: false } },
                         scales: {
-                            y: { 
-                                beginAtZero: true, 
-                                title: { display: true, text: 'Horas', color: '#94a3b8' },
-                                ticks: { color: '#94a3b8' }
-                            },
+                            y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } },
                             x: { ticks: { color: '#94a3b8' } }
                         }
                     }
@@ -928,15 +1419,10 @@
                             ]
                         },
                         options: {
-                            responsive: true, 
-                            maintainAspectRatio: false,
+                            responsive: true, maintainAspectRatio: false,
                             scales: { 
                                 x: { ticks: { color: '#94a3b8' } }, 
-                                y: { 
-                                    beginAtZero: true, 
-                                    title: { display: true, text: 'Horas', color: '#94a3b8' },
-                                    ticks: { color: '#94a3b8' }
-                                } 
+                                y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } } 
                             },
                             plugins: { legend: { labels: { color: '#94a3b8' } } }
                         }
@@ -948,8 +1434,7 @@
                     const mesesLabels = [];
                     const dadosMeses = [];
                     for (let i = 0; i < 3; i++) {
-                        let m = mes - i;
-                        let a = ano;
+                        let m = mes - i, a = ano;
                         if (m < 0) { m += 12; a--; }
                         mesesLabels.unshift(`${mesesNomes[m].substring(0,3)}/${a}`);
                         dadosMeses.unshift(calcularMes(m, a));
@@ -960,33 +1445,14 @@
                         data: {
                             labels: mesesLabels,
                             datasets: [
-                                { 
-                                    label: '50%', 
-                                    data: dadosMeses.map(d => d.extra50 / 60), 
-                                    borderColor: '#ec4899', 
-                                    backgroundColor: '#ec4899', 
-                                    tension: 0.3, 
-                                    pointRadius: 6 
-                                },
-                                { 
-                                    label: '100%', 
-                                    data: dadosMeses.map(d => d.extra100 / 60), 
-                                    borderColor: '#8b5cf6', 
-                                    backgroundColor: '#8b5cf6', 
-                                    tension: 0.3, 
-                                    pointRadius: 6 
-                                }
+                                { label: '50%', data: dadosMeses.map(d => d.extra50 / 60), borderColor: '#ec4899', backgroundColor: '#ec4899', tension: 0.3, pointRadius: 6 },
+                                { label: '100%', data: dadosMeses.map(d => d.extra100 / 60), borderColor: '#8b5cf6', backgroundColor: '#8b5cf6', tension: 0.3, pointRadius: 6 }
                             ]
                         },
                         options: {
-                            responsive: true, 
-                            maintainAspectRatio: false,
+                            responsive: true, maintainAspectRatio: false,
                             scales: { 
-                                y: { 
-                                    beginAtZero: true, 
-                                    title: { display: true, text: 'Horas', color: '#94a3b8' },
-                                    ticks: { color: '#94a3b8' }
-                                },
+                                y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } },
                                 x: { ticks: { color: '#94a3b8' } }
                             },
                             plugins: { legend: { labels: { color: '#94a3b8' } } }
@@ -1003,10 +1469,7 @@
                         const dt = new Date(ano, mes, d);
                         const s = calcularValoresDia(`${ano}-${mes}-${d}`, dt.getDay(), mes, d, ano);
                         semanaAtual.push(s);
-                        if (dt.getDay() === 6 || d === diasMes) {
-                            semanas.push(semanaAtual);
-                            semanaAtual = [];
-                        }
+                        if (dt.getDay() === 6 || d === diasMes) { semanas.push(semanaAtual); semanaAtual = []; }
                     }
 
                     const labelsSemana = semanas.map((s, i) => `Sem ${i+1}`);
@@ -1023,22 +1486,16 @@
                             ]
                         },
                         options: {
-                            responsive: true, 
-                            maintainAspectRatio: false,
+                            responsive: true, maintainAspectRatio: false,
                             scales: { 
                                 x: { ticks: { color: '#94a3b8' } }, 
-                                y: { 
-                                    beginAtZero: true, 
-                                    title: { display: true, text: 'Horas', color: '#94a3b8' },
-                                    ticks: { color: '#94a3b8' }
-                                } 
+                                y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } } 
                             },
                             plugins: { legend: { labels: { color: '#94a3b8' } } }
                         }
                     });
                 }
 
-                // GRÁFICO DIÁRIO
                 if (diarioCtx) {
                     if (chartDiario) chartDiario.destroy();
                     const diasMes = diasNoMes(ano, mes);
@@ -1059,98 +1516,34 @@
                         data: {
                             labels: labelsDias,
                             datasets: [
-                                { 
-                                    label: '50%', 
-                                    data: data50, 
-                                    borderColor: '#ec4899', 
-                                    backgroundColor: 'rgba(236, 72, 153, 0.15)',
-                                    fill: true,
-                                    tension: 0.4, 
-                                    pointRadius: 4,
-                                    pointBackgroundColor: '#ec4899',
-                                    pointBorderColor: '#fff',
-                                    pointBorderWidth: 1,
-                                    borderWidth: 2.5
-                                },
-                                { 
-                                    label: '100%', 
-                                    data: data100, 
-                                    borderColor: '#8b5cf6', 
-                                    backgroundColor: 'rgba(139, 92, 246, 0.15)',
-                                    fill: true,
-                                    tension: 0.4, 
-                                    pointRadius: 4,
-                                    pointBackgroundColor: '#8b5cf6',
-                                    pointBorderColor: '#fff',
-                                    pointBorderWidth: 1,
-                                    borderWidth: 2.5
-                                }
+                                { label: '50%', data: data50, borderColor: '#ec4899', backgroundColor: 'rgba(236, 72, 153, 0.15)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#ec4899', pointBorderColor: '#fff', pointBorderWidth: 1, borderWidth: 2.5 },
+                                { label: '100%', data: data100, borderColor: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.15)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#8b5cf6', pointBorderColor: '#fff', pointBorderWidth: 1, borderWidth: 2.5 }
                             ]
                         },
                         options: {
-                            responsive: true, 
-                            maintainAspectRatio: false,
+                            responsive: true, maintainAspectRatio: false,
                             scales: { 
                                 x: { 
-                                    title: { 
-                                        display: true, 
-                                        text: 'Dias do Mês', 
-                                        color: '#94a3b8',
-                                        font: { weight: 'bold', size: 12 }
-                                    },
-                                    ticks: { 
-                                        color: '#94a3b8',
-                                        stepSize: 1,
-                                        autoSkip: false,
-                                        maxRotation: 90,
-                                        minRotation: 45,
-                                        font: { size: 9 }
-                                    },
+                                    title: { display: true, text: 'Dias do Mês', color: '#94a3b8', font: { weight: 'bold', size: 12 } },
+                                    ticks: { color: '#94a3b8', stepSize: 1, autoSkip: false, maxRotation: 90, minRotation: 45, font: { size: 9 } },
                                     grid: { color: 'rgba(255,255,255,0.05)' }
                                 }, 
                                 y: { 
                                     beginAtZero: true, 
-                                    title: { 
-                                        display: true, 
-                                        text: 'Horas Extras', 
-                                        color: '#94a3b8',
-                                        font: { weight: 'bold', size: 12 }
-                                    },
-                                    ticks: { 
-                                        color: '#94a3b8',
-                                        callback: function(value) {
-                                            return value.toFixed(1) + 'h';
-                                        }
-                                    },
+                                    title: { display: true, text: 'Horas Extras', color: '#94a3b8', font: { weight: 'bold', size: 12 } },
+                                    ticks: { color: '#94a3b8', callback: function(value) { return value.toFixed(1) + 'h'; } },
                                     grid: { color: 'rgba(255,255,255,0.05)' }
                                 } 
                             },
                             plugins: { 
-                                legend: { 
-                                    labels: { 
-                                        color: '#94a3b8',
-                                        font: { size: 12, weight: 'bold' },
-                                        boxWidth: 15,
-                                        padding: 15
-                                    } 
-                                },
+                                legend: { labels: { color: '#94a3b8', font: { size: 12, weight: 'bold' }, boxWidth: 15, padding: 15 } },
                                 tooltip: {
-                                    backgroundColor: 'rgba(11, 16, 38, 0.9)',
-                                    titleColor: '#fff',
-                                    bodyColor: '#fff',
-                                    borderColor: 'rgba(255,255,255,0.1)',
-                                    borderWidth: 1,
-                                    callbacks: {
-                                        label: function(context) {
-                                            return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + 'h';
-                                        }
-                                    }
+                                    backgroundColor: 'rgba(11, 16, 38, 0.9)', titleColor: '#fff', bodyColor: '#fff',
+                                    borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1,
+                                    callbacks: { label: function(context) { return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + 'h'; } }
                                 }
                             },
-                            interaction: {
-                                intersect: false,
-                                mode: 'index'
-                            }
+                            interaction: { intersect: false, mode: 'index' }
                         }
                     });
                 }
@@ -1172,34 +1565,6 @@
             }
         }
 
-        function validarEAtualizar(chave, campo, input) {
-            let v = input.value, f = v.replace(/\D/g, ''); 
-            if (f.length > 4) f = f.slice(0,4);
-            if (f.length >= 3) f = f.slice(0,2) + ':' + f.slice(2);
-            if (f !== input.value) input.value = f;
-            if (!registros[chave]) registros[chave] = {}; 
-            registros[chave][campo] = f;
-            
-            recalcularTotais();
-            
-            const dNum = parseInt(chave.split('-')[2]);
-            const st = calcularValoresDia(chave, new Date(ano, mes, dNum).getDay(), mes, dNum, ano);
-            const tr = input.closest('tr');
-            if (tr) {
-                tr.querySelector('.col-total').innerText = minToHora(st.trab);
-                tr.querySelector('.col-norm').innerText = minToHora(st.normal);
-                tr.querySelector('.col-50').innerText = minToHora(st.extra50);
-                tr.querySelector('.col-100').innerText = minToHora(st.extra100);
-            }
-            const tfoot = document.querySelector('tfoot');
-            if (tfoot) {
-                tfoot.querySelector('.tot-trab').innerText = minToHora(cacheTotais.trab);
-                tfoot.querySelector('.tot-norm').innerText = minToHora(cacheTotais.normal);
-                tfoot.querySelector('.tot-50').innerText = minToHora(cacheTotais.extra50);
-                tfoot.querySelector('.tot-100').innerText = minToHora(cacheTotais.extra100);
-            }
-        }
-
         function toggleFeriadoManual(chave) {
             if (!registros[chave]) registros[chave] = {};
             registros[chave].feriadoManual = !registros[chave].feriadoManual; 
@@ -1208,11 +1573,217 @@
             renderizar();
         }
 
+        function toggleFeriadoManualDoDia() {
+            const chave = `${ano}-${mes}-${diaSelecionado}`;
+            const eraManual = registros[chave] && registros[chave].feriadoManual === true;
+            
+            if (!registros[chave]) registros[chave] = {};
+            registros[chave].feriadoManual = !registros[chave].feriadoManual;
+            
+            salvar(true);
+            recalcularTotais();
+            renderizar();
+            
+            if (!eraManual) {
+                mostrarToast('✅ Dia marcado como 100%');
+            } else {
+                mostrarToast('↩️ Marcação 100% removida');
+            }
+        }
+
+        function mudarDia(delta) {
+            let d = diaSelecionado + delta;
+            let m = mes;
+            let a = ano;
+            
+            if (d < 1) {
+                m--;
+                if (m < 0) { m = 11; a--; }
+                d = diasNoMes(a, m);
+            } else if (d > diasNoMes(a, m)) {
+                m++;
+                if (m > 11) { m = 0; a++; }
+                d = 1;
+            }
+            
+            diaSelecionado = d;
+            mes = m;
+            ano = a;
+            recalcularTotais();
+            renderizar();
+        }
+
+        function irParaHoje() {
+            const hoje = new Date();
+            ano = hoje.getFullYear();
+            mes = hoje.getMonth();
+            diaSelecionado = hoje.getDate();
+            recalcularTotais();
+            renderizar();
+            mostrarToast('📅 Voltou para hoje');
+        }
+
+        function toggleCalendario(event) {
+            if (event) event.stopPropagation();
+            const pop = document.getElementById('calendar-popover');
+            if (!pop) return;
+            
+            calMesAberto = mes;
+            calAnoAberto = ano;
+            
+            const isOpen = pop.classList.contains('open');
+            if (isOpen) {
+                pop.classList.remove('open');
+            } else {
+                renderCalendario();
+                pop.classList.add('open');
+            }
+        }
+
+        function fecharCalendario() {
+            const pop = document.getElementById('calendar-popover');
+            if (pop) pop.classList.remove('open');
+        }
+
+        function calMudarMes(delta) {
+            calMesAberto += delta;
+            if (calMesAberto < 0) { calMesAberto = 11; calAnoAberto--; }
+            if (calMesAberto > 11) { calMesAberto = 0; calAnoAberto++; }
+            renderCalendario();
+        }
+
+        function renderCalendario() {
+            const pop = document.getElementById('calendar-popover');
+            if (!pop) return;
+            
+            const hoje = new Date();
+            const primeiroDia = new Date(calAnoAberto, calMesAberto, 1).getDay();
+            const totalDias = diasNoMes(calAnoAberto, calMesAberto);
+            const diasMesAnterior = diasNoMes(calAnoAberto, calMesAberto - 1);
+            
+            let gridHTML = '';
+            
+            for (let i = primeiroDia - 1; i >= 0; i--) {
+                const d = diasMesAnterior - i;
+                gridHTML += `<div class="calendar-day other-month">${d}</div>`;
+            }
+            
+            for (let d = 1; d <= totalDias; d++) {
+                const dt = new Date(calAnoAberto, calMesAberto, d);
+                const sem = dt.getDay();
+                const chave = `${calAnoAberto}-${calMesAberto}-${d}`;
+                const reg = registros[chave];
+                const fer = isFeriado(calMesAberto, d, calAnoAberto);
+                
+                let classes = 'calendar-day';
+                if (sem === 0) classes += ' weekend sunday';
+                else if (sem === 6) classes += ' weekend';
+                if (calAnoAberto === hoje.getFullYear() && calMesAberto === hoje.getMonth() && d === hoje.getDate()) classes += ' today';
+                if (calAnoAberto === ano && calMesAberto === mes && d === diaSelecionado) classes += ' selected';
+                if (fer) classes += ' feriado';
+                if (reg && (reg.ent1 || reg.sai1 || reg.ent2 || reg.sai2) && !fer) classes += ' has-record';
+                
+                gridHTML += `<div class="${classes}" onclick="selecionarDiaCalendario(${calAnoAberto}, ${calMesAberto}, ${d})">${d}</div>`;
+            }
+            
+            const totalCells = primeiroDia + totalDias;
+            const resto = totalCells % 7;
+            if (resto !== 0) {
+                for (let i = 1; i <= (7 - resto); i++) {
+                    gridHTML += `<div class="calendar-day other-month">${i}</div>`;
+                }
+            }
+            
+            pop.innerHTML = `
+                <div class="calendar-header">
+                    <button class="cal-nav" onclick="calMudarMes(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                    <span class="cal-month">${mesesNomesCurto[calMesAberto]} ${calAnoAberto}</span>
+                    <button class="cal-nav" onclick="calMudarMes(1)"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+                <div class="calendar-weekdays">
+                    <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
+                </div>
+                <div class="calendar-grid">${gridHTML}</div>
+            `;
+        }
+
+        function selecionarDiaCalendario(a, m, d) {
+            ano = a;
+            mes = m;
+            diaSelecionado = d;
+            fecharCalendario();
+            recalcularTotais();
+            renderizar();
+        }
+
+        document.addEventListener('click', function(e) {
+            const pop = document.getElementById('calendar-popover');
+            const center = document.querySelector('.day-picker .day-center');
+            if (!pop || !pop.classList.contains('open')) return;
+            if (pop.contains(e.target)) return;
+            if (center && center.contains(e.target)) return;
+            fecharCalendario();
+        });
+
+        function salvarManualPrimeiraTela() {
+            const chaveSel = `${ano}-${mes}-${diaSelecionado}`;
+            
+            const e1 = document.getElementById('manual-ent1').value.trim();
+            const s1 = document.getElementById('manual-sai1').value.trim();
+            const e2 = document.getElementById('manual-ent2').value.trim();
+            const s2 = document.getElementById('manual-sai2').value.trim();
+            
+            const validarHora = (h) => {
+                if (!h) return true;
+                const regex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+                return regex.test(h);
+            };
+            
+            if (!validarHora(e1) || !validarHora(s1) || !validarHora(e2) || !validarHora(s2)) {
+                mostrarToast('⚠️ Formato inválido! Use HH:MM');
+                return;
+            }
+            
+            if (!registros[chaveSel]) registros[chaveSel] = {};
+            
+            if (e1) registros[chaveSel].ent1 = e1; else delete registros[chaveSel].ent1;
+            if (s1) registros[chaveSel].sai1 = s1; else delete registros[chaveSel].sai1;
+            if (e2) registros[chaveSel].ent2 = e2; else delete registros[chaveSel].ent2;
+            if (s2) registros[chaveSel].sai2 = s2; else delete registros[chaveSel].sai2;
+            
+            salvar(true);
+            recalcularTotais();
+            renderizar();
+            mostrarToast(`✅ Horários de ${diaSelecionado}/${mes+1} salvos!`);
+        }
+
+        function limparManualPrimeiraTela() {
+            document.getElementById('manual-ent1').value = '';
+            document.getElementById('manual-sai1').value = '';
+            document.getElementById('manual-ent2').value = '';
+            document.getElementById('manual-sai2').value = '';
+        }
+
+        function mascaraHora(input) {
+            let v = input.value.replace(/\D/g, '');
+            if (v.length > 4) v = v.slice(0, 4);
+            if (v.length >= 3) v = v.slice(0, 2) + ':' + v.slice(2);
+            input.value = v;
+        }
+
         function configJornada() { const v = prompt("Nova Jornada Diária em horas (ex: 8):", (jornadaDiaria/60)); if (v !== null && v !== "") { jornadaDiaria = Math.round(parseFloat(v.replace(',', '.')) * 60); recalcularTotais(); renderizar(); salvar(); } }
         function configHora() { const v = prompt("Novo Valor da Hora (R$):", valorHoraNormal.toFixed(2)); if (v !== null && v !== "") { valorHoraNormal = parseFloat(v.replace(',', '.')); recalcularTotais(); renderizar(); salvar(); } }
-        function mudarMes(delta) { mes += delta; if (mes<0){mes=11;ano--;} if (mes>11){mes=0;ano++;} recalcularTotais(); renderizar(); if (abaAtiva === 'dashboard' || abaAtiva === 'relatorio') setTimeout(initCharts, 50); }
+        function mudarMes(delta) { 
+            mes += delta; 
+            if (mes<0){mes=11;ano--;} 
+            if (mes>11){mes=0;ano++;} 
+            const maxDia = diasNoMes(ano, mes);
+            if (diaSelecionado > maxDia) diaSelecionado = maxDia;
+            recalcularTotais(); renderizar(); 
+            if (abaAtiva === 'dashboard' || abaAtiva === 'relatorio') setTimeout(initCharts, 50); 
+        }
         function mostrarToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3000); }
-        function mudarAba(nova) { abaAtiva = nova; renderizar(); if (nova === 'dashboard' || nova === 'relatorio') setTimeout(initCharts, 100); }
+        function mudarAba(nova) { abaAtiva = nova; fecharCalendario(); renderizar(); if (nova === 'dashboard' || nova === 'relatorio') setTimeout(initCharts, 100); }
 
         function requestBiometrics() {
             const modal = document.getElementById('biometric-modal');
@@ -1270,6 +1841,7 @@
             
             ano = a;
             mes = m;
+            diaSelecionado = d;
             
             salvar(true); 
             recalcularTotais();
@@ -1367,15 +1939,17 @@
                     const isFeriadoManual = reg.feriadoManual ? true : false;
                     const btn100 = `<span onclick="toggleFeriadoManual('${k}')" style="cursor:pointer; display:inline-block; margin-left:6px; padding: 2px 5px; border-radius:6px; font-size:0.6rem; font-weight:800; background:${isFeriadoManual ? '#C77DFF' : 'rgba(255,255,255,0.05)'}; color:${isFeriadoManual ? '#fff' : '#64748b'}; border: 1px solid ${isFeriadoManual ? '#C77DFF' : '#475569'}; transition: all 0.2s;" title="Ativar/Desativar 100% Manual">100%</span>`;
 
+                    const cellHora = (v) => v ? `<span class="hora-cell">${v}</span>` : `<span class="hora-cell vazia">--:--</span>`;
+
                     rows += `<tr class="${rowClass}">
                         <td style="font-weight:800">${d.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')}</td>
                         <td style="color:${sem===0?'#7B2EFF':(sem===6?'#39C6FF':'#94a3b8')}">
                             ${diasNomes[sem]}${fer ? ' (' + fer + ')' : ''} ${sem !== 0 ? btn100 : ''}
                         </td>
-                        <td><input type="text" inputmode="numeric" value="${reg.ent1||''}" oninput="validarEAtualizar('${k}','ent1',this)"></td>
-                        <td><input type="text" inputmode="numeric" value="${reg.sai1||''}" oninput="validarEAtualizar('${k}','sai1',this)"></td>
-                        <td><input type="text" inputmode="numeric" value="${reg.ent2||''}" oninput="validarEAtualizar('${k}','ent2',this)"></td>
-                        <td><input type="text" inputmode="numeric" value="${reg.sai2||''}" oninput="validarEAtualizar('${k}','sai2',this)"></td>
+                        <td>${cellHora(reg.ent1)}</td>
+                        <td>${cellHora(reg.sai1)}</td>
+                        <td>${cellHora(reg.ent2)}</td>
+                        <td>${cellHora(reg.sai2)}</td>
                         <td class="col-total" style="font-weight:900">${minToHora(st.trab)}</td>
                         <td class="col-norm" style="color:#39C6FF">${minToHora(st.normal)}</td>
                         <td class="col-50" style="color:#C77DFF">${minToHora(st.extra50)}</td>
@@ -1388,7 +1962,10 @@
 
                 corpo = `
                 <div class="aba-card">
-                    <div class="aba-title"><i class="fa-solid fa-pen-to-square"></i> Lançamentos</div>
+                    <div class="aba-title">
+                        <i class="fa-solid fa-list-check"></i> Lançamentos
+                        <span class="readonly-badge"><i class="fa-solid fa-eye"></i> Somente Leitura</span>
+                    </div>
                     <div class="table-container"><div class="scroll-area"><table>
                         <thead><tr><th>Data</th><th>Dia</th><th>E1</th><th>S1</th><th>E2</th><th>S2</th><th>Total</th><th>Norm</th><th>50%</th><th>100%</th></tr></thead>
                         <tbody>${rows}</tbody>
@@ -1407,71 +1984,151 @@
                     </div>
                 </div>`;
             } else if (abaAtiva === 'bater_ponto') {
-                const hoje = new Date();
-                const chaveHoje = `${hoje.getFullYear()}-${hoje.getMonth()}-${hoje.getDate()}`;
-                const regHoje = registros[chaveHoje] || {};
+                const chaveSel = `${ano}-${mes}-${diaSelecionado}`;
+                const regDia = registros[chaveSel] || {};
+                const dtSel = new Date(ano, mes, diaSelecionado);
+                const semSel = dtSel.getDay();
                 
-                // Total de horas trabalhadas do dia
-                const stHoje = calcularValoresDia(chaveHoje, hoje.getDay(), hoje.getMonth(), hoje.getDate(), hoje.getFullYear());
-                const totalTrabalhado = minToHora(stHoje.trab);
+                const stDia = calcularValoresDia(chaveSel, semSel, mes, diaSelecionado, ano);
+                const totalTrabalhado = minToHora(stDia.trab);
 
-                // Detectar se hoje é 100% (domingo, feriado ou marcado manualmente)
-                const feriadoHoje = isFeriado(hoje.getMonth(), hoje.getDate(), hoje.getFullYear());
-                const isDomingo = hoje.getDay() === 0;
-                const isManual100 = regHoje.feriadoManual === true;
-                const is100 = isDomingo || feriadoHoje || isManual100;
+                const feriadoDia = isFeriado(mes, diaSelecionado, ano);
+                const isDomingo = semSel === 0;
+                const isManual100 = regDia.feriadoManual === true;
+                const is100 = isDomingo || feriadoDia || isManual100;
                 
-                const totalBatidas = (regHoje.ent1?1:0) + (regHoje.sai1?1:0) + (regHoje.ent2?1:0) + (regHoje.sai2?1:0);
-                const isBloqueado = totalBatidas >= 4;
+                const hoje = new Date();
+                const isHoje = (ano === hoje.getFullYear() && mes === hoje.getMonth() && diaSelecionado === hoje.getDate());
+                
+                const totalBatidas = (regDia.ent1?1:0) + (regDia.sai1?1:0) + (regDia.ent2?1:0) + (regDia.sai2?1:0);
+                const isBloqueado = isHoje && totalBatidas >= 4;
                 
                 let textStatus = "Pressione para bater o ponto";
                 if (totalBatidas === 1) textStatus = "Pressione para registrar Início da Pausa";
                 if (totalBatidas === 2) textStatus = "Pressione para registrar Retorno da Pausa";
                 if (totalBatidas === 3) textStatus = "Pressione para registrar Saída Final";
                 if (isBloqueado) textStatus = "Expediente de hoje concluído!";
+                if (!isHoje) textStatus = "⚠️ Você está editando outro dia (use lançamento manual abaixo)";
+
+                const nomeDiaSel = diasNomesLongo[semSel];
+                const diaSemanaCurto = `${diasNomes[semSel]}, ${diaSelecionado.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')}`;
+
+                const podeMarcar100 = !isDomingo && !feriadoDia;
 
                 corpo = `
                 <div class="aba-card">
-                    <div class="aba-title"><i class="fa-solid fa-fingerprint"></i> Bater Ponto</div>
+                    <div class="aba-title"><i class="fa-solid fa-fingerprint"></i> Bater Ponto / Lançamento</div>
                     <div class="bio-container">
+
+                        <!-- DAY PICKER COMPACTO -->
+                        <div class="day-picker">
+                            <button class="day-nav-btn" onclick="mudarDia(-1)" title="Dia anterior">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </button>
+                            
+                            <div class="day-center" onclick="toggleCalendario(event)" title="Clique para abrir o calendário">
+                                <div class="day-number">${diaSelecionado.toString().padStart(2,'0')}<small>/${(mes+1).toString().padStart(2,'0')}</small></div>
+                                <div class="day-meta">
+                                    <div class="day-weekday"><i class="fa-regular fa-calendar day-info-icon"></i>${nomeDiaSel} • ${ano}</div>
+                                    ${(isHoje || feriadoDia) ? `
+                                    <div class="day-badges">
+                                        ${isHoje ? '<span class="badge-hoje">HOJE</span>' : ''}
+                                        ${feriadoDia ? `<span class="badge-feriado">${feriadoDia}</span>` : ''}
+                                    </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+
+                            ${!isHoje 
+                                ? `<button class="btn-hoje-quick" onclick="irParaHoje()" title="Ir para hoje"><i class="fa-solid fa-calendar-day"></i> HOJE</button>`
+                                : `<button class="day-nav-btn" onclick="mudarDia(1)" title="Próximo dia"><i class="fa-solid fa-chevron-right"></i></button>`
+                            }
+                            
+                            <div id="calendar-popover" class="calendar-popover"></div>
+                        </div>
+
+                        <!-- BOTÃO 100% (PALETA NEON) -->
+                        ${podeMarcar100 ? `
+                        <button class="btn-100-neon ${isManual100 ? 'active' : ''}" onclick="toggleFeriadoManualDoDia()" title="${isManual100 ? 'Remover marcação 100%' : 'Marcar dia como 100%'}">
+                            <i class="fa-solid fa-bolt"></i>
+                            <span>${isManual100 ? 'Dia Marcado como 100%' : 'Marcar como 100%'}</span>
+                            <span class="badge-off">${isManual100 ? 'ATIVO' : '100%'}</span>
+                        </button>
+                        ` : ''}
+
+                        ${isHoje ? `
                         <div style="text-align: center; margin-bottom: 20px;">
                             <p style="color: #94a3b8; font-size: 0.9rem;" id="bio-date">Carregando data...</p>
                             <div style="font-size: 3.5rem; font-weight: 800; margin: 15px 0; font-variant-numeric: tabular-nums; letter-spacing: 2px;" id="bio-clock">--:--:--</div>
                         </div>
+                        ` : `
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <p style="color: #f59e0b; font-size: 0.85rem; font-weight: 700;">
+                                <i class="fa-solid fa-pen-to-square"></i> Editando ${diaSemanaCurto}
+                            </p>
+                        </div>
+                        `}
                         
                         <div style="text-align: center;">
-                            <button id="fingerprint-btn" onclick="requestBiometrics()" class="fingerprint-btn ${isBloqueado ? '' : 'pulse'}" ${isBloqueado ? 'disabled' : ''}>
+                            <button id="fingerprint-btn" onclick="requestBiometrics()" class="fingerprint-btn ${(!isHoje || isBloqueado) ? '' : 'pulse'}" ${(!isHoje || isBloqueado) ? 'disabled' : ''}>
                                 <i class="fa-solid fa-fingerprint"></i>
                             </button>
-                            <p id="bio-status" style="margin-top: 15px; color: ${isBloqueado ? '#10b981' : 'var(--primary)'}; font-weight: bold; font-size: 1.1rem;">
-                                ${isBloqueado ? '<i class="fa-solid fa-check"></i> ' : ''}${textStatus}
+                            <p id="bio-status" style="margin-top: 15px; color: ${(!isHoje || isBloqueado) ? '#94a3b8' : 'var(--primary)'}; font-weight: bold; font-size: 0.95rem;">
+                                ${textStatus}
                             </p>
                         </div>
 
-                        <div style="margin-top: 40px;">
+                        <div style="margin-top: 30px;">
                             <h3 style="margin: 0 0 15px 0; font-size: 0.9rem; text-transform: uppercase; color: #94a3b8; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
-                                Registros de Hoje <span style="float:right; color: #fff;">${totalBatidas}/4</span>
+                                Registros do Dia <span style="float:right; color: #fff;">${totalBatidas}/4</span>
                             </h3>
                             
-                            <div class="punch-row ${regHoje.ent1 ? 'filled' : 'empty'}">
+                            <div class="punch-row ${regDia.ent1 ? 'filled' : 'empty'}">
                                 <span><i class="fa-solid fa-arrow-right-to-bracket" style="color: #10b981; margin-right: 10px;"></i> Entrada 1</span>
-                                <strong style="font-size: 1.1rem;">${regHoje.ent1 || '--:--'}</strong>
+                                <strong style="font-size: 1.1rem;">${regDia.ent1 || '--:--'}</strong>
                             </div>
-                            <div class="punch-row ${regHoje.sai1 ? 'filled' : 'empty'}">
+                            <div class="punch-row ${regDia.sai1 ? 'filled' : 'empty'}">
                                 <span><i class="fa-solid fa-mug-hot" style="color: #f59e0b; margin-right: 10px;"></i> Saída (Pausa)</span>
-                                <strong style="font-size: 1.1rem;">${regHoje.sai1 || '--:--'}</strong>
+                                <strong style="font-size: 1.1rem;">${regDia.sai1 || '--:--'}</strong>
                             </div>
-                            <div class="punch-row ${regHoje.ent2 ? 'filled' : 'empty'}">
+                            <div class="punch-row ${regDia.ent2 ? 'filled' : 'empty'}">
                                 <span><i class="fa-solid fa-briefcase" style="color: #3b82f6; margin-right: 10px;"></i> Retorno (Pausa)</span>
-                                <strong style="font-size: 1.1rem;">${regHoje.ent2 || '--:--'}</strong>
+                                <strong style="font-size: 1.1rem;">${regDia.ent2 || '--:--'}</strong>
                             </div>
-                            <div class="punch-row ${regHoje.sai2 ? 'filled' : 'empty'}">
+                            <div class="punch-row ${regDia.sai2 ? 'filled' : 'empty'}">
                                 <span><i class="fa-solid fa-arrow-right-from-bracket" style="color: #ef4444; margin-right: 10px;"></i> Saída Final</span>
-                                <strong style="font-size: 1.1rem;">${regHoje.sai2 || '--:--'}</strong>
+                                <strong style="font-size: 1.1rem;">${regDia.sai2 || '--:--'}</strong>
                             </div>
                         </div>
 
-                        <!-- SALDO DO DIA -->
+                        <div class="manual-entry">
+                            <div class="manual-title">
+                                <i class="fa-solid fa-keyboard"></i> Lançamento Manual
+                            </div>
+                            <div class="manual-fields">
+                                <div class="manual-field">
+                                    <label for="manual-ent1">Entrada 1</label>
+                                    <input type="text" id="manual-ent1" inputmode="numeric" placeholder="HH:MM" maxlength="5" value="${regDia.ent1 || ''}" oninput="mascaraHora(this)">
+                                </div>
+                                <div class="manual-field">
+                                    <label for="manual-sai1">Saída Pausa</label>
+                                    <input type="text" id="manual-sai1" inputmode="numeric" placeholder="HH:MM" maxlength="5" value="${regDia.sai1 || ''}" oninput="mascaraHora(this)">
+                                </div>
+                                <div class="manual-field">
+                                    <label for="manual-ent2">Retorno Pausa</label>
+                                    <input type="text" id="manual-ent2" inputmode="numeric" placeholder="HH:MM" maxlength="5" value="${regDia.ent2 || ''}" oninput="mascaraHora(this)">
+                                </div>
+                                <div class="manual-field">
+                                    <label for="manual-sai2">Saída Final</label>
+                                    <input type="text" id="manual-sai2" inputmode="numeric" placeholder="HH:MM" maxlength="5" value="${regDia.sai2 || ''}" oninput="mascaraHora(this)">
+                                </div>
+                            </div>
+                            <div class="manual-actions">
+                                <button class="btn-manual-clear" onclick="limparManualPrimeiraTela()"><i class="fa-regular fa-trash-can"></i> Limpar</button>
+                                <button class="btn-manual-save" onclick="salvarManualPrimeiraTela()"><i class="fa-regular fa-floppy-disk"></i> Salvar Horários</button>
+                            </div>
+                        </div>
+
                         <div class="saldo-dia ${is100 ? 'is-100' : ''}">
                             <span class="label">Saldo do Dia</span>
                             <span class="valor">${totalTrabalhado}</span>
@@ -1500,7 +2157,7 @@
                               <path d="M650 530 Q760 570 880 515" stroke="url(#neonBlue)" stroke-width="10" fill="none" stroke-linecap="round" filter="url(#glow)"/>
                             </svg>
                         </div>
-                        <h1 class="brand-title">Check Ponto <span class="version-tag">v3.4</span></h1>
+                        <h1 class="brand-title">Check Ponto <span class="version-tag">v3.8</span></h1>
                     </div>
 
                     <div class="header-row-2">
@@ -1523,18 +2180,10 @@
                 </header>
 
                 <nav class="tabs-nav">
-                    <button class="tab-btn ${abaAtiva==='bater_ponto'?'active':''}" onclick="mudarAba('bater_ponto')">
-                        PONTO
-                    </button>
-                    <button class="tab-btn ${abaAtiva==='lancamentos'?'active':''}" onclick="mudarAba('lancamentos')">
-                        LANÇAMENTOS
-                    </button>
-                    <button class="tab-btn ${abaAtiva==='dashboard'?'active':''}" onclick="mudarAba('dashboard')">
-                        DASHBOARD
-                    </button>
-                    <button class="tab-btn ${abaAtiva==='relatorio'?'active':''}" onclick="mudarAba('relatorio')">
-                        RELATÓRIO
-                    </button>
+                    <button class="tab-btn ${abaAtiva==='bater_ponto'?'active':''}" onclick="mudarAba('bater_ponto')">PONTO</button>
+                    <button class="tab-btn ${abaAtiva==='lancamentos'?'active':''}" onclick="mudarAba('lancamentos')">LANÇAMENTOS</button>
+                    <button class="tab-btn ${abaAtiva==='dashboard'?'active':''}" onclick="mudarAba('dashboard')">DASHBOARD</button>
+                    <button class="tab-btn ${abaAtiva==='relatorio'?'active':''}" onclick="mudarAba('relatorio')">RELATÓRIO</button>
                 </nav>
 
                 ${corpo}
@@ -1549,7 +2198,7 @@
             </div>`;
         }
 
-        window.validarEAtualizar = validarEAtualizar; 
+        window.validarEAtualizar = () => {}; 
         window.mudarMes = mudarMes; 
         window.salvar = salvar; 
         window.configJornada = configJornada; 
@@ -1558,7 +2207,16 @@
         window.exportarPDF = exportarPDF;
         window.requestBiometrics = requestBiometrics;
         window.salvarObservacao = salvarObservacao;
-        window.toggleFeriadoManual = toggleFeriadoManual; 
+        window.toggleFeriadoManual = toggleFeriadoManual;
+        window.toggleFeriadoManualDoDia = toggleFeriadoManualDoDia;
+        window.salvarManualPrimeiraTela = salvarManualPrimeiraTela;
+        window.limparManualPrimeiraTela = limparManualPrimeiraTela;
+        window.mascaraHora = mascaraHora;
+        window.mudarDia = mudarDia;
+        window.irParaHoje = irParaHoje;
+        window.toggleCalendario = toggleCalendario;
+        window.calMudarMes = calMudarMes;
+        window.selecionarDiaCalendario = selecionarDiaCalendario;
 
         recalcularTotais(); renderizar(); 
     })();
