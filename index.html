@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Check Ponto v4.4 - Clean Edition</title>
+    <title>Check Ponto v4.6 - Ajuste Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
@@ -45,7 +45,6 @@
 
         .container { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; }
 
-        /* HEADER */
         .header-card {
             background: rgba(11, 16, 38, 0.65) !important;
             backdrop-filter: blur(18px);
@@ -121,7 +120,6 @@
         .btn-pdf { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
         .btn-nav { background: transparent; color: var(--primary); font-size: 1.2rem; padding: 5px 15px; }
 
-        /* CARDS DAS ABAS */
         .aba-card {
             background: rgba(20, 25, 55, 0.7);
             backdrop-filter: blur(14px);
@@ -151,7 +149,6 @@
             font-size: 1rem;
         }
 
-        /* STATS */
         .stat-box { border-bottom: 4px solid rgba(255,255,255,0.1); padding: 12px 15px; border-radius: 12px; background: rgba(255,255,255,0.02); }
         .stat-box.blue { border-bottom-color: #39C6FF; }
         .stat-box.purple { border-bottom-color: #7B2EFF; }
@@ -162,17 +159,10 @@
         .stat-label { color: #94a3b8; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; }
         .stat-money { font-size: 0.85rem; color: #10b981; font-weight: 800; margin-top: 4px; }
 
-        /* DASHBOARD LAYOUT */
         .dashboard-layout { display: grid; grid-template-columns: 1fr; gap: 20px; }
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
 
-        /* RELATÓRIO */
-        .relatorio-wrapper {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-            margin-top: 10px;
-        }
+        .relatorio-wrapper { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 10px; }
 
         .relatorio-section {
             background: rgba(255,255,255,0.02);
@@ -193,11 +183,7 @@
             border-bottom: 1px solid rgba(236, 72, 153, 0.15);
         }
 
-        .relatorio-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-        }
+        .relatorio-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 
         .relatorio-card {
             background: rgba(20, 25, 55, 0.5);
@@ -213,32 +199,15 @@
             background: rgba(20, 25, 55, 0.7);
         }
 
-        .relatorio-card .q-label {
-            font-size: 0.7rem;
-            font-weight: 800;
-            color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-        .relatorio-card .q-total {
-            font-size: 1.6rem;
-            font-weight: 900;
-            margin: 4px 0;
-            color: #ec4899;
-        }
-        .relatorio-card .q-money {
-            font-size: 0.8rem;
-            color: #10b981;
-            font-weight: 700;
-            margin-top: 3px;
-        }
+        .relatorio-card .q-label { font-size: 0.7rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.3px; }
+        .relatorio-card .q-total { font-size: 1.6rem; font-weight: 900; margin: 4px 0; color: #ec4899; }
+        .relatorio-card .q-money { font-size: 0.8rem; color: #10b981; font-weight: 700; margin-top: 3px; }
 
         .relatorio-card.r1 { border-bottom: 3px solid #39C6FF; }
         .relatorio-card.r2 { border-bottom: 3px solid #7B2EFF; }
         .relatorio-card.r3 { border-bottom: 3px solid #C77DFF; }
         .relatorio-card.r4 { border-bottom: 3px solid #f59e0b; }
 
-        /* TABELAS */
         .table-container { padding: 0; overflow: hidden; }
         .scroll-area { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         table { width: 100%; border-collapse: collapse; min-width: 800px; }
@@ -248,17 +217,9 @@
         .weekend-sat { background: rgba(57, 198, 255, 0.04); }
         .weekend-sun { background: rgba(123, 46, 255, 0.05); }
 
-        .hora-cell {
-            font-weight: 700;
-            font-variant-numeric: tabular-nums;
-            color: #fff;
-        }
-        .hora-cell.vazia {
-            color: #475569;
-            font-weight: 500;
-        }
+        .hora-cell { font-weight: 700; font-variant-numeric: tabular-nums; color: #fff; }
+        .hora-cell.vazia { color: #475569; font-weight: 500; }
 
-        /* NAVEGAÇÃO DE ABAS */
         .tabs-nav {
             display: flex;
             background: rgba(255,255,255,.03);
@@ -301,17 +262,8 @@
             color: #94a3b8;
         }
 
-        .chart-grid-3 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-top: 20px;
-        }
-
-        .chart-grid-3 .chart-card-full {
-            grid-column: 1 / -1;
-        }
-
+        .chart-grid-3 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+        .chart-grid-3 .chart-card-full { grid-column: 1 / -1; }
         .chart-card {
             background: rgba(20, 25, 55, 0.7);
             backdrop-filter: blur(14px);
@@ -321,7 +273,6 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        /* BIOMETRIA */
         .bio-container { max-width: 500px; margin: 0 auto; }
         .fingerprint-btn {
             background: rgba(57, 198, 255, 0.05);
@@ -375,15 +326,7 @@
         .punch-row span { font-size: 0.85rem; }
         .punch-row strong { font-size: 1rem; }
 
-        /* DAY PICKER */
-        .day-picker {
-            position: relative;
-            display: flex;
-            align-items: stretch;
-            gap: 8px;
-            margin-bottom: 18px;
-        }
-
+        .day-picker { position: relative; display: flex; align-items: stretch; gap: 8px; margin-bottom: 18px; }
         .day-picker .day-nav-btn {
             background: linear-gradient(135deg, rgba(57, 198, 255, 0.08), rgba(123, 46, 255, 0.08));
             color: var(--primary);
@@ -398,13 +341,11 @@
             flex-shrink: 0;
             transition: all 0.25s ease;
         }
-
         .day-picker .day-nav-btn:hover {
             background: linear-gradient(135deg, rgba(57, 198, 255, 0.18), rgba(123, 46, 255, 0.18));
             border-color: rgba(57, 198, 255, 0.45);
             box-shadow: 0 0 20px rgba(57, 198, 255, 0.25);
         }
-
         .day-picker .day-nav-btn:active { transform: scale(0.95); }
 
         .day-picker .day-center {
@@ -454,11 +395,7 @@
             white-space: nowrap;
         }
 
-        .day-picker .day-center .day-number small {
-            font-size: 0.9rem;
-            font-weight: 800;
-            margin-left: 2px;
-        }
+        .day-picker .day-center .day-number small { font-size: 0.9rem; font-weight: 800; margin-left: 2px; }
 
         .day-picker .day-center .day-meta {
             display: flex;
@@ -479,17 +416,8 @@
             text-overflow: ellipsis;
         }
 
-        .day-picker .day-center .day-badges {
-            display: flex;
-            gap: 4px;
-            flex-wrap: wrap;
-        }
-
-        .day-picker .day-center .day-info-icon {
-            color: var(--primary);
-            font-size: 0.7rem;
-            margin-right: 4px;
-        }
+        .day-picker .day-center .day-badges { display: flex; gap: 4px; flex-wrap: wrap; }
+        .day-picker .day-center .day-info-icon { color: var(--primary); font-size: 0.7rem; margin-right: 4px; }
 
         .badge-hoje {
             display: inline-block;
@@ -885,11 +813,7 @@
             margin-bottom: 15px;
         }
 
-        .manual-field {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
+        .manual-field { display: flex; flex-direction: column; gap: 5px; }
 
         .manual-field label {
             font-size: 0.65rem;
@@ -918,11 +842,7 @@
             box-shadow: 0 0 10px rgba(57, 198, 255, 0.2);
         }
 
-        .manual-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
+        .manual-actions { display: flex; gap: 10px; justify-content: flex-end; }
 
         .btn-manual-save {
             background: linear-gradient(135deg, #39C6FF, #7B2EFF);
@@ -979,7 +899,6 @@
             font-size: 0.85rem;
         }
 
-        /* DEMONSTRATIVO MENSAL */
         .demonstrativo-table { border-collapse: separate; border-spacing: 0; }
         .demonstrativo-table th {
             background: rgba(57, 198, 255, 0.08);
@@ -999,9 +918,7 @@
         .demonstrativo-table .venc-header { background: rgba(16,185,129,0.15); color: #10b981; }
         .demonstrativo-table .desc-header { background: rgba(239,68,68,0.15); color: #ef4444; }
 
-        .demonstrativo-table tbody tr:hover {
-            background: rgba(255,255,255,0.02);
-        }
+        .demonstrativo-table tbody tr:hover { background: rgba(255,255,255,0.02); }
 
         .liquido-box {
             margin-top: 20px;
@@ -1030,7 +947,6 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* CONFIGURAÇÕES */
         .config-section {
             margin-bottom: 24px;
             padding: 18px 20px;
@@ -1055,21 +971,11 @@
             gap: 8px;
         }
 
-        .config-section-title i {
-            font-size: 0.9rem;
-        }
+        .config-section-title i { font-size: 0.9rem; }
 
-        .config-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 14px;
-        }
+        .config-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
 
-        .config-field {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
+        .config-field { display: flex; flex-direction: column; gap: 6px; }
 
         .config-field label {
             font-size: 0.65rem;
@@ -1109,17 +1015,9 @@
             line-height: 1.4;
         }
 
-        .config-hint i {
-            color: var(--primary);
-            margin-top: 2px;
-            flex-shrink: 0;
-        }
+        .config-hint i { color: var(--primary); margin-top: 2px; flex-shrink: 0; }
 
-        .config-save-area {
-            display: flex;
-            justify-content: center;
-            margin-top: 24px;
-        }
+        .config-save-area { display: flex; justify-content: center; margin-top: 24px; }
 
         .btn-save-config {
             background: linear-gradient(135deg, #39C6FF, #7B2EFF);
@@ -1144,7 +1042,58 @@
             transform: translateY(-2px);
         }
 
-        /* LANÇAMENTOS EXTRAS */
+        .backup-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .btn-backup {
+            background: linear-gradient(135deg, rgba(57,198,255,0.15), rgba(123,46,255,0.15));
+            color: #fff;
+            border: 1px solid rgba(57,198,255,0.35);
+            border-radius: 12px;
+            padding: 14px 20px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+        .btn-backup:hover {
+            background: linear-gradient(135deg, rgba(57,198,255,0.3), rgba(123,46,255,0.3));
+            box-shadow: 0 0 20px rgba(57,198,255,0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-backup.import {
+            background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(57,198,255,0.15));
+            border-color: rgba(16,185,129,0.35);
+        }
+        .btn-backup.import:hover {
+            background: linear-gradient(135deg, rgba(16,185,129,0.3), rgba(57,198,255,0.3));
+            box-shadow: 0 0 20px rgba(16,185,129,0.3);
+        }
+
+        .backup-hint {
+            margin-top: 14px;
+            font-size: 0.7rem;
+            color: #64748b;
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            line-height: 1.4;
+        }
+
+        .backup-hint i { color: var(--primary); margin-top: 2px; flex-shrink: 0; }
+
         .extras-section {
             margin-top: 25px;
             padding: 18px 20px;
@@ -1230,11 +1179,7 @@
             margin-bottom: 14px;
         }
 
-        .extra-form-field {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
+        .extra-form-field { display: flex; flex-direction: column; gap: 5px; }
 
         .extra-form-field label {
             font-size: 0.6rem;
@@ -1257,10 +1202,7 @@
             font-family: inherit;
         }
 
-        .extra-form-field input::placeholder {
-            color: #64748b;
-            font-weight: 500;
-        }
+        .extra-form-field input::placeholder { color: #64748b; font-weight: 500; }
 
         .extra-form-field input:focus,
         .extra-form-field select:focus {
@@ -1269,10 +1211,7 @@
             box-shadow: 0 0 12px rgba(57,198,255,0.25);
         }
 
-        .extra-form-field select option {
-            background: #0B1026;
-            color: #fff;
-        }
+        .extra-form-field select option { background: #0B1026; color: #fff; }
 
         .extra-form-footer {
             display: flex;
@@ -1302,10 +1241,7 @@
             flex-shrink: 0;
         }
 
-        .extra-form-actions {
-            display: flex;
-            gap: 8px;
-        }
+        .extra-form-actions { display: flex; gap: 8px; }
 
         .btn-cancel-extra {
             background: rgba(255,255,255,0.06);
@@ -1339,11 +1275,7 @@
         }
         .btn-confirm-extra:hover { box-shadow: 0 0 25px rgba(57,198,255,0.5); }
 
-        .extras-lista {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+        .extras-lista { display: flex; flex-direction: column; gap: 10px; }
 
         .extra-card {
             padding: 12px 14px;
@@ -1361,53 +1293,19 @@
         .extra-card.is-venc { border-left: 3px solid #10b981; }
         .extra-card.is-desc { border-left: 3px solid #ef4444; }
 
-        .extra-view {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            align-items: center;
-            gap: 12px;
-        }
+        .extra-view { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; }
 
-        .extra-view-info {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            min-width: 0;
-        }
+        .extra-view-info { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 
-        .extra-view-top {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
+        .extra-view-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
-        .extra-view-desc {
-            font-weight: 800;
-            font-size: 0.9rem;
-            color: #fff;
-            word-break: break-word;
-        }
+        .extra-view-desc { font-weight: 800; font-size: 0.9rem; color: #fff; word-break: break-word; }
 
-        .extra-view-meta {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            font-size: 0.7rem;
-            color: #94a3b8;
-        }
+        .extra-view-meta { display: flex; gap: 12px; flex-wrap: wrap; font-size: 0.7rem; color: #94a3b8; }
 
-        .extra-view-meta strong {
-            color: #cbd5e1;
-            font-weight: 800;
-        }
+        .extra-view-meta strong { color: #cbd5e1; font-weight: 800; }
 
-        .extra-view-valor {
-            font-weight: 900;
-            font-size: 1rem;
-            color: #10b981;
-            white-space: nowrap;
-        }
+        .extra-view-valor { font-weight: 900; font-size: 1rem; color: #10b981; white-space: nowrap; }
         .extra-card.is-desc .extra-view-valor { color: #ef4444; }
 
         .extra-card-badge {
@@ -1435,11 +1333,7 @@
             border: 1px solid rgba(239,68,68,0.3);
         }
 
-        .extra-actions {
-            display: flex;
-            gap: 6px;
-            flex-shrink: 0;
-        }
+        .extra-actions { display: flex; gap: 6px; flex-shrink: 0; }
 
         .btn-extra-action {
             border-radius: 9px;
@@ -1459,23 +1353,15 @@
             color: #39C6FF;
             border-color: rgba(57,198,255,0.3);
         }
-        .btn-extra-action.edit:hover {
-            background: rgba(57,198,255,0.25);
-        }
+        .btn-extra-action.edit:hover { background: rgba(57,198,255,0.25); }
         .btn-extra-action.delete {
             background: rgba(239,68,68,0.12);
             color: #ef4444;
             border-color: rgba(239,68,68,0.25);
         }
-        .btn-extra-action.delete:hover {
-            background: rgba(239,68,68,0.3);
-        }
+        .btn-extra-action.delete:hover { background: rgba(239,68,68,0.3); }
 
-        .extra-edit {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+        .extra-edit { display: flex; flex-direction: column; gap: 10px; }
 
         .extra-edit-header {
             display: flex;
@@ -1494,11 +1380,7 @@
             gap: 8px;
         }
 
-        .extra-edit-field {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
+        .extra-edit-field { display: flex; flex-direction: column; gap: 4px; }
 
         .extra-edit-field label {
             font-size: 0.55rem;
@@ -1526,15 +1408,9 @@
             border-color: var(--primary);
             box-shadow: 0 0 10px rgba(57,198,255,0.2);
         }
-        .extra-edit-field select option {
-            background: #0B1026;
-        }
+        .extra-edit-field select option { background: #0B1026; }
 
-        .extra-edit-actions {
-            display: flex;
-            gap: 8px;
-            justify-content: flex-end;
-        }
+        .extra-edit-actions { display: flex; gap: 8px; justify-content: flex-end; }
 
         .btn-extra-save {
             background: linear-gradient(135deg, #39C6FF, #7B2EFF);
@@ -1579,7 +1455,6 @@
             border: 1px dashed rgba(255,255,255,0.08);
         }
 
-        /* RESPONSIVO */
         @media (max-width: 992px) {
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .relatorio-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1645,6 +1520,7 @@
             .config-section { padding: 16px; }
             .config-section-title { font-size: 0.7rem; }
             .btn-save-config { padding: 12px 30px; font-size: 0.8rem; }
+            .backup-actions { grid-template-columns: 1fr; }
             .extras-section { padding: 14px; }
             .extras-header { flex-direction: column; align-items: stretch; }
             .extras-header .extras-title { justify-content: center; }
@@ -1733,6 +1609,7 @@
             .config-section-title { font-size: 0.65rem; }
             .config-field input { padding: 10px 12px; font-size: 0.85rem; height: 44px; }
             .btn-save-config { padding: 12px 24px; font-size: 0.75rem; }
+            .backup-actions { grid-template-columns: 1fr; }
             .extras-section { padding: 12px; }
             .extras-title { font-size: 0.65rem; }
             .btn-add-extra { font-size: 0.6rem; padding: 5px 10px; }
@@ -1759,7 +1636,6 @@
         <p style="font-size: 0.7rem; color: #475569;">O horário será registrado através do servidor central.</p>
     </div>
 </div>
-
 <script>
     (function() {
         let jornadaDiaria = 480; 
@@ -1801,11 +1677,10 @@
         let extrasPorMes = {};
         let extrasEmEdicao = {};
 
-        // ============================================
-        // RECUPERAÇÃO AUTOMÁTICA DE DADOS ANTIGOS
-        // ============================================
         const CHAVE_ATUAL = 'folhaPonto_v4.2';
         const CHAVES_ANTIGAS = [
+            'folhaPonto_v4.6',
+            'folhaPonto_v4.5',
             'folhaPonto_v4.4',
             'folhaPonto_v4.3',
             'folhaPonto_v4.2',
@@ -1818,13 +1693,11 @@
         let dadosRecuperados = false;
         let chaveOrigem = null;
         
-        // Procura em todas as chaves, começando pela atual
         for (const chave of CHAVES_ANTIGAS) {
             const conteudo = localStorage.getItem(chave);
             if (conteudo) {
                 try {
                     const p = JSON.parse(conteudo);
-                    // Verifica se tem dados minimamente válidos
                     if (p && (p.registros || p.jornadaDiaria || p.extrasFixos)) {
                         registros = p.registros || {}; 
                         jornadaDiaria = p.jornadaDiaria || 480; 
@@ -1838,7 +1711,6 @@
                         dadosRecuperados = true;
                         chaveOrigem = chave;
                         
-                        // Se veio de uma chave antiga, migra automaticamente
                         if (chave !== CHAVE_ATUAL) {
                             localStorage.setItem(CHAVE_ATUAL, conteudo);
                             console.log('✅ Dados migrados de', chave, 'para', CHAVE_ATUAL);
@@ -1851,23 +1723,14 @@
             }
         }
         
-        // Notifica o usuário
         setTimeout(() => {
             if (dadosRecuperados && chaveOrigem && chaveOrigem !== CHAVE_ATUAL) {
                 mostrarToast(`✅ Dados recuperados de ${chaveOrigem}!`);
-            } else if (!dadosRecuperados) {
-                console.log('ℹ️ Nenhum dado antigo encontrado. Iniciando do zero.');
             }
         }, 500);
         
-        // Log para debug
         console.log('🔍 Chaves no localStorage:', Object.keys(localStorage));
         console.log('📦 Dados recuperados:', dadosRecuperados ? 'Sim' : 'Não');
-        if (dadosRecuperados) {
-            console.log('📅 Registros carregados:', Object.keys(registros).length);
-            console.log('📌 Extras fixos:', extrasFixos.length);
-            console.log('📌 Meses com extras:', Object.keys(extrasPorMes).length);
-        }
         
         const mesesNomes = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
         const mesesNomesCurto = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
@@ -1954,861 +1817,978 @@
             cacheTotais = n; return n;
         }
 
-        async function exportarPDF() {
-            recalcularTotais();
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('p', 'mm', 'a4');
-
-            doc.setFont("helvetica", "bold"); doc.setFontSize(22); doc.setTextColor(57, 198, 255);
-            doc.text("CHECK PONTO", 20, 20);
-
-            doc.setFontSize(10); doc.setTextColor(100, 100, 100);
-            doc.text(`Relatório Oficial Premium v4.4 • Gerado em ${new Date().toLocaleDateString()}`, 20, 28);
-            doc.line(20, 32, 190, 32);
-
-            doc.setFontSize(11); doc.setTextColor(0, 0, 0);
-            doc.text(`Período: ${mesesNomes[mes]} de ${ano}`, 20, 42);
-            doc.text(`Jornada: ${Math.floor(jornadaDiaria/60)}h | Valor Hora: R$ ${valorHoraNormal.toFixed(2)}`, 110, 42);
-
-            const tableBody = [];
+        function contarDiasTrabalhados() {
+            let dias = 0;
             for (let d = 1; d <= diasNoMes(ano, mes); d++) {
-                const k = `${ano}-${mes}-${d}`;
+                const chave = `${ano}-${mes}-${d}`;
+                const reg = registros[chave];
                 const dt = new Date(ano, mes, d);
-                const st = calcularValoresDia(k, dt.getDay(), mes, d, ano);
-                const reg = registros[k] || {};
-                
-                let nomeDiaStr = diasNomes[dt.getDay()];
+                const sem = dt.getDay();
                 const fer = isFeriado(mes, d, ano);
-                if (fer) nomeDiaStr += ` (${fer})`;
-                else if (reg.feriadoManual) nomeDiaStr += ` (100% Man.)`;
-
-                tableBody.push([
-                    `${d.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')}`,
-                    nomeDiaStr, reg.ent1 || '-', reg.sai1 || '-', reg.ent2 || '-', reg.sai2 || '-',
-                    minToHora(st.trab), minToHora(st.extra50), minToHora(st.extra100)
-                ]);
-            }
-
-            const val50 = (cacheTotais.extra50 / 60 * valorHoraNormal * 1.5).toFixed(2);
-            const val100 = (cacheTotais.extra100 / 60 * valorHoraNormal * 2.0).toFixed(2);
-
-            doc.autoTable({
-                startY: 48,
-                head: [['Data', 'Dia', 'E1', 'S1', 'E2', 'S2', 'Total', '50%', '100%']],
-                body: tableBody,
-                theme: 'grid',
-                headStyles: { fillColor: [57, 198, 255], halign: 'center', textColor: 255 },
-                styles: { fontSize: 8, halign: 'center' },
-                foot: [
-                    [ { content: 'TOTAIS (HORAS)', colSpan: 6, styles: { halign: 'right', fontStyle: 'bold' } }, minToHora(cacheTotais.trab), minToHora(cacheTotais.extra50), minToHora(cacheTotais.extra100) ],
-                    [ { content: 'SALDO EM DINHEIRO (R$)', colSpan: 6, styles: { halign: 'right', fontStyle: 'bold' } }, '-', `R$ ${val50}`, `R$ ${val100}` ]
-                ],
-                footStyles: { fillColor: [240, 240, 240], textColor: 0, lineWidth: 0.1 }
-            });
-
-            const obsKey = `${ano}-${mes}`;
-            const obsText = observacoes[obsKey];
-            if (obsText && obsText.trim() !== '') {
-                let finalY = doc.lastAutoTable.finalY || 250;
-                if (finalY > 260) { doc.addPage(); finalY = 20; } 
-                else { finalY += 15; }
-
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(10);
-                doc.setTextColor(0, 0, 0);
-                doc.text("Observações:", 20, finalY);
                 
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(9);
-                doc.setTextColor(80, 80, 80);
-                const splitObs = doc.splitTextToSize(obsText, 170);
-                doc.text(splitObs, 20, finalY + 6);
-            }
-
-            doc.save(`CheckPonto_v44_${mesesNomes[mes]}_${ano}.pdf`);
-            mostrarToast("📄 PDF Exportado com Saldo!");
-        }
-
-        function initCharts() {
-            if (abaAtiva === 'dashboard') {
-                const distCtx = document.getElementById('chartDist');
-                if (!distCtx) return;
-                if (chartDist) chartDist.destroy();
-
-                chartDist = new Chart(distCtx.getContext('2d'), {
-                    type: 'bar',
-                    data: { 
-                        labels: ['Normal', '50%', '100%'], 
-                        datasets: [{ 
-                            data: [cacheTotais.normal/60, cacheTotais.extra50/60, cacheTotais.extra100/60], 
-                            backgroundColor: ['#39C6FF', '#ec4899', '#8b5cf6'], 
-                            borderRadius: 6 
-                        }] 
-                    },
-                    options: { 
-                        responsive: true, maintainAspectRatio: false, 
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } },
-                            x: { ticks: { color: '#94a3b8' } }
-                        }
-                    }
-                });
-            }
-
-            if (abaAtiva === 'relatorio') {
-                const trimCtx = document.getElementById('chartTrimestre');
-                const mensalCtx = document.getElementById('chartMensal');
-                const semanalCtx = document.getElementById('chartSemanal');
-                const diarioCtx = document.getElementById('chartDiario');
-                
-                if (trimCtx) {
-                    if (chartTrimestre) chartTrimestre.destroy();
-                    const dados = getDadosTrimestres(ano);
-                    const labelsTrim = getLabelsTrimestres();
-                    const extra50 = dados.map(d => d.extra50 / 60);
-                    const extra100 = dados.map(d => d.extra100 / 60);
-
-                    chartTrimestre = new Chart(trimCtx.getContext('2d'), {
-                        type: 'bar',
-                        data: {
-                            labels: labelsTrim,
-                            datasets: [
-                                { label: '50%', data: extra50, backgroundColor: '#ec4899' },
-                                { label: '100%', data: extra100, backgroundColor: '#8b5cf6' }
-                            ]
-                        },
-                        options: {
-                            responsive: true, maintainAspectRatio: false,
-                            scales: { 
-                                x: { ticks: { color: '#94a3b8' } }, 
-                                y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } } 
-                            },
-                            plugins: { legend: { labels: { color: '#94a3b8' } } }
-                        }
-                    });
-                }
-
-                if (mensalCtx) {
-                    if (chartMensal) chartMensal.destroy();
-                    const mesesLabels = [];
-                    const dadosMeses = [];
-                    for (let i = 0; i < 3; i++) {
-                        let m = mes - i, a = ano;
-                        if (m < 0) { m += 12; a--; }
-                        mesesLabels.unshift(`${mesesNomes[m].substring(0,3)}/${a}`);
-                        dadosMeses.unshift(calcularMes(m, a));
-                    }
-
-                    chartMensal = new Chart(mensalCtx.getContext('2d'), {
-                        type: 'line',
-                        data: {
-                            labels: mesesLabels,
-                            datasets: [
-                                { label: '50%', data: dadosMeses.map(d => d.extra50 / 60), borderColor: '#ec4899', backgroundColor: '#ec4899', tension: 0.3, pointRadius: 6 },
-                                { label: '100%', data: dadosMeses.map(d => d.extra100 / 60), borderColor: '#8b5cf6', backgroundColor: '#8b5cf6', tension: 0.3, pointRadius: 6 }
-                            ]
-                        },
-                        options: {
-                            responsive: true, maintainAspectRatio: false,
-                            scales: { 
-                                y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } },
-                                x: { ticks: { color: '#94a3b8' } }
-                            },
-                            plugins: { legend: { labels: { color: '#94a3b8' } } }
-                        }
-                    });
-                }
-
-                if (semanalCtx) {
-                    if (chartSemanal) chartSemanal.destroy();
-                    const semanas = [];
-                    const diasMes = diasNoMes(ano, mes);
-                    let semanaAtual = [];
-                    for (let d = 1; d <= diasMes; d++) {
-                        const dt = new Date(ano, mes, d);
-                        const s = calcularValoresDia(`${ano}-${mes}-${d}`, dt.getDay(), mes, d, ano);
-                        semanaAtual.push(s);
-                        if (dt.getDay() === 6 || d === diasMes) { semanas.push(semanaAtual); semanaAtual = []; }
-                    }
-
-                    const labelsSemana = semanas.map((s, i) => `Sem ${i+1}`);
-                    const data50 = semanas.map(s => s.reduce((acc, v) => acc + v.extra50, 0) / 60);
-                    const data100 = semanas.map(s => s.reduce((acc, v) => acc + v.extra100, 0) / 60);
-
-                    chartSemanal = new Chart(semanalCtx.getContext('2d'), {
-                        type: 'bar',
-                        data: {
-                            labels: labelsSemana,
-                            datasets: [
-                                { label: '50%', data: data50, backgroundColor: '#ec4899' },
-                                { label: '100%', data: data100, backgroundColor: '#8b5cf6' }
-                            ]
-                        },
-                        options: {
-                            responsive: true, maintainAspectRatio: false,
-                            scales: { 
-                                x: { ticks: { color: '#94a3b8' } }, 
-                                y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } } 
-                            },
-                            plugins: { legend: { labels: { color: '#94a3b8' } } }
-                        }
-                    });
-                }
-
-                if (diarioCtx) {
-                    if (chartDiario) chartDiario.destroy();
-                    const diasMes = diasNoMes(ano, mes);
-                    const labelsDias = [];
-                    const data50 = [];
-                    const data100 = [];
-                    
-                    for (let d = 1; d <= diasMes; d++) {
-                        const dt = new Date(ano, mes, d);
-                        const s = calcularValoresDia(`${ano}-${mes}-${d}`, dt.getDay(), mes, d, ano);
-                        labelsDias.push(`${d}`);
-                        data50.push(s.extra50 / 60);
-                        data100.push(s.extra100 / 60);
-                    }
-
-                    chartDiario = new Chart(diarioCtx.getContext('2d'), {
-                        type: 'line',
-                        data: {
-                            labels: labelsDias,
-                            datasets: [
-                                { label: '50%', data: data50, borderColor: '#ec4899', backgroundColor: 'rgba(236, 72, 153, 0.15)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#ec4899', pointBorderColor: '#fff', pointBorderWidth: 1, borderWidth: 2.5 },
-                                { label: '100%', data: data100, borderColor: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.15)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#8b5cf6', pointBorderColor: '#fff', pointBorderWidth: 1, borderWidth: 2.5 }
-                            ]
-                        },
-                        options: {
-                            responsive: true, maintainAspectRatio: false,
-                            scales: { 
-                                x: { 
-                                    title: { display: true, text: 'Dias do Mês', color: '#94a3b8', font: { weight: 'bold', size: 12 } },
-                                    ticks: { color: '#94a3b8', stepSize: 1, autoSkip: false, maxRotation: 90, minRotation: 45, font: { size: 9 } },
-                                    grid: { color: 'rgba(255,255,255,0.05)' }
-                                }, 
-                                y: { 
-                                    beginAtZero: true, 
-                                    title: { display: true, text: 'Horas Extras', color: '#94a3b8', font: { weight: 'bold', size: 12 } },
-                                    ticks: { color: '#94a3b8', callback: function(value) { return value.toFixed(1) + 'h'; } },
-                                    grid: { color: 'rgba(255,255,255,0.05)' }
-                                } 
-                            },
-                            plugins: { 
-                                legend: { labels: { color: '#94a3b8', font: { size: 12, weight: 'bold' }, boxWidth: 15, padding: 15 } },
-                                tooltip: {
-                                    backgroundColor: 'rgba(11, 16, 38, 0.9)', titleColor: '#fff', bodyColor: '#fff',
-                                    borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1,
-                                    callbacks: { label: function(context) { return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + 'h'; } }
-                                }
-                            },
-                            interaction: { intersect: false, mode: 'index' }
-                        }
-                    });
+                if (reg && sem !== 0 && !fer) {
+                    const temRegistro = reg.ent1 || reg.sai1 || reg.ent2 || reg.sai2;
+                    if (temRegistro) dias++;
                 }
             }
-        }
-
-        function salvar(silencioso = false) { 
-            localStorage.setItem(CHAVE_ATUAL, JSON.stringify({ 
-                registros, jornadaDiaria, valorHoraNormal, observacoes,
-                salarioBaseMensal, adiantamentoMensal, dependentesIRRF,
-                extrasFixos, extrasPorMes
-            })); 
-            if(!silencioso) mostrarToast('✅ Dados guardados!'); 
+            return Math.min(dias, 30);
         }
         
-        function salvarObservacao() {
-            const textarea = document.getElementById('obs-textarea');
-            if (textarea) {
-                const obsKey = `${ano}-${mes}`;
-                observacoes[obsKey] = textarea.value;
-                salvar(true);
-                mostrarToast('✅ Observação salva com sucesso!');
-            }
-        }
+async function exportarPDF() {
+    recalcularTotais();
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'mm', 'a4');
 
-        function toggleFeriadoManual(chave) {
-            if (!registros[chave]) registros[chave] = {};
-            registros[chave].feriadoManual = !registros[chave].feriadoManual; 
-            salvar(true); 
-            recalcularTotais();
-            renderizar();
-        }
+    doc.setFont("helvetica", "bold"); doc.setFontSize(22); doc.setTextColor(57, 198, 255);
+    doc.text("CHECK PONTO", 20, 20);
 
-        function toggleFeriadoManualDoDia() {
-            const chave = `${ano}-${mes}-${diaSelecionado}`;
-            const eraManual = registros[chave] && registros[chave].feriadoManual === true;
-            
-            if (!registros[chave]) registros[chave] = {};
-            registros[chave].feriadoManual = !registros[chave].feriadoManual;
-            
-            salvar(true);
-            recalcularTotais();
-            renderizar();
-            
-            if (!eraManual) {
-                mostrarToast('✅ Dia marcado como 100%');
-            } else {
-                mostrarToast('↩️ Marcação 100% removida');
-            }
-        }
+    doc.setFontSize(10); doc.setTextColor(100, 100, 100);
+    doc.text(`Relatório Oficial Premium v4.6 • Gerado em ${new Date().toLocaleDateString()}`, 20, 28);
+    doc.line(20, 32, 190, 32);
 
-        function mudarDia(delta) {
-            let d = diaSelecionado + delta;
-            let m = mes;
-            let a = ano;
-            
-            if (d < 1) {
-                m--;
-                if (m < 0) { m = 11; a--; }
-                d = diasNoMes(a, m);
-            } else if (d > diasNoMes(a, m)) {
-                m++;
-                if (m > 11) { m = 0; a++; }
-                d = 1;
-            }
-            
-            diaSelecionado = d;
-            mes = m;
-            ano = a;
-            recalcularTotais();
-            renderizar();
-        }
+    doc.setFontSize(11); doc.setTextColor(0, 0, 0);
+    doc.text(`Período: ${mesesNomes[mes]} de ${ano}`, 20, 42);
+    doc.text(`Jornada: ${Math.floor(jornadaDiaria/60)}h | Valor Hora: R$ ${valorHoraNormal.toFixed(2)}`, 110, 42);
 
-        function irParaHoje() {
-            const hoje = new Date();
-            ano = hoje.getFullYear();
-            mes = hoje.getMonth();
-            diaSelecionado = hoje.getDate();
-            recalcularTotais();
-            renderizar();
-            mostrarToast('📅 Voltou para hoje');
-        }
+    const tableBody = [];
+    for (let d = 1; d <= diasNoMes(ano, mes); d++) {
+        const k = `${ano}-${mes}-${d}`;
+        const dt = new Date(ano, mes, d);
+        const st = calcularValoresDia(k, dt.getDay(), mes, d, ano);
+        const reg = registros[k] || {};
+        
+        let nomeDiaStr = diasNomes[dt.getDay()];
+        const fer = isFeriado(mes, d, ano);
+        if (fer) nomeDiaStr += ` (${fer})`;
+        else if (reg.feriadoManual) nomeDiaStr += ` (100% Man.)`;
 
-        function toggleCalendario(event) {
-            if (event) event.stopPropagation();
-            const pop = document.getElementById('calendar-popover');
-            if (!pop) return;
-            
-            calMesAberto = mes;
-            calAnoAberto = ano;
-            
-            const isOpen = pop.classList.contains('open');
-            if (isOpen) {
-                pop.classList.remove('open');
-            } else {
-                renderCalendario();
-                pop.classList.add('open');
-            }
-        }
+        tableBody.push([
+            `${d.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')}`,
+            nomeDiaStr, reg.ent1 || '-', reg.sai1 || '-', reg.ent2 || '-', reg.sai2 || '-',
+            minToHora(st.trab), minToHora(st.extra50), minToHora(st.extra100)
+        ]);
+    }
 
-        function fecharCalendario() {
-            const pop = document.getElementById('calendar-popover');
-            if (pop) pop.classList.remove('open');
-        }
+    const val50 = (cacheTotais.extra50 / 60 * valorHoraNormal * 1.5).toFixed(2);
+    const val100 = (cacheTotais.extra100 / 60 * valorHoraNormal * 2.0).toFixed(2);
 
-        function calMudarMes(delta) {
-            calMesAberto += delta;
-            if (calMesAberto < 0) { calMesAberto = 11; calAnoAberto--; }
-            if (calMesAberto > 11) { calMesAberto = 0; calAnoAberto++; }
-            renderCalendario();
-        }
+    doc.autoTable({
+        startY: 48,
+        head: [['Data', 'Dia', 'E1', 'S1', 'E2', 'S2', 'Total', '50%', '100%']],
+        body: tableBody,
+        theme: 'grid',
+        headStyles: { fillColor: [57, 198, 255], halign: 'center', textColor: 255 },
+        styles: { fontSize: 8, halign: 'center' },
+        foot: [
+            [ { content: 'TOTAIS (HORAS)', colSpan: 6, styles: { halign: 'right', fontStyle: 'bold' } }, minToHora(cacheTotais.trab), minToHora(cacheTotais.extra50), minToHora(cacheTotais.extra100) ],
+            [ { content: 'SALDO EM DINHEIRO (R$)', colSpan: 6, styles: { halign: 'right', fontStyle: 'bold' } }, '-', `R$ ${val50}`, `R$ ${val100}` ]
+        ],
+        footStyles: { fillColor: [240, 240, 240], textColor: 0, lineWidth: 0.1 }
+    });
 
-        function renderCalendario() {
-            const pop = document.getElementById('calendar-popover');
-            if (!pop) return;
-            
-            const hoje = new Date();
-            const primeiroDia = new Date(calAnoAberto, calMesAberto, 1).getDay();
-            const totalDias = diasNoMes(calAnoAberto, calMesAberto);
-            const diasMesAnterior = diasNoMes(calAnoAberto, calMesAberto - 1);
-            
-            let gridHTML = '';
-            
-            for (let i = primeiroDia - 1; i >= 0; i--) {
-                const d = diasMesAnterior - i;
-                gridHTML += `<div class="calendar-day other-month">${d}</div>`;
-            }
-            
-            for (let d = 1; d <= totalDias; d++) {
-                const dt = new Date(calAnoAberto, calMesAberto, d);
-                const sem = dt.getDay();
-                const chave = `${calAnoAberto}-${calMesAberto}-${d}`;
-                const reg = registros[chave];
-                const fer = isFeriado(calMesAberto, d, calAnoAberto);
-                
-                let classes = 'calendar-day';
-                if (sem === 0) classes += ' weekend sunday';
-                else if (sem === 6) classes += ' weekend';
-                if (calAnoAberto === hoje.getFullYear() && calMesAberto === hoje.getMonth() && d === hoje.getDate()) classes += ' today';
-                if (calAnoAberto === ano && calMesAberto === mes && d === diaSelecionado) classes += ' selected';
-                if (fer) classes += ' feriado';
-                if (reg && (reg.ent1 || reg.sai1 || reg.ent2 || reg.sai2) && !fer) classes += ' has-record';
-                
-                gridHTML += `<div class="${classes}" onclick="selecionarDiaCalendario(${calAnoAberto}, ${calMesAberto}, ${d})">${d}</div>`;
-            }
-            
-            const totalCells = primeiroDia + totalDias;
-            const resto = totalCells % 7;
-            if (resto !== 0) {
-                for (let i = 1; i <= (7 - resto); i++) {
-                    gridHTML += `<div class="calendar-day other-month">${i}</div>`;
+    const obsKey = `${ano}-${mes}`;
+    const obsText = observacoes[obsKey];
+    if (obsText && obsText.trim() !== '') {
+        let finalY = doc.lastAutoTable.finalY || 250;
+        if (finalY > 260) { doc.addPage(); finalY = 20; } 
+        else { finalY += 15; }
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.setTextColor(0, 0, 0);
+        doc.text("Observações:", 20, finalY);
+        
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.setTextColor(80, 80, 80);
+        const splitObs = doc.splitTextToSize(obsText, 170);
+        doc.text(splitObs, 20, finalY + 6);
+    }
+
+    doc.save(`CheckPonto_v46_${mesesNomes[mes]}_${ano}.pdf`);
+    mostrarToast("📄 PDF Exportado com Saldo!");
+}
+
+function initCharts() {
+    if (abaAtiva === 'dashboard') {
+        const distCtx = document.getElementById('chartDist');
+        if (!distCtx) return;
+        if (chartDist) chartDist.destroy();
+
+        chartDist = new Chart(distCtx.getContext('2d'), {
+            type: 'bar',
+            data: { 
+                labels: ['Normal', '50%', '100%'], 
+                datasets: [{ 
+                    data: [cacheTotais.normal/60, cacheTotais.extra50/60, cacheTotais.extra100/60], 
+                    backgroundColor: ['#39C6FF', '#ec4899', '#8b5cf6'], 
+                    borderRadius: 6 
+                }] 
+            },
+            options: { 
+                responsive: true, maintainAspectRatio: false, 
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } },
+                    x: { ticks: { color: '#94a3b8' } }
                 }
             }
-            
-            pop.innerHTML = `
-                <div class="calendar-header">
-                    <button class="cal-nav" onclick="calMudarMes(-1)"><i class="fa-solid fa-chevron-left"></i></button>
-                    <span class="cal-month">${mesesNomesCurto[calMesAberto]} ${calAnoAberto}</span>
-                    <button class="cal-nav" onclick="calMudarMes(1)"><i class="fa-solid fa-chevron-right"></i></button>
-                </div>
-                <div class="calendar-weekdays">
-                    <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
-                </div>
-                <div class="calendar-grid">${gridHTML}</div>
-            `;
-        }
-
-        function selecionarDiaCalendario(a, m, d) {
-            ano = a;
-            mes = m;
-            diaSelecionado = d;
-            fecharCalendario();
-            recalcularTotais();
-            renderizar();
-        }
-
-        document.addEventListener('click', function(e) {
-            const pop = document.getElementById('calendar-popover');
-            const center = document.querySelector('.day-picker .day-center');
-            if (!pop || !pop.classList.contains('open')) return;
-            if (pop.contains(e.target)) return;
-            if (center && center.contains(e.target)) return;
-            fecharCalendario();
         });
+    }
 
-        function salvarManualPrimeiraTela() {
-            const chaveSel = `${ano}-${mes}-${diaSelecionado}`;
-            
-            const e1 = document.getElementById('manual-ent1').value.trim();
-            const s1 = document.getElementById('manual-sai1').value.trim();
-            const e2 = document.getElementById('manual-ent2').value.trim();
-            const s2 = document.getElementById('manual-sai2').value.trim();
-            
-            const validarHora = (h) => {
-                if (!h) return true;
-                const regex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
-                return regex.test(h);
-            };
-            
-            if (!validarHora(e1) || !validarHora(s1) || !validarHora(e2) || !validarHora(s2)) {
-                mostrarToast('⚠️ Formato inválido! Use HH:MM');
-                return;
+    if (abaAtiva === 'relatorio') {
+        const trimCtx = document.getElementById('chartTrimestre');
+        const mensalCtx = document.getElementById('chartMensal');
+        const semanalCtx = document.getElementById('chartSemanal');
+        const diarioCtx = document.getElementById('chartDiario');
+        
+        if (trimCtx) {
+            if (chartTrimestre) chartTrimestre.destroy();
+            const dados = getDadosTrimestres(ano);
+            const labelsTrim = getLabelsTrimestres();
+            const extra50 = dados.map(d => d.extra50 / 60);
+            const extra100 = dados.map(d => d.extra100 / 60);
+
+            chartTrimestre = new Chart(trimCtx.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: labelsTrim,
+                    datasets: [
+                        { label: '50%', data: extra50, backgroundColor: '#ec4899' },
+                        { label: '100%', data: extra100, backgroundColor: '#8b5cf6' }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { 
+                        x: { ticks: { color: '#94a3b8' } }, 
+                        y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } } 
+                    },
+                    plugins: { legend: { labels: { color: '#94a3b8' } } }
+                }
+            });
+        }
+
+        if (mensalCtx) {
+            if (chartMensal) chartMensal.destroy();
+            const mesesLabels = [];
+            const dadosMeses = [];
+            for (let i = 0; i < 3; i++) {
+                let m = mes - i, a = ano;
+                if (m < 0) { m += 12; a--; }
+                mesesLabels.unshift(`${mesesNomes[m].substring(0,3)}/${a}`);
+                dadosMeses.unshift(calcularMes(m, a));
             }
-            
-            if (!registros[chaveSel]) registros[chaveSel] = {};
-            
-            if (e1) registros[chaveSel].ent1 = e1; else delete registros[chaveSel].ent1;
-            if (s1) registros[chaveSel].sai1 = s1; else delete registros[chaveSel].sai1;
-            if (e2) registros[chaveSel].ent2 = e2; else delete registros[chaveSel].ent2;
-            if (s2) registros[chaveSel].sai2 = s2; else delete registros[chaveSel].sai2;
-            
-            salvar(true);
-            recalcularTotais();
-            renderizar();
-            mostrarToast(`✅ Horários de ${diaSelecionado}/${mes+1} salvos!`);
+
+            chartMensal = new Chart(mensalCtx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: mesesLabels,
+                    datasets: [
+                        { label: '50%', data: dadosMeses.map(d => d.extra50 / 60), borderColor: '#ec4899', backgroundColor: '#ec4899', tension: 0.3, pointRadius: 6 },
+                        { label: '100%', data: dadosMeses.map(d => d.extra100 / 60), borderColor: '#8b5cf6', backgroundColor: '#8b5cf6', tension: 0.3, pointRadius: 6 }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { 
+                        y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } },
+                        x: { ticks: { color: '#94a3b8' } }
+                    },
+                    plugins: { legend: { labels: { color: '#94a3b8' } } }
+                }
+            });
         }
 
-        function limparManualPrimeiraTela() {
-            document.getElementById('manual-ent1').value = '';
-            document.getElementById('manual-sai1').value = '';
-            document.getElementById('manual-ent2').value = '';
-            document.getElementById('manual-sai2').value = '';
+        if (semanalCtx) {
+            if (chartSemanal) chartSemanal.destroy();
+            const semanas = [];
+            const diasMes = diasNoMes(ano, mes);
+            let semanaAtual = [];
+            for (let d = 1; d <= diasMes; d++) {
+                const dt = new Date(ano, mes, d);
+                const s = calcularValoresDia(`${ano}-${mes}-${d}`, dt.getDay(), mes, d, ano);
+                semanaAtual.push(s);
+                if (dt.getDay() === 6 || d === diasMes) { semanas.push(semanaAtual); semanaAtual = []; }
+            }
+
+            const labelsSemana = semanas.map((s, i) => `Sem ${i+1}`);
+            const data50 = semanas.map(s => s.reduce((acc, v) => acc + v.extra50, 0) / 60);
+            const data100 = semanas.map(s => s.reduce((acc, v) => acc + v.extra100, 0) / 60);
+
+            chartSemanal = new Chart(semanalCtx.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: labelsSemana,
+                    datasets: [
+                        { label: '50%', data: data50, backgroundColor: '#ec4899' },
+                        { label: '100%', data: data100, backgroundColor: '#8b5cf6' }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { 
+                        x: { ticks: { color: '#94a3b8' } }, 
+                        y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } } 
+                    },
+                    plugins: { legend: { labels: { color: '#94a3b8' } } }
+                }
+            });
         }
 
-        function mascaraHora(input) {
-            let v = input.value.replace(/\D/g, '');
-            if (v.length > 4) v = v.slice(0, 4);
-            if (v.length >= 3) v = v.slice(0, 2) + ':' + v.slice(2);
-            input.value = v;
-        }
-
-        function mudarMes(delta) { 
-            mes += delta; 
-            if (mes<0){mes=11;ano--;} 
-            if (mes>11){mes=0;ano++;} 
-            const maxDia = diasNoMes(ano, mes);
-            if (diaSelecionado > maxDia) diaSelecionado = maxDia;
-            extrasEmEdicao = {};
-            recalcularTotais(); renderizar(); 
-            if (abaAtiva === 'dashboard' || abaAtiva === 'relatorio') setTimeout(initCharts, 50); 
-        }
-        function mostrarToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3000); }
-        function mudarAba(nova) { abaAtiva = nova; fecharCalendario(); extrasEmEdicao = {}; renderizar(); if (nova === 'dashboard' || nova === 'relatorio') setTimeout(initCharts, 100); }
-
-        function requestBiometrics() {
-            const modal = document.getElementById('biometric-modal');
-            const progress = document.getElementById('auth-progress');
-            const status = document.getElementById('auth-status');
-            const icon = document.getElementById('modal-icon');
+        if (diarioCtx) {
+            if (chartDiario) chartDiario.destroy();
+            const diasMes = diasNoMes(ano, mes);
+            const labelsDias = [];
+            const data50 = [];
+            const data100 = [];
             
-            modal.style.display = 'flex';
-            progress.style.width = '0%';
-            progress.style.transition = 'none';
-            status.innerText = "Lendo digital...";
-            status.style.color = "#94a3b8";
-            icon.className = "fa-solid fa-fingerprint animate-pulse";
-            icon.style.color = "var(--primary)";
+            for (let d = 1; d <= diasMes; d++) {
+                const dt = new Date(ano, mes, d);
+                const s = calcularValoresDia(`${ano}-${mes}-${d}`, dt.getDay(), mes, d, ano);
+                labelsDias.push(`${d}`);
+                data50.push(s.extra50 / 60);
+                data100.push(s.extra100 / 60);
+            }
 
+            chartDiario = new Chart(diarioCtx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: labelsDias,
+                    datasets: [
+                        { label: '50%', data: data50, borderColor: '#ec4899', backgroundColor: 'rgba(236, 72, 153, 0.15)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#ec4899', pointBorderColor: '#fff', pointBorderWidth: 1, borderWidth: 2.5 },
+                        { label: '100%', data: data100, borderColor: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.15)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#8b5cf6', pointBorderColor: '#fff', pointBorderWidth: 1, borderWidth: 2.5 }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { 
+                        x: { 
+                            title: { display: true, text: 'Dias do Mês', color: '#94a3b8', font: { weight: 'bold', size: 12 } },
+                            ticks: { color: '#94a3b8', stepSize: 1, autoSkip: false, maxRotation: 90, minRotation: 45, font: { size: 9 } },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        }, 
+                        y: { 
+                            beginAtZero: true, 
+                            title: { display: true, text: 'Horas Extras', color: '#94a3b8', font: { weight: 'bold', size: 12 } },
+                            ticks: { color: '#94a3b8', callback: function(value) { return value.toFixed(1) + 'h'; } },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        } 
+                    },
+                    plugins: { 
+                        legend: { labels: { color: '#94a3b8', font: { size: 12, weight: 'bold' }, boxWidth: 15, padding: 15 } },
+                        tooltip: {
+                            backgroundColor: 'rgba(11, 16, 38, 0.9)', titleColor: '#fff', bodyColor: '#fff',
+                            borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1,
+                            callbacks: { label: function(context) { return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + 'h'; } }
+                        }
+                    },
+                    interaction: { intersect: false, mode: 'index' }
+                }
+            });
+        }
+    }
+}
+
+function salvar(silencioso = false) { 
+    localStorage.setItem(CHAVE_ATUAL, JSON.stringify({ 
+        registros, jornadaDiaria, valorHoraNormal, observacoes,
+        salarioBaseMensal, adiantamentoMensal, dependentesIRRF,
+        extrasFixos, extrasPorMes
+    })); 
+    if(!silencioso) mostrarToast('✅ Dados guardados!'); 
+}
+
+function salvarObservacao() {
+    const textarea = document.getElementById('obs-textarea');
+    if (textarea) {
+        const obsKey = `${ano}-${mes}`;
+        observacoes[obsKey] = textarea.value;
+        salvar(true);
+        mostrarToast('✅ Observação salva com sucesso!');
+    }
+}
+
+function toggleFeriadoManual(chave) {
+    if (!registros[chave]) registros[chave] = {};
+    registros[chave].feriadoManual = !registros[chave].feriadoManual; 
+    salvar(true); 
+    recalcularTotais();
+    renderizar();
+}
+
+function toggleFeriadoManualDoDia() {
+    const chave = `${ano}-${mes}-${diaSelecionado}`;
+    const eraManual = registros[chave] && registros[chave].feriadoManual === true;
+    
+    if (!registros[chave]) registros[chave] = {};
+    registros[chave].feriadoManual = !registros[chave].feriadoManual;
+    
+    salvar(true);
+    recalcularTotais();
+    renderizar();
+    
+    if (!eraManual) {
+        mostrarToast('✅ Dia marcado como 100%');
+    } else {
+        mostrarToast('↩️ Marcação 100% removida');
+    }
+}
+
+function mudarDia(delta) {
+    let d = diaSelecionado + delta;
+    let m = mes;
+    let a = ano;
+    
+    if (d < 1) {
+        m--;
+        if (m < 0) { m = 11; a--; }
+        d = diasNoMes(a, m);
+    } else if (d > diasNoMes(a, m)) {
+        m++;
+        if (m > 11) { m = 0; a++; }
+        d = 1;
+    }
+    
+    diaSelecionado = d;
+    mes = m;
+    ano = a;
+    recalcularTotais();
+    renderizar();
+}
+
+function irParaHoje() {
+    const hoje = new Date();
+    ano = hoje.getFullYear();
+    mes = hoje.getMonth();
+    diaSelecionado = hoje.getDate();
+    recalcularTotais();
+    renderizar();
+    mostrarToast('📅 Voltou para hoje');
+}
+
+function toggleCalendario(event) {
+    if (event) event.stopPropagation();
+    const pop = document.getElementById('calendar-popover');
+    if (!pop) return;
+    
+    calMesAberto = mes;
+    calAnoAberto = ano;
+    
+    const isOpen = pop.classList.contains('open');
+    if (isOpen) {
+        pop.classList.remove('open');
+    } else {
+        renderCalendario();
+        pop.classList.add('open');
+    }
+}
+
+function fecharCalendario() {
+    const pop = document.getElementById('calendar-popover');
+    if (pop) pop.classList.remove('open');
+}
+
+function calMudarMes(delta) {
+    calMesAberto += delta;
+    if (calMesAberto < 0) { calMesAberto = 11; calAnoAberto--; }
+    if (calMesAberto > 11) { calMesAberto = 0; calAnoAberto++; }
+    renderCalendario();
+}
+
+function renderCalendario() {
+    const pop = document.getElementById('calendar-popover');
+    if (!pop) return;
+    
+    const hoje = new Date();
+    const primeiroDia = new Date(calAnoAberto, calMesAberto, 1).getDay();
+    const totalDias = diasNoMes(calAnoAberto, calMesAberto);
+    const diasMesAnterior = diasNoMes(calAnoAberto, calMesAberto - 1);
+    
+    let gridHTML = '';
+    
+    for (let i = primeiroDia - 1; i >= 0; i--) {
+        const d = diasMesAnterior - i;
+        gridHTML += `<div class="calendar-day other-month">${d}</div>`;
+    }
+    
+    for (let d = 1; d <= totalDias; d++) {
+        const dt = new Date(calAnoAberto, calMesAberto, d);
+        const sem = dt.getDay();
+        const chave = `${calAnoAberto}-${calMesAberto}-${d}`;
+        const reg = registros[chave];
+        const fer = isFeriado(calMesAberto, d, calAnoAberto);
+        
+        let classes = 'calendar-day';
+        if (sem === 0) classes += ' weekend sunday';
+        else if (sem === 6) classes += ' weekend';
+        if (calAnoAberto === hoje.getFullYear() && calMesAberto === hoje.getMonth() && d === hoje.getDate()) classes += ' today';
+        if (calAnoAberto === ano && calMesAberto === mes && d === diaSelecionado) classes += ' selected';
+        if (fer) classes += ' feriado';
+        if (reg && (reg.ent1 || reg.sai1 || reg.ent2 || reg.sai2) && !fer) classes += ' has-record';
+        
+        gridHTML += `<div class="${classes}" onclick="selecionarDiaCalendario(${calAnoAberto}, ${calMesAberto}, ${d})">${d}</div>`;
+    }
+    
+    const totalCells = primeiroDia + totalDias;
+    const resto = totalCells % 7;
+    if (resto !== 0) {
+        for (let i = 1; i <= (7 - resto); i++) {
+            gridHTML += `<div class="calendar-day other-month">${i}</div>`;
+        }
+    }
+    
+    pop.innerHTML = `
+        <div class="calendar-header">
+            <button class="cal-nav" onclick="calMudarMes(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+            <span class="cal-month">${mesesNomesCurto[calMesAberto]} ${calAnoAberto}</span>
+            <button class="cal-nav" onclick="calMudarMes(1)"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+        <div class="calendar-weekdays">
+            <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
+        </div>
+        <div class="calendar-grid">${gridHTML}</div>
+    `;
+}
+
+function selecionarDiaCalendario(a, m, d) {
+    ano = a;
+    mes = m;
+    diaSelecionado = d;
+    fecharCalendario();
+    recalcularTotais();
+    renderizar();
+}
+
+document.addEventListener('click', function(e) {
+    const pop = document.getElementById('calendar-popover');
+    const center = document.querySelector('.day-picker .day-center');
+    if (!pop || !pop.classList.contains('open')) return;
+    if (pop.contains(e.target)) return;
+    if (center && center.contains(e.target)) return;
+    fecharCalendario();
+});
+
+function salvarManualPrimeiraTela() {
+    const chaveSel = `${ano}-${mes}-${diaSelecionado}`;
+    
+    const e1 = document.getElementById('manual-ent1').value.trim();
+    const s1 = document.getElementById('manual-sai1').value.trim();
+    const e2 = document.getElementById('manual-ent2').value.trim();
+    const s2 = document.getElementById('manual-sai2').value.trim();
+    
+    const validarHora = (h) => {
+        if (!h) return true;
+        const regex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+        return regex.test(h);
+    };
+    
+    if (!validarHora(e1) || !validarHora(s1) || !validarHora(e2) || !validarHora(s2)) {
+        mostrarToast('⚠️ Formato inválido! Use HH:MM');
+        return;
+    }
+    
+    if (!registros[chaveSel]) registros[chaveSel] = {};
+    
+    if (e1) registros[chaveSel].ent1 = e1; else delete registros[chaveSel].ent1;
+    if (s1) registros[chaveSel].sai1 = s1; else delete registros[chaveSel].sai1;
+    if (e2) registros[chaveSel].ent2 = e2; else delete registros[chaveSel].ent2;
+    if (s2) registros[chaveSel].sai2 = s2; else delete registros[chaveSel].sai2;
+    
+    salvar(true);
+    recalcularTotais();
+    renderizar();
+    mostrarToast(`✅ Horários de ${diaSelecionado}/${mes+1} salvos!`);
+}
+
+function limparManualPrimeiraTela() {
+    document.getElementById('manual-ent1').value = '';
+    document.getElementById('manual-sai1').value = '';
+    document.getElementById('manual-ent2').value = '';
+    document.getElementById('manual-sai2').value = '';
+}
+
+function mascaraHora(input) {
+    let v = input.value.replace(/\D/g, '');
+    if (v.length > 4) v = v.slice(0, 4);
+    if (v.length >= 3) v = v.slice(0, 2) + ':' + v.slice(2);
+    input.value = v;
+}
+
+function mudarMes(delta) { 
+    mes += delta; 
+    if (mes<0){mes=11;ano--;} 
+    if (mes>11){mes=0;ano++;} 
+    const maxDia = diasNoMes(ano, mes);
+    if (diaSelecionado > maxDia) diaSelecionado = maxDia;
+    extrasEmEdicao = {};
+    recalcularTotais(); renderizar(); 
+    if (abaAtiva === 'dashboard' || abaAtiva === 'relatorio') setTimeout(initCharts, 50); 
+}
+function mostrarToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3000); }
+function mudarAba(nova) { abaAtiva = nova; fecharCalendario(); extrasEmEdicao = {}; renderizar(); if (nova === 'dashboard' || nova === 'relatorio') setTimeout(initCharts, 100); }
+
+function requestBiometrics() {
+    const modal = document.getElementById('biometric-modal');
+    const progress = document.getElementById('auth-progress');
+    const status = document.getElementById('auth-status');
+    const icon = document.getElementById('modal-icon');
+    
+    modal.style.display = 'flex';
+    progress.style.width = '0%';
+    progress.style.transition = 'none';
+    status.innerText = "Lendo digital...";
+    status.style.color = "#94a3b8";
+    icon.className = "fa-solid fa-fingerprint animate-pulse";
+    icon.style.color = "var(--primary)";
+
+    setTimeout(() => {
+        progress.style.transition = 'width 1.5s ease-in-out';
+        progress.style.width = '100%';
+        status.innerText = "Autenticando no servidor...";
+        status.style.color = "var(--primary)";
+        
+        setTimeout(() => {
+            status.innerText = "Sucesso!";
+            status.style.color = "#10b981";
+            icon.className = "fa-solid fa-check-circle";
+            icon.style.color = "#10b981";
+            
             setTimeout(() => {
-                progress.style.transition = 'width 1.5s ease-in-out';
-                progress.style.width = '100%';
-                status.innerText = "Autenticando no servidor...";
-                status.style.color = "var(--primary)";
-                
-                setTimeout(() => {
-                    status.innerText = "Sucesso!";
-                    status.style.color = "#10b981";
-                    icon.className = "fa-solid fa-check-circle";
-                    icon.style.color = "#10b981";
-                    
-                    setTimeout(() => {
-                        modal.style.display = 'none';
-                        registrarPontoAutomatico(); 
-                    }, 800);
-                }, 1500);
-            }, 300);
+                modal.style.display = 'none';
+                registrarPontoAutomatico(); 
+            }, 800);
+        }, 1500);
+    }, 300);
+}
+
+function registrarPontoAutomatico() {
+    const hoje = new Date();
+    const d = hoje.getDate();
+    const m = hoje.getMonth();
+    const a = hoje.getFullYear();
+    const chaveHoje = `${a}-${m}-${d}`;
+    
+    const horaAtual = hoje.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+    if (!registros[chaveHoje]) registros[chaveHoje] = {};
+    let r = registros[chaveHoje];
+
+    let msg = "";
+    if (!r.ent1) { r.ent1 = horaAtual; msg = "Entrada 1 registrada"; }
+    else if (!r.sai1) { r.sai1 = horaAtual; msg = "Início de Pausa registrado"; }
+    else if (!r.ent2) { r.ent2 = horaAtual; msg = "Retorno de Pausa registrado"; }
+    else if (!r.sai2) { r.sai2 = horaAtual; msg = "Saída Final registrada"; }
+    
+    mostrarToast(`✅ ${msg} às ${horaAtual}`);
+    
+    ano = a;
+    mes = m;
+    diaSelecionado = d;
+    
+    salvar(true); 
+    recalcularTotais();
+    renderizar();
+}
+
+setInterval(() => {
+    const clockElem = document.getElementById('bio-clock');
+    const dateElem = document.getElementById('bio-date');
+    if (clockElem && dateElem) {
+        const now = new Date();
+        clockElem.innerText = now.toLocaleTimeString('pt-BR', { hour12: false });
+        const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+        let ds = now.toLocaleDateString('pt-BR', options);
+        dateElem.innerText = ds.charAt(0).toUpperCase() + ds.slice(1);
+    }
+}, 1000);
+
+function calcularINSS(base) {
+    const faixas = [
+        { limite: 1518.00, aliquota: 0.075 },
+        { limite: 2793.88, aliquota: 0.09 },
+        { limite: 4190.83, aliquota: 0.12 },
+        { limite: 8157.41, aliquota: 0.14 }
+    ];
+    let inss = 0;
+    let anterior = 0;
+    for (let f of faixas) {
+        if (base > anterior) {
+            const baseFaixa = Math.min(base, f.limite) - anterior;
+            inss += baseFaixa * f.aliquota;
+            anterior = f.limite;
+        } else break;
+    }
+    return Math.min(inss, 951.62);
+}
+
+function calcularIRRF(base, dependentes = 0) {
+    const deducaoDependente = 189.59;
+    const baseCalculo = base - (dependentes * deducaoDependente);
+    
+    const faixas = [
+        { limite: 2259.20, aliquota: 0, deducao: 0 },
+        { limite: 2826.65, aliquota: 0.075, deducao: 169.44 },
+        { limite: 3751.05, aliquota: 0.15, deducao: 381.44 },
+        { limite: 4664.68, aliquota: 0.225, deducao: 662.77 },
+        { limite: Infinity, aliquota: 0.275, deducao: 896.00 }
+    ];
+    
+    for (let f of faixas) {
+        if (baseCalculo <= f.limite) {
+            const imposto = (baseCalculo * f.aliquota) - f.deducao;
+            return Math.max(0, imposto);
         }
+    }
+    return 0;
+}
 
-        function registrarPontoAutomatico() {
-            const hoje = new Date();
-            const d = hoje.getDate();
-            const m = hoje.getMonth();
-            const a = hoje.getFullYear();
-            const chaveHoje = `${a}-${m}-${d}`;
-            
-            const horaAtual = hoje.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+function calcularFGTS(base) {
+    return base * 0.08;
+}
 
-            if (!registros[chaveHoje]) registros[chaveHoje] = {};
-            let r = registros[chaveHoje];
+function gerarDemonstrativo() {
+    recalcularTotais();
+    
+    const salarioBaseAuto = (jornadaDiaria / 60) * valorHoraNormal * 30;
+    const salarioBase = salarioBaseMensal !== null && salarioBaseMensal > 0 ? salarioBaseMensal : salarioBaseAuto;
+    
+    // Contar dias trabalhados (com registro, exceto domingos e feriados)
+    const diasTrabalhados = contarDiasTrabalhados();
+    const valorDiasNormais = (salarioBase / 30) * diasTrabalhados;
+    
+    const horas100 = cacheTotais.extra100 / 60;
+    const valorHoras100 = horas100 * valorHoraNormal * 2.0;
+    
+    let horas50 = 0;
+    let valorHoras50 = 0;
+    let labelTrimestre = null;
+    
+    const trimPag = getTrimestrePagamento(mes);
+    if (trimPag) {
+        const dadosTrim = calcularTrimestrePersonalizado(trimPag.trimestre, ano);
+        horas50 = dadosTrim.extra50 / 60;
+        valorHoras50 = horas50 * valorHoraNormal * 1.5;
+        labelTrimestre = trimPag.label;
+    }
+    
+    // DSR = (HE 50% + HE 100%) / 5
+    const dsr = (valorHoras50 + valorHoras100) / 5;
+    
+    const chaveMes = `${ano}-${mes}`;
+    const extrasMes = extrasPorMes[chaveMes] || [];
+    const todosExtras = [...extrasFixos, ...extrasMes];
+    
+    const extrasVenc = todosExtras.filter(e => e.tipo === 'vencimento');
+    const extrasDesc = todosExtras.filter(e => e.tipo === 'desconto');
+    
+    const totalExtrasVenc = extrasVenc.reduce((acc, e) => acc + (parseFloat(e.valor) || 0), 0);
+    const totalExtrasDesc = extrasDesc.reduce((acc, e) => acc + (parseFloat(e.valor) || 0), 0);
+    
+    const totalVencimentos = valorDiasNormais + valorHoras100 + valorHoras50 + dsr + totalExtrasVenc;
+    
+    const inss = calcularINSS(totalVencimentos);
+    const baseIRRFcalc = totalVencimentos - inss;
+    const irrf = calcularIRRF(baseIRRFcalc, dependentesIRRF);
+    const totalDescontos = inss + irrf + adiantamentoMensal + totalExtrasDesc;
+    
+    const valorLiquido = totalVencimentos - totalDescontos;
+    
+    const baseINSS = totalVencimentos;
+    const baseFGTS = totalVencimentos;
+    const valorFGTS = calcularFGTS(baseFGTS);
+    const baseIRRF = baseIRRFcalc;
+    
+    return {
+        salarioBase,
+        diasTrabalhados,
+        valorDiasNormais,
+        horas50, horas100,
+        valorHoras50, valorHoras100,
+        dsr, labelTrimestre,
+        totalExtrasVenc, totalExtrasDesc,
+        extrasVenc, extrasDesc,
+        totalVencimentos,
+        inss, irrf, adiantamento: adiantamentoMensal, totalDescontos,
+        valorLiquido,
+        baseINSS, baseFGTS, valorFGTS, baseIRRF,
+        dependentesIRRF
+    };
+}
 
-            let msg = "";
-            if (!r.ent1) { r.ent1 = horaAtual; msg = "Entrada 1 registrada"; }
-            else if (!r.sai1) { r.sai1 = horaAtual; msg = "Início de Pausa registrado"; }
-            else if (!r.ent2) { r.ent2 = horaAtual; msg = "Retorno de Pausa registrado"; }
-            else if (!r.sai2) { r.sai2 = horaAtual; msg = "Saída Final registrada"; }
-            
-            mostrarToast(`✅ ${msg} às ${horaAtual}`);
-            
-            ano = a;
-            mes = m;
-            diaSelecionado = d;
-            
-            salvar(true); 
-            recalcularTotais();
-            renderizar();
-        }
+function fmtMoeda(v) {
+    return v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
 
-        setInterval(() => {
-            const clockElem = document.getElementById('bio-clock');
-            const dateElem = document.getElementById('bio-date');
-            if (clockElem && dateElem) {
-                const now = new Date();
-                clockElem.innerText = now.toLocaleTimeString('pt-BR', { hour12: false });
-                const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-                let ds = now.toLocaleDateString('pt-BR', options);
-                dateElem.innerText = ds.charAt(0).toUpperCase() + ds.slice(1);
-            }
-        }, 1000);
+window.salvarConfiguracoes = function() {
+    const jEl = document.getElementById('cfg-jornada');
+    const vhEl = document.getElementById('cfg-valor-hora');
+    const salEl = document.getElementById('cfg-salario');
+    const adiEl = document.getElementById('cfg-adiantamento');
+    const depEl = document.getElementById('cfg-dependentes');
+    
+    if (jEl) {
+        const v = parseFloat(jEl.value.replace(',', '.'));
+        if (!isNaN(v) && v > 0) jornadaDiaria = Math.round(v * 60);
+    }
+    
+    if (vhEl) {
+        const v = parseFloat(vhEl.value.replace(',', '.'));
+        if (!isNaN(v) && v > 0) valorHoraNormal = v;
+    }
+    
+    if (salEl) {
+        const v = parseFloat(salEl.value.replace(',', '.'));
+        salarioBaseMensal = (isNaN(v) || v <= 0) ? null : v;
+    }
+    
+    if (adiEl) {
+        const v = parseFloat(adiEl.value.replace(',', '.'));
+        adiantamentoMensal = (isNaN(v) || v < 0) ? 0 : v;
+    }
+    
+    if (depEl) {
+        const v = parseInt(depEl.value);
+        dependentesIRRF = (isNaN(v) || v < 0) ? 0 : v;
+    }
+    
+    salvar(true);
+    recalcularTotais();
+    renderizar();
+    mostrarToast('✅ Configurações salvas!');
+};
 
-        // ============================================
-        // CÁLCULOS DO DEMONSTRATIVO
-        // ============================================
+window.exportarBackup = function() {
+    const dados = {
+        _meta: {
+            app: 'CheckPonto',
+            versao: 'v4.6',
+            exportadoEm: new Date().toISOString(),
+            chave: CHAVE_ATUAL
+        },
+        registros: registros,
+        jornadaDiaria: jornadaDiaria,
+        valorHoraNormal: valorHoraNormal,
+        observacoes: observacoes,
+        salarioBaseMensal: salarioBaseMensal,
+        adiantamentoMensal: adiantamentoMensal,
+        dependentesIRRF: dependentesIRRF,
+        extrasFixos: extrasFixos,
+        extrasPorMes: extrasPorMes
+    };
+    
+    const json = JSON.stringify(dados, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const data = new Date();
+    const dia = data.getDate().toString().padStart(2,'0');
+    const mes = (data.getMonth() + 1).toString().padStart(2,'0');
+    const ano = data.getFullYear();
+    const hora = data.getHours().toString().padStart(2,'0');
+    const min = data.getMinutes().toString().padStart(2,'0');
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `CheckPonto_Backup_${ano}-${mes}-${dia}_${hora}${min}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    mostrarToast('📥 Backup exportado com sucesso!');
+};
 
-        function calcularINSS(base) {
-            const faixas = [
-                { limite: 1518.00, aliquota: 0.075 },
-                { limite: 2793.88, aliquota: 0.09 },
-                { limite: 4190.83, aliquota: 0.12 },
-                { limite: 8157.41, aliquota: 0.14 }
-            ];
-            let inss = 0;
-            let anterior = 0;
-            for (let f of faixas) {
-                if (base > anterior) {
-                    const baseFaixa = Math.min(base, f.limite) - anterior;
-                    inss += baseFaixa * f.aliquota;
-                    anterior = f.limite;
-                } else break;
-            }
-            return Math.min(inss, 951.62);
-        }
-
-        function calcularIRRF(base, dependentes = 0) {
-            const deducaoDependente = 189.59;
-            const baseCalculo = base - (dependentes * deducaoDependente);
+window.importarBackup = function(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        try {
+            const dados = JSON.parse(e.target.result);
             
-            const faixas = [
-                { limite: 2259.20, aliquota: 0, deducao: 0 },
-                { limite: 2826.65, aliquota: 0.075, deducao: 169.44 },
-                { limite: 3751.05, aliquota: 0.15, deducao: 381.44 },
-                { limite: 4664.68, aliquota: 0.225, deducao: 662.77 },
-                { limite: Infinity, aliquota: 0.275, deducao: 896.00 }
-            ];
-            
-            for (let f of faixas) {
-                if (baseCalculo <= f.limite) {
-                    const imposto = (baseCalculo * f.aliquota) - f.deducao;
-                    return Math.max(0, imposto);
-                }
-            }
-            return 0;
-        }
-
-        function calcularFGTS(base) {
-            return base * 0.08;
-        }
-
-        function gerarDemonstrativo() {
-            recalcularTotais();
-            
-            const salarioBaseAuto = (jornadaDiaria / 60) * valorHoraNormal * 30;
-            const salarioBase = salarioBaseMensal !== null && salarioBaseMensal > 0 ? salarioBaseMensal : salarioBaseAuto;
-            
-            const horasNormais = cacheTotais.normal / 60;
-            const horas100 = cacheTotais.extra100 / 60;
-            
-            const valorHorasNormais = horasNormais * valorHoraNormal;
-            const valorHoras100 = horas100 * valorHoraNormal * 2.0;
-            
-            let horas50 = 0;
-            let valorHoras50 = 0;
-            let dsr = 0;
-            let labelTrimestre = null;
-            
-            const trimPag = getTrimestrePagamento(mes);
-            if (trimPag) {
-                const dadosTrim = calcularTrimestrePersonalizado(trimPag.trimestre, ano);
-                horas50 = dadosTrim.extra50 / 60;
-                valorHoras50 = horas50 * valorHoraNormal * 1.5;
-                dsr = valorHoras50 / 6;
-                labelTrimestre = trimPag.label;
-            }
-            
-            const chaveMes = `${ano}-${mes}`;
-            const extrasMes = extrasPorMes[chaveMes] || [];
-            const todosExtras = [...extrasFixos, ...extrasMes];
-            
-            const extrasVenc = todosExtras.filter(e => e.tipo === 'vencimento');
-            const extrasDesc = todosExtras.filter(e => e.tipo === 'desconto');
-            
-            const totalExtrasVenc = extrasVenc.reduce((acc, e) => acc + (parseFloat(e.valor) || 0), 0);
-            const totalExtrasDesc = extrasDesc.reduce((acc, e) => acc + (parseFloat(e.valor) || 0), 0);
-            
-            const totalVencimentos = salarioBase + valorHorasNormais + valorHoras100 + valorHoras50 + dsr + totalExtrasVenc;
-            
-            const inss = calcularINSS(totalVencimentos);
-            const baseIRRFcalc = totalVencimentos - inss;
-            const irrf = calcularIRRF(baseIRRFcalc, dependentesIRRF);
-            const totalDescontos = inss + irrf + adiantamentoMensal + totalExtrasDesc;
-            
-            const valorLiquido = totalVencimentos - totalDescontos;
-            
-            const baseINSS = totalVencimentos;
-            const baseFGTS = totalVencimentos;
-            const valorFGTS = calcularFGTS(baseFGTS);
-            const baseIRRF = baseIRRFcalc;
-            
-            return {
-                salarioBase,
-                horasNormais, horas50, horas100,
-                valorHorasNormais, valorHoras50, valorHoras100,
-                dsr, labelTrimestre,
-                totalExtrasVenc, totalExtrasDesc,
-                extrasVenc, extrasDesc,
-                totalVencimentos,
-                inss, irrf, adiantamento: adiantamentoMensal, totalDescontos,
-                valorLiquido,
-                baseINSS, baseFGTS, valorFGTS, baseIRRF,
-                dependentesIRRF
-            };
-        }
-
-        function fmtMoeda(v) {
-            return v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        }
-
-        window.salvarConfiguracoes = function() {
-            const jEl = document.getElementById('cfg-jornada');
-            const vhEl = document.getElementById('cfg-valor-hora');
-            const salEl = document.getElementById('cfg-salario');
-            const adiEl = document.getElementById('cfg-adiantamento');
-            const depEl = document.getElementById('cfg-dependentes');
-            
-            if (jEl) {
-                const v = parseFloat(jEl.value.replace(',', '.'));
-                if (!isNaN(v) && v > 0) jornadaDiaria = Math.round(v * 60);
-            }
-            
-            if (vhEl) {
-                const v = parseFloat(vhEl.value.replace(',', '.'));
-                if (!isNaN(v) && v > 0) valorHoraNormal = v;
-            }
-            
-            if (salEl) {
-                const v = parseFloat(salEl.value.replace(',', '.'));
-                salarioBaseMensal = (isNaN(v) || v <= 0) ? null : v;
+            if (!dados || (!dados.registros && !dados.jornadaDiaria && !dados.extrasFixos)) {
+                mostrarToast('⚠️ Arquivo inválido!');
+                event.target.value = '';
+                return;
             }
             
-            if (adiEl) {
-                const v = parseFloat(adiEl.value.replace(',', '.'));
-                adiantamentoMensal = (isNaN(v) || v < 0) ? 0 : v;
+            const qtdRegistros = dados.registros ? Object.keys(dados.registros).length : 0;
+            const qtdExtras = dados.extrasFixos ? dados.extrasFixos.length : 0;
+            
+            const msg = `⚠️ ATENÇÃO!\n\n` +
+                        `Isso vai SUBSTITUIR todos os seus dados atuais pelos dados do arquivo:\n\n` +
+                        `📅 Registros de ponto: ${qtdRegistros}\n` +
+                        `📌 Lançamentos fixos: ${qtdExtras}\n\n` +
+                        `Deseja continuar?`;
+            
+            if (!confirm(msg)) {
+                event.target.value = '';
+                return;
             }
             
-            if (depEl) {
-                const v = parseInt(depEl.value);
-                dependentesIRRF = (isNaN(v) || v < 0) ? 0 : v;
-            }
+            registros = dados.registros || {};
+            jornadaDiaria = dados.jornadaDiaria || 480;
+            valorHoraNormal = dados.valorHoraNormal || 10.32;
+            observacoes = dados.observacoes || {};
+            salarioBaseMensal = dados.salarioBaseMensal !== undefined ? dados.salarioBaseMensal : null;
+            adiantamentoMensal = dados.adiantamentoMensal || 0;
+            dependentesIRRF = dados.dependentesIRRF || 0;
+            extrasFixos = dados.extrasFixos || [];
+            extrasPorMes = dados.extrasPorMes || {};
+            extrasEmEdicao = {};
             
             salvar(true);
             recalcularTotais();
             renderizar();
-            mostrarToast('✅ Configurações salvas!');
-        };
+            
+            mostrarToast(`✅ Backup restaurado! ${qtdRegistros} registros carregados.`);
+            
+        } catch (err) {
+            console.error(err);
+            mostrarToast('❌ Erro ao ler o arquivo!');
+        }
+        
+        event.target.value = '';
+    };
+    
+    reader.onerror = function() {
+        mostrarToast('❌ Erro ao ler o arquivo!');
+        event.target.value = '';
+    };
+    
+    reader.readAsText(file);
+};
 
-        window.toggleFormExtra = function() {
-            const form = document.getElementById('form-extra');
-            if (!form) return;
-            if (form.style.display === 'none' || form.style.display === '') {
-                form.style.display = 'block';
-                const desc = document.getElementById('extra-desc');
-                if (desc) setTimeout(() => desc.focus(), 100);
-            } else {
-                form.style.display = 'none';
-                ['extra-cod','extra-desc','extra-ref','extra-valor'].forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) el.value = '';
-                });
-                const fixo = document.getElementById('extra-fixo');
-                if (fixo) fixo.checked = false;
-                const tipo = document.getElementById('extra-tipo');
-                if (tipo) tipo.value = 'vencimento';
-            }
-        };
+window.toggleFormExtra = function() {
+    const form = document.getElementById('form-extra');
+    if (!form) return;
+    if (form.style.display === 'none' || form.style.display === '') {
+        form.style.display = 'block';
+        const desc = document.getElementById('extra-desc');
+        if (desc) setTimeout(() => desc.focus(), 100);
+    } else {
+        form.style.display = 'none';
+        ['extra-cod','extra-desc','extra-ref','extra-valor'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+        const fixo = document.getElementById('extra-fixo');
+        if (fixo) fixo.checked = false;
+        const tipo = document.getElementById('extra-tipo');
+        if (tipo) tipo.value = 'vencimento';
+    }
+};
 
-        window.adicionarExtra = function() {
-            const cod = document.getElementById('extra-cod');
-            const desc = document.getElementById('extra-desc');
-            const ref = document.getElementById('extra-ref');
-            const val = document.getElementById('extra-valor');
-            const tipo = document.getElementById('extra-tipo');
-            const fixo = document.getElementById('extra-fixo');
-            
-            if (!desc || !val) return;
-            
-            const descVal = desc.value.trim();
-            const valNum = parseFloat(val.value);
-            
-            if (!descVal) {
-                mostrarToast('⚠️ Digite uma descrição!');
-                return;
-            }
-            if (isNaN(valNum) || valNum <= 0) {
-                mostrarToast('⚠️ Digite um valor válido!');
-                return;
-            }
-            
-            const item = {
-                id: 'ext_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
-                cod: cod ? cod.value.trim() : '',
-                desc: descVal,
-                ref: ref ? ref.value.trim() : '',
-                valor: valNum,
-                tipo: tipo ? tipo.value : 'vencimento'
-            };
-            
-            if (fixo && fixo.checked) {
-                extrasFixos.push(item);
-            } else {
-                const chaveMes = `${ano}-${mes}`;
-                if (!extrasPorMes[chaveMes]) extrasPorMes[chaveMes] = [];
-                extrasPorMes[chaveMes].push(item);
-            }
-            
-            salvar(true);
-            renderizar();
-            mostrarToast('✅ Lançamento adicionado!');
-        };
+window.adicionarExtra = function() {
+    const cod = document.getElementById('extra-cod');
+    const desc = document.getElementById('extra-desc');
+    const ref = document.getElementById('extra-ref');
+    const val = document.getElementById('extra-valor');
+    const tipo = document.getElementById('extra-tipo');
+    const fixo = document.getElementById('extra-fixo');
+    
+    if (!desc || !val) return;
+    
+    const descVal = desc.value.trim();
+    const valNum = parseFloat(val.value);
+    
+    if (!descVal) {
+        mostrarToast('⚠️ Digite uma descrição!');
+        return;
+    }
+    if (isNaN(valNum) || valNum <= 0) {
+        mostrarToast('⚠️ Digite um valor válido!');
+        return;
+    }
+    
+    const item = {
+        id: 'ext_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+        cod: cod ? cod.value.trim() : '',
+        desc: descVal,
+        ref: ref ? ref.value.trim() : '',
+        valor: valNum,
+        tipo: tipo ? tipo.value : 'vencimento'
+    };
+    
+    if (fixo && fixo.checked) {
+        extrasFixos.push(item);
+    } else {
+        const chaveMes = `${ano}-${mes}`;
+        if (!extrasPorMes[chaveMes]) extrasPorMes[chaveMes] = [];
+        extrasPorMes[chaveMes].push(item);
+    }
+    
+    salvar(true);
+    renderizar();
+    mostrarToast('✅ Lançamento adicionado!');
+};
 
-        window.removerExtra = function(id, isFixo) {
-            if (!confirm('Deseja realmente apagar este lançamento?')) return;
-            
-            if (isFixo) {
-                extrasFixos = extrasFixos.filter(e => e.id !== id);
-            } else {
-                const chaveMes = `${ano}-${mes}`;
-                if (extrasPorMes[chaveMes]) {
-                    extrasPorMes[chaveMes] = extrasPorMes[chaveMes].filter(e => e.id !== id);
-                }
-            }
-            delete extrasEmEdicao[id];
-            salvar(true);
-            renderizar();
-            mostrarToast('🗑️ Lançamento apagado!');
-        };
+window.removerExtra = function(id, isFixo) {
+    if (!confirm('Deseja realmente apagar este lançamento?')) return;
+    
+    if (isFixo) {
+        extrasFixos = extrasFixos.filter(e => e.id !== id);
+    } else {
+        const chaveMes = `${ano}-${mes}`;
+        if (extrasPorMes[chaveMes]) {
+            extrasPorMes[chaveMes] = extrasPorMes[chaveMes].filter(e => e.id !== id);
+        }
+    }
+    delete extrasEmEdicao[id];
+    salvar(true);
+    renderizar();
+    mostrarToast('🗑️ Lançamento apagado!');
+};
 
-        window.iniciarEdicaoExtra = function(id) {
-            extrasEmEdicao[id] = true;
-            renderizar();
-        };
+window.iniciarEdicaoExtra = function(id) {
+    extrasEmEdicao[id] = true;
+    renderizar();
+};
 
-        window.cancelarEdicaoExtra = function(id) {
-            delete extrasEmEdicao[id];
-            renderizar();
-        };
+window.cancelarEdicaoExtra = function(id) {
+    delete extrasEmEdicao[id];
+    renderizar();
+};
 
-        window.salvarEdicaoExtra = function(id, isFixo) {
-            const codEl = document.getElementById('edit-cod-' + id);
-            const descEl = document.getElementById('edit-desc-' + id);
-            const refEl = document.getElementById('edit-ref-' + id);
-            const tipoEl = document.getElementById('edit-tipo-' + id);
-            const valEl = document.getElementById('edit-valor-' + id);
-            
-            if (!descEl || !valEl) return;
-            
-            const descVal = descEl.value.trim();
-            const valNum = parseFloat(valEl.value);
-            
-            if (!descVal) {
-                mostrarToast('⚠️ Digite uma descrição!');
-                return;
-            }
-            if (isNaN(valNum) || valNum <= 0) {
-                mostrarToast('⚠️ Digite um valor válido!');
-                return;
-            }
-            
-            const lista = isFixo ? extrasFixos : (extrasPorMes[`${ano}-${mes}`] || []);
-            const item = lista.find(e => e.id === id);
-            if (!item) return;
-            
-            item.cod = codEl ? codEl.value.trim() : '';
-            item.desc = descVal;
-            item.ref = refEl ? refEl.value.trim() : '';
-            item.tipo = tipoEl ? tipoEl.value : 'vencimento';
-            item.valor = valNum;
-            
-            delete extrasEmEdicao[id];
-            salvar(true);
-            renderizar();
-            mostrarToast('✅ Lançamento atualizado!');
-        };
-
-        // ============================================
-        // RENDERIZAÇÃO
-        // ============================================
+window.salvarEdicaoExtra = function(id, isFixo) {
+    const codEl = document.getElementById('edit-cod-' + id);
+    const descEl = document.getElementById('edit-desc-' + id);
+    const refEl = document.getElementById('edit-ref-' + id);
+    const tipoEl = document.getElementById('edit-tipo-' + id);
+    const valEl = document.getElementById('edit-valor-' + id);
+    
+    if (!descEl || !valEl) return;
+    
+    const descVal = descEl.value.trim();
+    const valNum = parseFloat(valEl.value);
+    
+    if (!descVal) {
+        mostrarToast('⚠️ Digite uma descrição!');
+        return;
+    }
+    if (isNaN(valNum) || valNum <= 0) {
+        mostrarToast('⚠️ Digite um valor válido!');
+        return;
+    }
+    
+    const lista = isFixo ? extrasFixos : (extrasPorMes[`${ano}-${mes}`] || []);
+    const item = lista.find(e => e.id === id);
+    if (!item) return;
+    
+    item.cod = codEl ? codEl.value.trim() : '';
+    item.desc = descVal;
+    item.ref = refEl ? refEl.value.trim() : '';
+    item.tipo = tipoEl ? tipoEl.value : 'vencimento';
+    item.valor = valNum;
+    
+    delete extrasEmEdicao[id];
+    salvar(true);
+    renderizar();
+    mostrarToast('✅ Lançamento atualizado!');
+};
 
         function renderizar() {
             let corpo = '';
@@ -2937,7 +2917,7 @@
                 const d = gerarDemonstrativo();
                 
                 const linhasVenc = [
-                    { cod: '00503', desc: 'DIAS NORMAIS', ref: `${d.horasNormais.toFixed(2)}h`, valor: d.valorHorasNormais },
+                    { cod: '00503', desc: 'DIAS NORMAIS', ref: `${d.diasTrabalhados.toFixed(2)}`, valor: d.valorDiasNormais },
                     { cod: '00565', desc: 'HORA EXTRA 100%', ref: `${d.horas100.toFixed(2)}h`, valor: d.valorHoras100 }
                 ];
                 
@@ -2948,6 +2928,9 @@
                         ref: `${d.horas50.toFixed(2)}h`, 
                         valor: d.valorHoras50 
                     });
+                }
+                
+                if (d.dsr > 0) {
                     linhasVenc.push({ 
                         cod: '00678', 
                         desc: 'DSR S/ HORAS EXTRAS', 
@@ -3244,6 +3227,28 @@
                         </div>
                     </div>
                     
+                    <div class="config-section">
+                        <div class="config-section-title">
+                            <i class="fa-solid fa-shield-halved"></i> Backup e Restauração
+                        </div>
+                        <p style="font-size:0.75rem; color:#94a3b8; margin:0 0 4px 0; line-height:1.4;">
+                            Faça backup dos seus dados regularmente para não perder nada em atualizações.
+                        </p>
+                        <div class="backup-actions">
+                            <button class="btn-backup" onclick="exportarBackup()">
+                                <i class="fa-solid fa-download"></i> Exportar Dados
+                            </button>
+                            <button class="btn-backup import" onclick="document.getElementById('import-file').click()">
+                                <i class="fa-solid fa-upload"></i> Importar Dados
+                            </button>
+                        </div>
+                        <input type="file" id="import-file" accept=".json,application/json" style="display:none;" onchange="importarBackup(event)">
+                        <div class="backup-hint">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span>O arquivo exportado contém todos os registros de ponto, lançamentos extras, observações e configurações.</span>
+                        </div>
+                    </div>
+                    
                     <div class="config-save-area">
                         <button class="btn-save-config" onclick="salvarConfiguracoes()">
                             <i class="fa-solid fa-floppy-disk"></i> Salvar Configurações
@@ -3422,7 +3427,7 @@
                               <path d="M650 530 Q760 570 880 515" stroke="url(#neonBlue)" stroke-width="10" fill="none" stroke-linecap="round" filter="url(#glow)"/>
                             </svg>
                         </div>
-                        <h1 class="brand-title">Check Ponto <span class="version-tag">v4.4</span></h1>
+                        <h1 class="brand-title">Check Ponto <span class="version-tag">v4.6</span></h1>
                     </div>
 
                     <div class="header-row-2">
@@ -3453,7 +3458,7 @@
                 <footer class="footer">
                     <div class="footer-content">
                         <span class="footer-text">Criado por <b>Deh Januário</b></span>
-                        <span class="footer-brand">Check Ponto • v4.4 Premium</span>
+                        <span class="footer-brand">Check Ponto • v4.6 Premium</span>
                     </div>
                 </footer>
                 <div id="toast" class="toast"></div>
@@ -3478,6 +3483,8 @@
         window.calMudarMes = calMudarMes;
         window.selecionarDiaCalendario = selecionarDiaCalendario;
         window.salvarConfiguracoes = salvarConfiguracoes;
+        window.exportarBackup = exportarBackup;
+        window.importarBackup = importarBackup;
         window.toggleFormExtra = toggleFormExtra;
         window.adicionarExtra = adicionarExtra;
         window.removerExtra = removerExtra;
