@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Check Ponto v4.6 - Ajuste Edition</title>
+    <title>Check Ponto v4.7 - Clean Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
@@ -45,19 +45,20 @@
 
         .container { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; }
 
+        /* HEADER */
         .header-card {
             background: rgba(11, 16, 38, 0.65) !important;
             backdrop-filter: blur(18px);
             -webkit-backdrop-filter: blur(18px);
             border: 1px solid rgba(255,255,255,0.08);
             border-radius: var(--radius);
-            padding: 20px;
+            padding: 22px 20px;
             margin-bottom: 20px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.45);
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
+            gap: 16px;
             position: relative;
             overflow: hidden;
         }
@@ -74,11 +75,9 @@
         @keyframes shineSweep { 0% { left: -150%; } 40%, 100% { left: 150%; } }
 
         .header-row-1 { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; }
-        .header-row-2 { display: flex; align-items: center; justify-content: center; width: 100%; }
-        .header-row-4 { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; }
 
         .futuristic-logo {
-            width: 55px; height: 55px; 
+            width: 50px; height: 50px; 
             filter: drop-shadow(0 0 12px rgba(57, 198, 255, 0.4));
             animation: logoFloat 4s ease-in-out infinite;
         }
@@ -89,26 +88,81 @@
         }
 
         .brand-title {
-            margin: 0; font-size: 1.6rem; font-weight: 800;
+            margin: 0; font-size: 1.5rem; font-weight: 800;
             background: linear-gradient(90deg, #3ACDFF 0%, #B15CFF 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
         .version-tag {
             background: linear-gradient(135deg, #39C6FF, #7B2EFF);
-            color: white; font-size: 0.65rem; padding: 2px 8px; border-radius: 6px;
+            color: white; font-size: 0.6rem; padding: 2px 8px; border-radius: 6px;
             font-weight: 700; margin-left: 6px; vertical-align: middle;
         }
 
-        .date-stepper {
-            display: flex; align-items: center; background: rgba(255,255,255,0.04);
-            border-radius: 14px; padding: 4px; border: 1px solid rgba(255,255,255,0.08);
+        /* NOVO STEPPER GRANDE */
+        .date-stepper-big {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            width: 100%;
+            background: linear-gradient(135deg, rgba(57, 198, 255, 0.06), rgba(123, 46, 255, 0.06));
+            border: 1px solid rgba(57, 198, 255, 0.2);
+            border-radius: 18px;
+            padding: 12px 16px;
+            box-shadow: inset 0 0 20px rgba(57, 198, 255, 0.04), 0 4px 20px rgba(0,0,0,0.2);
+            position: relative;
         }
 
-        .date-display {
-            font-weight: 800; font-size: 1rem; min-width: 140px;
-            text-align: center; color: #fff; text-transform: uppercase; letter-spacing: 1px;
+        .date-stepper-big::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 18px;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(57, 198, 255, 0.35), transparent 40%, transparent 60%, rgba(199, 125, 255, 0.35));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
         }
+
+        .date-stepper-big .btn-nav {
+            background: rgba(57, 198, 255, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(57, 198, 255, 0.25);
+            border-radius: 12px;
+            font-size: 1.1rem;
+            padding: 8px 16px;
+            flex-shrink: 0;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .date-stepper-big .btn-nav:hover {
+            background: rgba(57, 198, 255, 0.2);
+            box-shadow: 0 0 20px rgba(57, 198, 255, 0.3);
+        }
+
+        .date-display-big {
+            flex: 1;
+            text-align: center;
+            font-weight: 900;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #3ACDFF 0%, #B15CFF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .header-row-4 { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; }
 
         button {
             padding: 10px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none;
@@ -117,9 +171,9 @@
         }
 
         .btn-primary { background: linear-gradient(135deg, #39C6FF, #7B2EFF); color: white; box-shadow: 0 5px 15px rgba(57, 198, 255, 0.3); }
-        .btn-pdf { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
         .btn-nav { background: transparent; color: var(--primary); font-size: 1.2rem; padding: 5px 15px; }
 
+        /* CARDS DAS ABAS */
         .aba-card {
             background: rgba(20, 25, 55, 0.7);
             backdrop-filter: blur(14px);
@@ -149,6 +203,7 @@
             font-size: 1rem;
         }
 
+        /* STATS */
         .stat-box { border-bottom: 4px solid rgba(255,255,255,0.1); padding: 12px 15px; border-radius: 12px; background: rgba(255,255,255,0.02); }
         .stat-box.blue { border-bottom-color: #39C6FF; }
         .stat-box.purple { border-bottom-color: #7B2EFF; }
@@ -250,7 +305,6 @@
             justify-content: center;
             gap: 4px;
         }
-        .tab-btn i { display: none; }
         .tab-btn.active {
             background: rgba(57, 198, 255, 0.12);
             color: #fff;
@@ -899,54 +953,7 @@
             font-size: 0.85rem;
         }
 
-        .demonstrativo-table { border-collapse: separate; border-spacing: 0; }
-        .demonstrativo-table th {
-            background: rgba(57, 198, 255, 0.08);
-            font-size: 0.65rem;
-            padding: 8px 6px;
-        }
-        .demonstrativo-table td {
-            font-size: 0.75rem;
-            padding: 7px 6px;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
-        }
-
-        .demonstrativo-table .col-divider {
-            border-right: 2px solid rgba(57, 198, 255, 0.5) !important;
-        }
-
-        .demonstrativo-table .venc-header { background: rgba(16,185,129,0.15); color: #10b981; }
-        .demonstrativo-table .desc-header { background: rgba(239,68,68,0.15); color: #ef4444; }
-
-        .demonstrativo-table tbody tr:hover { background: rgba(255,255,255,0.02); }
-
-        .liquido-box {
-            margin-top: 20px;
-            padding: 18px 20px;
-            border-radius: 16px;
-            background: linear-gradient(135deg, rgba(57,198,255,0.12), rgba(123,46,255,0.12));
-            border: 1px solid rgba(57,198,255,0.3);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .liquido-box .label {
-            font-size: 0.9rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            color: #94a3b8;
-            letter-spacing: 1px;
-        }
-        .liquido-box .valor {
-            font-size: 2rem;
-            font-weight: 900;
-            background: linear-gradient(90deg,#3ACDFF,#B15CFF);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
+        /* CONFIG */
         .config-section {
             margin-bottom: 24px;
             padding: 18px 20px;
@@ -972,75 +979,6 @@
         }
 
         .config-section-title i { font-size: 0.9rem; }
-
-        .config-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
-
-        .config-field { display: flex; flex-direction: column; gap: 6px; }
-
-        .config-field label {
-            font-size: 0.65rem;
-            color: #94a3b8;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .config-field input {
-            width: 100%;
-            padding: 12px 14px;
-            font-size: 0.95rem;
-            background: rgba(255,255,255,.06);
-            border: 1px solid rgba(255,255,255,.1);
-            border-radius: 12px;
-            color: #fff;
-            font-weight: 700;
-            text-align: center;
-            letter-spacing: 0.5px;
-            height: 48px;
-        }
-
-        .config-field input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 15px rgba(57, 198, 255, 0.25);
-        }
-
-        .config-hint {
-            margin-top: 10px;
-            font-size: 0.7rem;
-            color: #64748b;
-            display: flex;
-            align-items: flex-start;
-            gap: 6px;
-            line-height: 1.4;
-        }
-
-        .config-hint i { color: var(--primary); margin-top: 2px; flex-shrink: 0; }
-
-        .config-save-area { display: flex; justify-content: center; margin-top: 24px; }
-
-        .btn-save-config {
-            background: linear-gradient(135deg, #39C6FF, #7B2EFF);
-            color: #fff;
-            border: none;
-            padding: 14px 40px;
-            font-size: 0.85rem;
-            font-weight: 800;
-            border-radius: 14px;
-            cursor: pointer;
-            box-shadow: 0 6px 20px rgba(57, 198, 255, 0.35);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-save-config:hover {
-            box-shadow: 0 0 30px rgba(57, 198, 255, 0.6);
-            transform: translateY(-2px);
-        }
 
         .backup-actions {
             display: grid;
@@ -1082,6 +1020,16 @@
             box-shadow: 0 0 20px rgba(16,185,129,0.3);
         }
 
+        .btn-backup.pdf {
+            background: linear-gradient(135deg, rgba(236,72,153,0.15), rgba(123,46,255,0.15));
+            border-color: rgba(236,72,153,0.35);
+            grid-column: 1 / -1;
+        }
+        .btn-backup.pdf:hover {
+            background: linear-gradient(135deg, rgba(236,72,153,0.3), rgba(123,46,255,0.3));
+            box-shadow: 0 0 20px rgba(236,72,153,0.3);
+        }
+
         .backup-hint {
             margin-top: 14px;
             font-size: 0.7rem;
@@ -1094,367 +1042,6 @@
 
         .backup-hint i { color: var(--primary); margin-top: 2px; flex-shrink: 0; }
 
-        .extras-section {
-            margin-top: 25px;
-            padding: 18px 20px;
-            border-radius: 16px;
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.06);
-        }
-
-        .extras-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }
-
-        .extras-header .extras-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            color: #94a3b8;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-        }
-
-        .extras-header .extras-title i { color: var(--primary); }
-
-        .btn-add-extra {
-            background: linear-gradient(135deg, rgba(57,198,255,0.18), rgba(123,46,255,0.18));
-            color: #fff;
-            border: 1px solid rgba(57,198,255,0.35);
-            border-radius: 10px;
-            padding: 9px 18px;
-            font-size: 0.72rem;
-            font-weight: 800;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .btn-add-extra:hover {
-            background: linear-gradient(135deg, rgba(57,198,255,0.3), rgba(123,46,255,0.3));
-            box-shadow: 0 0 20px rgba(57,198,255,0.3);
-        }
-
-        .extra-form-card {
-            margin-bottom: 18px;
-            padding: 18px;
-            background: rgba(57,198,255,0.05);
-            border-radius: 14px;
-            border: 1px solid rgba(57,198,255,0.25);
-            box-shadow: 0 0 20px rgba(57,198,255,0.08) inset;
-            animation: fadeInForm 0.25s ease;
-        }
-
-        @keyframes fadeInForm {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .extra-form-card .form-title {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            color: var(--primary);
-            font-weight: 800;
-            letter-spacing: 0.8px;
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .extra-form-grid {
-            display: grid;
-            grid-template-columns: 100px 2fr 1fr 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 14px;
-        }
-
-        .extra-form-field { display: flex; flex-direction: column; gap: 5px; }
-
-        .extra-form-field label {
-            font-size: 0.6rem;
-            color: #94a3b8;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .extra-form-field input,
-        .extra-form-field select {
-            width: 100%;
-            padding: 10px 12px;
-            font-size: 0.85rem;
-            background: rgba(255,255,255,.06);
-            border: 1px solid rgba(255,255,255,.12);
-            border-radius: 10px;
-            color: #fff;
-            font-weight: 600;
-            font-family: inherit;
-        }
-
-        .extra-form-field input::placeholder { color: #64748b; font-weight: 500; }
-
-        .extra-form-field input:focus,
-        .extra-form-field select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 12px rgba(57,198,255,0.25);
-        }
-
-        .extra-form-field select option { background: #0B1026; color: #fff; }
-
-        .extra-form-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .extra-checkbox-label {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.72rem;
-            color: #cbd5e1;
-            font-weight: 700;
-            cursor: pointer;
-            user-select: none;
-            padding: 6px 0;
-        }
-
-        .extra-checkbox-label input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--primary);
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .extra-form-actions { display: flex; gap: 8px; }
-
-        .btn-cancel-extra {
-            background: rgba(255,255,255,0.06);
-            color: #94a3b8;
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 9px 18px;
-            font-size: 0.72rem;
-            font-weight: 800;
-            border-radius: 10px;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .btn-cancel-extra:hover { background: rgba(255,255,255,0.1); }
-
-        .btn-confirm-extra {
-            background: linear-gradient(135deg, #39C6FF, #7B2EFF);
-            color: #fff;
-            border: none;
-            padding: 9px 20px;
-            font-size: 0.72rem;
-            font-weight: 800;
-            border-radius: 10px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(57,198,255,0.35);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .btn-confirm-extra:hover { box-shadow: 0 0 25px rgba(57,198,255,0.5); }
-
-        .extras-lista { display: flex; flex-direction: column; gap: 10px; }
-
-        .extra-card {
-            padding: 12px 14px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.06);
-            transition: all 0.2s;
-        }
-
-        .extra-card:hover {
-            background: rgba(255,255,255,0.05);
-            border-color: rgba(255,255,255,0.1);
-        }
-
-        .extra-card.is-venc { border-left: 3px solid #10b981; }
-        .extra-card.is-desc { border-left: 3px solid #ef4444; }
-
-        .extra-view { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; }
-
-        .extra-view-info { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-
-        .extra-view-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-
-        .extra-view-desc { font-weight: 800; font-size: 0.9rem; color: #fff; word-break: break-word; }
-
-        .extra-view-meta { display: flex; gap: 12px; flex-wrap: wrap; font-size: 0.7rem; color: #94a3b8; }
-
-        .extra-view-meta strong { color: #cbd5e1; font-weight: 800; }
-
-        .extra-view-valor { font-weight: 900; font-size: 1rem; color: #10b981; white-space: nowrap; }
-        .extra-card.is-desc .extra-view-valor { color: #ef4444; }
-
-        .extra-card-badge {
-            font-size: 0.55rem;
-            font-weight: 900;
-            padding: 3px 8px;
-            border-radius: 6px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-        .extra-card-badge.fixo {
-            background: rgba(57,198,255,0.15);
-            color: #39C6FF;
-            border: 1px solid rgba(57,198,255,0.35);
-        }
-        .extra-card-badge.venc {
-            background: rgba(16,185,129,0.15);
-            color: #10b981;
-            border: 1px solid rgba(16,185,129,0.3);
-        }
-        .extra-card-badge.desc {
-            background: rgba(239,68,68,0.15);
-            color: #ef4444;
-            border: 1px solid rgba(239,68,68,0.3);
-        }
-
-        .extra-actions { display: flex; gap: 6px; flex-shrink: 0; }
-
-        .btn-extra-action {
-            border-radius: 9px;
-            width: 36px;
-            height: 36px;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: all 0.2s;
-            border: 1px solid;
-        }
-        .btn-extra-action.edit {
-            background: rgba(57,198,255,0.12);
-            color: #39C6FF;
-            border-color: rgba(57,198,255,0.3);
-        }
-        .btn-extra-action.edit:hover { background: rgba(57,198,255,0.25); }
-        .btn-extra-action.delete {
-            background: rgba(239,68,68,0.12);
-            color: #ef4444;
-            border-color: rgba(239,68,68,0.25);
-        }
-        .btn-extra-action.delete:hover { background: rgba(239,68,68,0.3); }
-
-        .extra-edit { display: flex; flex-direction: column; gap: 10px; }
-
-        .extra-edit-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            color: var(--primary);
-            font-weight: 800;
-            letter-spacing: 0.5px;
-        }
-
-        .extra-edit-grid {
-            display: grid;
-            grid-template-columns: 100px 2fr 1fr 1fr 1fr;
-            gap: 8px;
-        }
-
-        .extra-edit-field { display: flex; flex-direction: column; gap: 4px; }
-
-        .extra-edit-field label {
-            font-size: 0.55rem;
-            color: #64748b;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-
-        .extra-edit-field input,
-        .extra-edit-field select {
-            width: 100%;
-            padding: 8px 10px;
-            font-size: 0.8rem;
-            background: rgba(255,255,255,.06);
-            border: 1px solid rgba(255,255,255,.12);
-            border-radius: 8px;
-            color: #fff;
-            font-weight: 700;
-            font-family: inherit;
-        }
-        .extra-edit-field input:focus,
-        .extra-edit-field select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 10px rgba(57,198,255,0.2);
-        }
-        .extra-edit-field select option { background: #0B1026; }
-
-        .extra-edit-actions { display: flex; gap: 8px; justify-content: flex-end; }
-
-        .btn-extra-save {
-            background: linear-gradient(135deg, #39C6FF, #7B2EFF);
-            color: #fff;
-            border: none;
-            padding: 8px 18px;
-            font-size: 0.7rem;
-            font-weight: 800;
-            border-radius: 9px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(57,198,255,0.3);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .btn-extra-save:hover { box-shadow: 0 0 20px rgba(57,198,255,0.5); }
-
-        .btn-extra-cancel {
-            background: rgba(255,255,255,0.06);
-            color: #94a3b8;
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 8px 16px;
-            font-size: 0.7rem;
-            font-weight: 800;
-            border-radius: 9px;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .btn-extra-cancel:hover { background: rgba(255,255,255,0.1); }
-
-        .empty-extras {
-            text-align: center;
-            padding: 24px 16px;
-            color: #64748b;
-            font-size: 0.8rem;
-            font-style: italic;
-            background: rgba(255,255,255,0.02);
-            border-radius: 12px;
-            border: 1px dashed rgba(255,255,255,0.08);
-        }
-
         @media (max-width: 992px) {
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .relatorio-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1466,11 +1053,13 @@
 
         @media (max-width: 768px) {
             body { padding: 8px; }
-            .header-card { padding: 15px; gap: 12px; }
+            .header-card { padding: 15px; gap: 14px; }
             .brand-title { font-size: 1.2rem; }
-            .futuristic-logo { width: 45px; height: 45px; }
+            .futuristic-logo { width: 42px; height: 42px; }
+            .date-display-big { font-size: 1.4rem; letter-spacing: 1.5px; }
+            .date-stepper-big { padding: 10px 12px; gap: 8px; }
+            .date-stepper-big .btn-nav { font-size: 0.9rem; padding: 6px 12px; }
             .header-row-4 button { font-size: 0.7rem; padding: 8px 14px; }
-            .date-display { font-size: 0.85rem; min-width: 100px; }
             .tab-btn { font-size: 0.55rem; padding: 8px 4px; min-width: 35px; flex: 1 1 0; }
             .aba-card { padding: 14px; }
             .aba-card .aba-title { font-size: 0.65rem; }
@@ -1514,40 +1103,21 @@
             table { min-width: 600px; }
             th { font-size: 0.6rem; padding: 8px 5px; }
             td { font-size: 0.7rem; padding: 6px 4px; }
-            .demonstrativo-table { min-width: 700px; }
-            .demonstrativo-table td { font-size: 0.7rem; padding: 6px 4px; }
-            .config-grid { grid-template-columns: 1fr; gap: 12px; }
             .config-section { padding: 16px; }
             .config-section-title { font-size: 0.7rem; }
-            .btn-save-config { padding: 12px 30px; font-size: 0.8rem; }
             .backup-actions { grid-template-columns: 1fr; }
-            .extras-section { padding: 14px; }
-            .extras-header { flex-direction: column; align-items: stretch; }
-            .extras-header .extras-title { justify-content: center; }
-            .btn-add-extra { justify-content: center; width: 100%; }
-            .extra-form-card { padding: 14px; }
-            .extra-form-grid { grid-template-columns: 1fr 1fr 1fr; }
-            .extra-form-field.desc { grid-column: 1 / -1; }
-            .extra-form-footer { flex-direction: column; align-items: stretch; }
-            .extra-form-actions { width: 100%; }
-            .extra-form-actions button { flex: 1; justify-content: center; }
-            .extra-view { grid-template-columns: 1fr; gap: 10px; }
-            .extra-actions { justify-content: flex-end; }
-            .extra-edit-grid { grid-template-columns: 1fr 1fr 1fr; }
-            .extra-edit-field.desc { grid-column: 1 / -1; }
-            .extra-edit-actions { width: 100%; }
-            .extra-edit-actions button { flex: 1; justify-content: center; }
         }
 
         @media (max-width: 480px) {
             body { padding: 6px; }
-            .header-card { padding: 12px; gap: 10px; }
+            .header-card { padding: 12px; gap: 12px; }
             .brand-title { font-size: 1rem; }
-            .futuristic-logo { width: 38px; height: 38px; }
+            .futuristic-logo { width: 36px; height: 36px; }
             .version-tag { font-size: 0.5rem; padding: 1px 6px; }
+            .date-display-big { font-size: 1.1rem; letter-spacing: 1px; }
+            .date-stepper-big { padding: 8px 10px; gap: 6px; }
+            .date-stepper-big .btn-nav { font-size: 0.8rem; padding: 5px 10px; }
             .header-row-4 button { font-size: 0.6rem; padding: 6px 10px; }
-            .date-display { font-size: 0.7rem; min-width: 80px; }
-            .btn-nav { font-size: 1rem; padding: 3px 10px; }
             .tab-btn { font-size: 0.48rem; padding: 6px 2px; min-width: 30px; }
             .aba-card { padding: 10px; }
             .aba-card .aba-title { font-size: 0.55rem; margin-bottom: 10px; padding-bottom: 6px; }
@@ -1602,23 +1172,9 @@
             th { font-size: 0.5rem; padding: 6px 4px; }
             td { font-size: 0.6rem; padding: 4px 3px; }
             .readonly-badge { font-size: 0.55rem; padding: 3px 6px; }
-            .liquido-box { padding: 12px 14px; }
-            .liquido-box .label { font-size: 0.7rem; }
-            .liquido-box .valor { font-size: 1.4rem; }
             .config-section { padding: 12px; }
             .config-section-title { font-size: 0.65rem; }
-            .config-field input { padding: 10px 12px; font-size: 0.85rem; height: 44px; }
-            .btn-save-config { padding: 12px 24px; font-size: 0.75rem; }
             .backup-actions { grid-template-columns: 1fr; }
-            .extras-section { padding: 12px; }
-            .extras-title { font-size: 0.65rem; }
-            .btn-add-extra { font-size: 0.6rem; padding: 5px 10px; }
-            .extra-form-card { padding: 12px; }
-            .extra-form-grid { grid-template-columns: 1fr 1fr; }
-            .extra-form-field.desc { grid-column: 1 / -1; }
-            .extra-edit-grid { grid-template-columns: 1fr 1fr; }
-            .extra-edit-field.desc { grid-column: 1 / -1; }
-            .extra-view-desc { font-size: 0.85rem; }
         }
     </style>
 </head>
@@ -1669,16 +1225,13 @@
         let calMesAberto = mes;
         let calAnoAberto = ano;
 
-        let salarioBaseMensal = null;
-        let adiantamentoMensal = 0;
-        let dependentesIRRF = 0;
-        
         let extrasFixos = [];
         let extrasPorMes = {};
         let extrasEmEdicao = {};
 
         const CHAVE_ATUAL = 'folhaPonto_v4.2';
         const CHAVES_ANTIGAS = [
+            'folhaPonto_v4.7',
             'folhaPonto_v4.6',
             'folhaPonto_v4.5',
             'folhaPonto_v4.4',
@@ -1703,9 +1256,6 @@
                         jornadaDiaria = p.jornadaDiaria || 480; 
                         valorHoraNormal = p.valorHoraNormal || 10.32; 
                         observacoes = p.observacoes || {};
-                        salarioBaseMensal = p.salarioBaseMensal !== undefined ? p.salarioBaseMensal : null;
-                        adiantamentoMensal = p.adiantamentoMensal || 0;
-                        dependentesIRRF = p.dependentesIRRF || 0;
                         extrasFixos = p.extrasFixos || [];
                         extrasPorMes = p.extrasPorMes || {};
                         dadosRecuperados = true;
@@ -1817,979 +1367,672 @@
             cacheTotais = n; return n;
         }
 
-        function contarDiasTrabalhados() {
-            let dias = 0;
+        async function exportarPDF() {
+            recalcularTotais();
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+
+            doc.setFont("helvetica", "bold"); doc.setFontSize(22); doc.setTextColor(57, 198, 255);
+            doc.text("CHECK PONTO", 20, 20);
+
+            doc.setFontSize(10); doc.setTextColor(100, 100, 100);
+            doc.text(`Relatório Oficial Premium v4.7 • Gerado em ${new Date().toLocaleDateString()}`, 20, 28);
+            doc.line(20, 32, 190, 32);
+
+            doc.setFontSize(11); doc.setTextColor(0, 0, 0);
+            doc.text(`Período: ${mesesNomes[mes]} de ${ano}`, 20, 42);
+            doc.text(`Jornada: ${Math.floor(jornadaDiaria/60)}h | Valor Hora: R$ ${valorHoraNormal.toFixed(2)}`, 110, 42);
+
+            const tableBody = [];
             for (let d = 1; d <= diasNoMes(ano, mes); d++) {
-                const chave = `${ano}-${mes}-${d}`;
-                const reg = registros[chave];
+                const k = `${ano}-${mes}-${d}`;
                 const dt = new Date(ano, mes, d);
-                const sem = dt.getDay();
-                const fer = isFeriado(mes, d, ano);
+                const st = calcularValoresDia(k, dt.getDay(), mes, d, ano);
+                const reg = registros[k] || {};
                 
-                if (reg && sem !== 0 && !fer) {
-                    const temRegistro = reg.ent1 || reg.sai1 || reg.ent2 || reg.sai2;
-                    if (temRegistro) dias++;
-                }
+                let nomeDiaStr = diasNomes[dt.getDay()];
+                const fer = isFeriado(mes, d, ano);
+                if (fer) nomeDiaStr += ` (${fer})`;
+                else if (reg.feriadoManual) nomeDiaStr += ` (100% Man.)`;
+
+                tableBody.push([
+                    `${d.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')}`,
+                    nomeDiaStr, reg.ent1 || '-', reg.sai1 || '-', reg.ent2 || '-', reg.sai2 || '-',
+                    minToHora(st.trab), minToHora(st.extra50), minToHora(st.extra100)
+                ]);
             }
-            return Math.min(dias, 30);
-        }
-        
-async function exportarPDF() {
-    recalcularTotais();
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('p', 'mm', 'a4');
 
-    doc.setFont("helvetica", "bold"); doc.setFontSize(22); doc.setTextColor(57, 198, 255);
-    doc.text("CHECK PONTO", 20, 20);
+            const val50 = (cacheTotais.extra50 / 60 * valorHoraNormal * 1.5).toFixed(2);
+            const val100 = (cacheTotais.extra100 / 60 * valorHoraNormal * 2.0).toFixed(2);
 
-    doc.setFontSize(10); doc.setTextColor(100, 100, 100);
-    doc.text(`Relatório Oficial Premium v4.6 • Gerado em ${new Date().toLocaleDateString()}`, 20, 28);
-    doc.line(20, 32, 190, 32);
-
-    doc.setFontSize(11); doc.setTextColor(0, 0, 0);
-    doc.text(`Período: ${mesesNomes[mes]} de ${ano}`, 20, 42);
-    doc.text(`Jornada: ${Math.floor(jornadaDiaria/60)}h | Valor Hora: R$ ${valorHoraNormal.toFixed(2)}`, 110, 42);
-
-    const tableBody = [];
-    for (let d = 1; d <= diasNoMes(ano, mes); d++) {
-        const k = `${ano}-${mes}-${d}`;
-        const dt = new Date(ano, mes, d);
-        const st = calcularValoresDia(k, dt.getDay(), mes, d, ano);
-        const reg = registros[k] || {};
-        
-        let nomeDiaStr = diasNomes[dt.getDay()];
-        const fer = isFeriado(mes, d, ano);
-        if (fer) nomeDiaStr += ` (${fer})`;
-        else if (reg.feriadoManual) nomeDiaStr += ` (100% Man.)`;
-
-        tableBody.push([
-            `${d.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')}`,
-            nomeDiaStr, reg.ent1 || '-', reg.sai1 || '-', reg.ent2 || '-', reg.sai2 || '-',
-            minToHora(st.trab), minToHora(st.extra50), minToHora(st.extra100)
-        ]);
-    }
-
-    const val50 = (cacheTotais.extra50 / 60 * valorHoraNormal * 1.5).toFixed(2);
-    const val100 = (cacheTotais.extra100 / 60 * valorHoraNormal * 2.0).toFixed(2);
-
-    doc.autoTable({
-        startY: 48,
-        head: [['Data', 'Dia', 'E1', 'S1', 'E2', 'S2', 'Total', '50%', '100%']],
-        body: tableBody,
-        theme: 'grid',
-        headStyles: { fillColor: [57, 198, 255], halign: 'center', textColor: 255 },
-        styles: { fontSize: 8, halign: 'center' },
-        foot: [
-            [ { content: 'TOTAIS (HORAS)', colSpan: 6, styles: { halign: 'right', fontStyle: 'bold' } }, minToHora(cacheTotais.trab), minToHora(cacheTotais.extra50), minToHora(cacheTotais.extra100) ],
-            [ { content: 'SALDO EM DINHEIRO (R$)', colSpan: 6, styles: { halign: 'right', fontStyle: 'bold' } }, '-', `R$ ${val50}`, `R$ ${val100}` ]
-        ],
-        footStyles: { fillColor: [240, 240, 240], textColor: 0, lineWidth: 0.1 }
-    });
-
-    const obsKey = `${ano}-${mes}`;
-    const obsText = observacoes[obsKey];
-    if (obsText && obsText.trim() !== '') {
-        let finalY = doc.lastAutoTable.finalY || 250;
-        if (finalY > 260) { doc.addPage(); finalY = 20; } 
-        else { finalY += 15; }
-
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(10);
-        doc.setTextColor(0, 0, 0);
-        doc.text("Observações:", 20, finalY);
-        
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(9);
-        doc.setTextColor(80, 80, 80);
-        const splitObs = doc.splitTextToSize(obsText, 170);
-        doc.text(splitObs, 20, finalY + 6);
-    }
-
-    doc.save(`CheckPonto_v46_${mesesNomes[mes]}_${ano}.pdf`);
-    mostrarToast("📄 PDF Exportado com Saldo!");
-}
-
-function initCharts() {
-    if (abaAtiva === 'dashboard') {
-        const distCtx = document.getElementById('chartDist');
-        if (!distCtx) return;
-        if (chartDist) chartDist.destroy();
-
-        chartDist = new Chart(distCtx.getContext('2d'), {
-            type: 'bar',
-            data: { 
-                labels: ['Normal', '50%', '100%'], 
-                datasets: [{ 
-                    data: [cacheTotais.normal/60, cacheTotais.extra50/60, cacheTotais.extra100/60], 
-                    backgroundColor: ['#39C6FF', '#ec4899', '#8b5cf6'], 
-                    borderRadius: 6 
-                }] 
-            },
-            options: { 
-                responsive: true, maintainAspectRatio: false, 
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } },
-                    x: { ticks: { color: '#94a3b8' } }
-                }
-            }
-        });
-    }
-
-    if (abaAtiva === 'relatorio') {
-        const trimCtx = document.getElementById('chartTrimestre');
-        const mensalCtx = document.getElementById('chartMensal');
-        const semanalCtx = document.getElementById('chartSemanal');
-        const diarioCtx = document.getElementById('chartDiario');
-        
-        if (trimCtx) {
-            if (chartTrimestre) chartTrimestre.destroy();
-            const dados = getDadosTrimestres(ano);
-            const labelsTrim = getLabelsTrimestres();
-            const extra50 = dados.map(d => d.extra50 / 60);
-            const extra100 = dados.map(d => d.extra100 / 60);
-
-            chartTrimestre = new Chart(trimCtx.getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: labelsTrim,
-                    datasets: [
-                        { label: '50%', data: extra50, backgroundColor: '#ec4899' },
-                        { label: '100%', data: extra100, backgroundColor: '#8b5cf6' }
-                    ]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    scales: { 
-                        x: { ticks: { color: '#94a3b8' } }, 
-                        y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } } 
-                    },
-                    plugins: { legend: { labels: { color: '#94a3b8' } } }
-                }
+            doc.autoTable({
+                startY: 48,
+                head: [['Data', 'Dia', 'E1', 'S1', 'E2', 'S2', 'Total', '50%', '100%']],
+                body: tableBody,
+                theme: 'grid',
+                headStyles: { fillColor: [57, 198, 255], halign: 'center', textColor: 255 },
+                styles: { fontSize: 8, halign: 'center' },
+                foot: [
+                    [ { content: 'TOTAIS (HORAS)', colSpan: 6, styles: { halign: 'right', fontStyle: 'bold' } }, minToHora(cacheTotais.trab), minToHora(cacheTotais.extra50), minToHora(cacheTotais.extra100) ],
+                    [ { content: 'SALDO EM DINHEIRO (R$)', colSpan: 6, styles: { halign: 'right', fontStyle: 'bold' } }, '-', `R$ ${val50}`, `R$ ${val100}` ]
+                ],
+                footStyles: { fillColor: [240, 240, 240], textColor: 0, lineWidth: 0.1 }
             });
-        }
 
-        if (mensalCtx) {
-            if (chartMensal) chartMensal.destroy();
-            const mesesLabels = [];
-            const dadosMeses = [];
-            for (let i = 0; i < 3; i++) {
-                let m = mes - i, a = ano;
-                if (m < 0) { m += 12; a--; }
-                mesesLabels.unshift(`${mesesNomes[m].substring(0,3)}/${a}`);
-                dadosMeses.unshift(calcularMes(m, a));
+            const obsKey = `${ano}-${mes}`;
+            const obsText = observacoes[obsKey];
+            if (obsText && obsText.trim() !== '') {
+                let finalY = doc.lastAutoTable.finalY || 250;
+                if (finalY > 260) { doc.addPage(); finalY = 20; } 
+                else { finalY += 15; }
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(10);
+                doc.setTextColor(0, 0, 0);
+                doc.text("Observações:", 20, finalY);
+                
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(9);
+                doc.setTextColor(80, 80, 80);
+                const splitObs = doc.splitTextToSize(obsText, 170);
+                doc.text(splitObs, 20, finalY + 6);
             }
 
-            chartMensal = new Chart(mensalCtx.getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: mesesLabels,
-                    datasets: [
-                        { label: '50%', data: dadosMeses.map(d => d.extra50 / 60), borderColor: '#ec4899', backgroundColor: '#ec4899', tension: 0.3, pointRadius: 6 },
-                        { label: '100%', data: dadosMeses.map(d => d.extra100 / 60), borderColor: '#8b5cf6', backgroundColor: '#8b5cf6', tension: 0.3, pointRadius: 6 }
-                    ]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    scales: { 
-                        y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } },
-                        x: { ticks: { color: '#94a3b8' } }
-                    },
-                    plugins: { legend: { labels: { color: '#94a3b8' } } }
-                }
-            });
+            doc.save(`CheckPonto_v47_${mesesNomes[mes]}_${ano}.pdf`);
+            mostrarToast("📄 PDF Exportado com Saldo!");
         }
 
-        if (semanalCtx) {
-            if (chartSemanal) chartSemanal.destroy();
-            const semanas = [];
-            const diasMes = diasNoMes(ano, mes);
-            let semanaAtual = [];
-            for (let d = 1; d <= diasMes; d++) {
-                const dt = new Date(ano, mes, d);
-                const s = calcularValoresDia(`${ano}-${mes}-${d}`, dt.getDay(), mes, d, ano);
-                semanaAtual.push(s);
-                if (dt.getDay() === 6 || d === diasMes) { semanas.push(semanaAtual); semanaAtual = []; }
-            }
+        function initCharts() {
+            if (abaAtiva === 'dashboard') {
+                const distCtx = document.getElementById('chartDist');
+                if (!distCtx) return;
+                if (chartDist) chartDist.destroy();
 
-            const labelsSemana = semanas.map((s, i) => `Sem ${i+1}`);
-            const data50 = semanas.map(s => s.reduce((acc, v) => acc + v.extra50, 0) / 60);
-            const data100 = semanas.map(s => s.reduce((acc, v) => acc + v.extra100, 0) / 60);
-
-            chartSemanal = new Chart(semanalCtx.getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: labelsSemana,
-                    datasets: [
-                        { label: '50%', data: data50, backgroundColor: '#ec4899' },
-                        { label: '100%', data: data100, backgroundColor: '#8b5cf6' }
-                    ]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    scales: { 
-                        x: { ticks: { color: '#94a3b8' } }, 
-                        y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } } 
+                chartDist = new Chart(distCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: { 
+                        labels: ['Normal', '50%', '100%'], 
+                        datasets: [{ 
+                            data: [cacheTotais.normal/60, cacheTotais.extra50/60, cacheTotais.extra100/60], 
+                            backgroundColor: ['#39C6FF', '#ec4899', '#8b5cf6'], 
+                            borderRadius: 6 
+                        }] 
                     },
-                    plugins: { legend: { labels: { color: '#94a3b8' } } }
-                }
-            });
-        }
-
-        if (diarioCtx) {
-            if (chartDiario) chartDiario.destroy();
-            const diasMes = diasNoMes(ano, mes);
-            const labelsDias = [];
-            const data50 = [];
-            const data100 = [];
-            
-            for (let d = 1; d <= diasMes; d++) {
-                const dt = new Date(ano, mes, d);
-                const s = calcularValoresDia(`${ano}-${mes}-${d}`, dt.getDay(), mes, d, ano);
-                labelsDias.push(`${d}`);
-                data50.push(s.extra50 / 60);
-                data100.push(s.extra100 / 60);
-            }
-
-            chartDiario = new Chart(diarioCtx.getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: labelsDias,
-                    datasets: [
-                        { label: '50%', data: data50, borderColor: '#ec4899', backgroundColor: 'rgba(236, 72, 153, 0.15)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#ec4899', pointBorderColor: '#fff', pointBorderWidth: 1, borderWidth: 2.5 },
-                        { label: '100%', data: data100, borderColor: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.15)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#8b5cf6', pointBorderColor: '#fff', pointBorderWidth: 1, borderWidth: 2.5 }
-                    ]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    scales: { 
-                        x: { 
-                            title: { display: true, text: 'Dias do Mês', color: '#94a3b8', font: { weight: 'bold', size: 12 } },
-                            ticks: { color: '#94a3b8', stepSize: 1, autoSkip: false, maxRotation: 90, minRotation: 45, font: { size: 9 } },
-                            grid: { color: 'rgba(255,255,255,0.05)' }
-                        }, 
-                        y: { 
-                            beginAtZero: true, 
-                            title: { display: true, text: 'Horas Extras', color: '#94a3b8', font: { weight: 'bold', size: 12 } },
-                            ticks: { color: '#94a3b8', callback: function(value) { return value.toFixed(1) + 'h'; } },
-                            grid: { color: 'rgba(255,255,255,0.05)' }
-                        } 
-                    },
-                    plugins: { 
-                        legend: { labels: { color: '#94a3b8', font: { size: 12, weight: 'bold' }, boxWidth: 15, padding: 15 } },
-                        tooltip: {
-                            backgroundColor: 'rgba(11, 16, 38, 0.9)', titleColor: '#fff', bodyColor: '#fff',
-                            borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1,
-                            callbacks: { label: function(context) { return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + 'h'; } }
+                    options: { 
+                        responsive: true, maintainAspectRatio: false, 
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } },
+                            x: { ticks: { color: '#94a3b8' } }
                         }
-                    },
-                    interaction: { intersect: false, mode: 'index' }
+                    }
+                });
+            }
+
+            if (abaAtiva === 'relatorio') {
+                const trimCtx = document.getElementById('chartTrimestre');
+                const mensalCtx = document.getElementById('chartMensal');
+                const semanalCtx = document.getElementById('chartSemanal');
+                const diarioCtx = document.getElementById('chartDiario');
+                
+                if (trimCtx) {
+                    if (chartTrimestre) chartTrimestre.destroy();
+                    const dados = getDadosTrimestres(ano);
+                    const labelsTrim = getLabelsTrimestres();
+                    const extra50 = dados.map(d => d.extra50 / 60);
+                    const extra100 = dados.map(d => d.extra100 / 60);
+
+                    chartTrimestre = new Chart(trimCtx.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: labelsTrim,
+                            datasets: [
+                                { label: '50%', data: extra50, backgroundColor: '#ec4899' },
+                                { label: '100%', data: extra100, backgroundColor: '#8b5cf6' }
+                            ]
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: false,
+                            scales: { 
+                                x: { ticks: { color: '#94a3b8' } }, 
+                                y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } } 
+                            },
+                            plugins: { legend: { labels: { color: '#94a3b8' } } }
+                        }
+                    });
                 }
-            });
-        }
-    }
-}
 
-function salvar(silencioso = false) { 
-    localStorage.setItem(CHAVE_ATUAL, JSON.stringify({ 
-        registros, jornadaDiaria, valorHoraNormal, observacoes,
-        salarioBaseMensal, adiantamentoMensal, dependentesIRRF,
-        extrasFixos, extrasPorMes
-    })); 
-    if(!silencioso) mostrarToast('✅ Dados guardados!'); 
-}
+                if (mensalCtx) {
+                    if (chartMensal) chartMensal.destroy();
+                    const mesesLabels = [];
+                    const dadosMeses = [];
+                    for (let i = 0; i < 3; i++) {
+                        let m = mes - i, a = ano;
+                        if (m < 0) { m += 12; a--; }
+                        mesesLabels.unshift(`${mesesNomes[m].substring(0,3)}/${a}`);
+                        dadosMeses.unshift(calcularMes(m, a));
+                    }
 
-function salvarObservacao() {
-    const textarea = document.getElementById('obs-textarea');
-    if (textarea) {
-        const obsKey = `${ano}-${mes}`;
-        observacoes[obsKey] = textarea.value;
-        salvar(true);
-        mostrarToast('✅ Observação salva com sucesso!');
-    }
-}
+                    chartMensal = new Chart(mensalCtx.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: mesesLabels,
+                            datasets: [
+                                { label: '50%', data: dadosMeses.map(d => d.extra50 / 60), borderColor: '#ec4899', backgroundColor: '#ec4899', tension: 0.3, pointRadius: 6 },
+                                { label: '100%', data: dadosMeses.map(d => d.extra100 / 60), borderColor: '#8b5cf6', backgroundColor: '#8b5cf6', tension: 0.3, pointRadius: 6 }
+                            ]
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: false,
+                            scales: { 
+                                y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } },
+                                x: { ticks: { color: '#94a3b8' } }
+                            },
+                            plugins: { legend: { labels: { color: '#94a3b8' } } }
+                        }
+                    });
+                }
 
-function toggleFeriadoManual(chave) {
-    if (!registros[chave]) registros[chave] = {};
-    registros[chave].feriadoManual = !registros[chave].feriadoManual; 
-    salvar(true); 
-    recalcularTotais();
-    renderizar();
-}
+                if (semanalCtx) {
+                    if (chartSemanal) chartSemanal.destroy();
+                    const semanas = [];
+                    const diasMes = diasNoMes(ano, mes);
+                    let semanaAtual = [];
+                    for (let d = 1; d <= diasMes; d++) {
+                        const dt = new Date(ano, mes, d);
+                        const s = calcularValoresDia(`${ano}-${mes}-${d}`, dt.getDay(), mes, d, ano);
+                        semanaAtual.push(s);
+                        if (dt.getDay() === 6 || d === diasMes) { semanas.push(semanaAtual); semanaAtual = []; }
+                    }
 
-function toggleFeriadoManualDoDia() {
-    const chave = `${ano}-${mes}-${diaSelecionado}`;
-    const eraManual = registros[chave] && registros[chave].feriadoManual === true;
-    
-    if (!registros[chave]) registros[chave] = {};
-    registros[chave].feriadoManual = !registros[chave].feriadoManual;
-    
-    salvar(true);
-    recalcularTotais();
-    renderizar();
-    
-    if (!eraManual) {
-        mostrarToast('✅ Dia marcado como 100%');
-    } else {
-        mostrarToast('↩️ Marcação 100% removida');
-    }
-}
+                    const labelsSemana = semanas.map((s, i) => `Sem ${i+1}`);
+                    const data50 = semanas.map(s => s.reduce((acc, v) => acc + v.extra50, 0) / 60);
+                    const data100 = semanas.map(s => s.reduce((acc, v) => acc + v.extra100, 0) / 60);
 
-function mudarDia(delta) {
-    let d = diaSelecionado + delta;
-    let m = mes;
-    let a = ano;
-    
-    if (d < 1) {
-        m--;
-        if (m < 0) { m = 11; a--; }
-        d = diasNoMes(a, m);
-    } else if (d > diasNoMes(a, m)) {
-        m++;
-        if (m > 11) { m = 0; a++; }
-        d = 1;
-    }
-    
-    diaSelecionado = d;
-    mes = m;
-    ano = a;
-    recalcularTotais();
-    renderizar();
-}
+                    chartSemanal = new Chart(semanalCtx.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: labelsSemana,
+                            datasets: [
+                                { label: '50%', data: data50, backgroundColor: '#ec4899' },
+                                { label: '100%', data: data100, backgroundColor: '#8b5cf6' }
+                            ]
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: false,
+                            scales: { 
+                                x: { ticks: { color: '#94a3b8' } }, 
+                                y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } } 
+                            },
+                            plugins: { legend: { labels: { color: '#94a3b8' } } }
+                        }
+                    });
+                }
 
-function irParaHoje() {
-    const hoje = new Date();
-    ano = hoje.getFullYear();
-    mes = hoje.getMonth();
-    diaSelecionado = hoje.getDate();
-    recalcularTotais();
-    renderizar();
-    mostrarToast('📅 Voltou para hoje');
-}
+                if (diarioCtx) {
+                    if (chartDiario) chartDiario.destroy();
+                    const diasMes = diasNoMes(ano, mes);
+                    const labelsDias = [];
+                    const data50 = [];
+                    const data100 = [];
+                    
+                    for (let d = 1; d <= diasMes; d++) {
+                        const dt = new Date(ano, mes, d);
+                        const s = calcularValoresDia(`${ano}-${mes}-${d}`, dt.getDay(), mes, d, ano);
+                        labelsDias.push(`${d}`);
+                        data50.push(s.extra50 / 60);
+                        data100.push(s.extra100 / 60);
+                    }
 
-function toggleCalendario(event) {
-    if (event) event.stopPropagation();
-    const pop = document.getElementById('calendar-popover');
-    if (!pop) return;
-    
-    calMesAberto = mes;
-    calAnoAberto = ano;
-    
-    const isOpen = pop.classList.contains('open');
-    if (isOpen) {
-        pop.classList.remove('open');
-    } else {
-        renderCalendario();
-        pop.classList.add('open');
-    }
-}
-
-function fecharCalendario() {
-    const pop = document.getElementById('calendar-popover');
-    if (pop) pop.classList.remove('open');
-}
-
-function calMudarMes(delta) {
-    calMesAberto += delta;
-    if (calMesAberto < 0) { calMesAberto = 11; calAnoAberto--; }
-    if (calMesAberto > 11) { calMesAberto = 0; calAnoAberto++; }
-    renderCalendario();
-}
-
-function renderCalendario() {
-    const pop = document.getElementById('calendar-popover');
-    if (!pop) return;
-    
-    const hoje = new Date();
-    const primeiroDia = new Date(calAnoAberto, calMesAberto, 1).getDay();
-    const totalDias = diasNoMes(calAnoAberto, calMesAberto);
-    const diasMesAnterior = diasNoMes(calAnoAberto, calMesAberto - 1);
-    
-    let gridHTML = '';
-    
-    for (let i = primeiroDia - 1; i >= 0; i--) {
-        const d = diasMesAnterior - i;
-        gridHTML += `<div class="calendar-day other-month">${d}</div>`;
-    }
-    
-    for (let d = 1; d <= totalDias; d++) {
-        const dt = new Date(calAnoAberto, calMesAberto, d);
-        const sem = dt.getDay();
-        const chave = `${calAnoAberto}-${calMesAberto}-${d}`;
-        const reg = registros[chave];
-        const fer = isFeriado(calMesAberto, d, calAnoAberto);
-        
-        let classes = 'calendar-day';
-        if (sem === 0) classes += ' weekend sunday';
-        else if (sem === 6) classes += ' weekend';
-        if (calAnoAberto === hoje.getFullYear() && calMesAberto === hoje.getMonth() && d === hoje.getDate()) classes += ' today';
-        if (calAnoAberto === ano && calMesAberto === mes && d === diaSelecionado) classes += ' selected';
-        if (fer) classes += ' feriado';
-        if (reg && (reg.ent1 || reg.sai1 || reg.ent2 || reg.sai2) && !fer) classes += ' has-record';
-        
-        gridHTML += `<div class="${classes}" onclick="selecionarDiaCalendario(${calAnoAberto}, ${calMesAberto}, ${d})">${d}</div>`;
-    }
-    
-    const totalCells = primeiroDia + totalDias;
-    const resto = totalCells % 7;
-    if (resto !== 0) {
-        for (let i = 1; i <= (7 - resto); i++) {
-            gridHTML += `<div class="calendar-day other-month">${i}</div>`;
-        }
-    }
-    
-    pop.innerHTML = `
-        <div class="calendar-header">
-            <button class="cal-nav" onclick="calMudarMes(-1)"><i class="fa-solid fa-chevron-left"></i></button>
-            <span class="cal-month">${mesesNomesCurto[calMesAberto]} ${calAnoAberto}</span>
-            <button class="cal-nav" onclick="calMudarMes(1)"><i class="fa-solid fa-chevron-right"></i></button>
-        </div>
-        <div class="calendar-weekdays">
-            <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
-        </div>
-        <div class="calendar-grid">${gridHTML}</div>
-    `;
-}
-
-function selecionarDiaCalendario(a, m, d) {
-    ano = a;
-    mes = m;
-    diaSelecionado = d;
-    fecharCalendario();
-    recalcularTotais();
-    renderizar();
-}
-
-document.addEventListener('click', function(e) {
-    const pop = document.getElementById('calendar-popover');
-    const center = document.querySelector('.day-picker .day-center');
-    if (!pop || !pop.classList.contains('open')) return;
-    if (pop.contains(e.target)) return;
-    if (center && center.contains(e.target)) return;
-    fecharCalendario();
-});
-
-function salvarManualPrimeiraTela() {
-    const chaveSel = `${ano}-${mes}-${diaSelecionado}`;
-    
-    const e1 = document.getElementById('manual-ent1').value.trim();
-    const s1 = document.getElementById('manual-sai1').value.trim();
-    const e2 = document.getElementById('manual-ent2').value.trim();
-    const s2 = document.getElementById('manual-sai2').value.trim();
-    
-    const validarHora = (h) => {
-        if (!h) return true;
-        const regex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
-        return regex.test(h);
-    };
-    
-    if (!validarHora(e1) || !validarHora(s1) || !validarHora(e2) || !validarHora(s2)) {
-        mostrarToast('⚠️ Formato inválido! Use HH:MM');
-        return;
-    }
-    
-    if (!registros[chaveSel]) registros[chaveSel] = {};
-    
-    if (e1) registros[chaveSel].ent1 = e1; else delete registros[chaveSel].ent1;
-    if (s1) registros[chaveSel].sai1 = s1; else delete registros[chaveSel].sai1;
-    if (e2) registros[chaveSel].ent2 = e2; else delete registros[chaveSel].ent2;
-    if (s2) registros[chaveSel].sai2 = s2; else delete registros[chaveSel].sai2;
-    
-    salvar(true);
-    recalcularTotais();
-    renderizar();
-    mostrarToast(`✅ Horários de ${diaSelecionado}/${mes+1} salvos!`);
-}
-
-function limparManualPrimeiraTela() {
-    document.getElementById('manual-ent1').value = '';
-    document.getElementById('manual-sai1').value = '';
-    document.getElementById('manual-ent2').value = '';
-    document.getElementById('manual-sai2').value = '';
-}
-
-function mascaraHora(input) {
-    let v = input.value.replace(/\D/g, '');
-    if (v.length > 4) v = v.slice(0, 4);
-    if (v.length >= 3) v = v.slice(0, 2) + ':' + v.slice(2);
-    input.value = v;
-}
-
-function mudarMes(delta) { 
-    mes += delta; 
-    if (mes<0){mes=11;ano--;} 
-    if (mes>11){mes=0;ano++;} 
-    const maxDia = diasNoMes(ano, mes);
-    if (diaSelecionado > maxDia) diaSelecionado = maxDia;
-    extrasEmEdicao = {};
-    recalcularTotais(); renderizar(); 
-    if (abaAtiva === 'dashboard' || abaAtiva === 'relatorio') setTimeout(initCharts, 50); 
-}
-function mostrarToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3000); }
-function mudarAba(nova) { abaAtiva = nova; fecharCalendario(); extrasEmEdicao = {}; renderizar(); if (nova === 'dashboard' || nova === 'relatorio') setTimeout(initCharts, 100); }
-
-function requestBiometrics() {
-    const modal = document.getElementById('biometric-modal');
-    const progress = document.getElementById('auth-progress');
-    const status = document.getElementById('auth-status');
-    const icon = document.getElementById('modal-icon');
-    
-    modal.style.display = 'flex';
-    progress.style.width = '0%';
-    progress.style.transition = 'none';
-    status.innerText = "Lendo digital...";
-    status.style.color = "#94a3b8";
-    icon.className = "fa-solid fa-fingerprint animate-pulse";
-    icon.style.color = "var(--primary)";
-
-    setTimeout(() => {
-        progress.style.transition = 'width 1.5s ease-in-out';
-        progress.style.width = '100%';
-        status.innerText = "Autenticando no servidor...";
-        status.style.color = "var(--primary)";
-        
-        setTimeout(() => {
-            status.innerText = "Sucesso!";
-            status.style.color = "#10b981";
-            icon.className = "fa-solid fa-check-circle";
-            icon.style.color = "#10b981";
-            
-            setTimeout(() => {
-                modal.style.display = 'none';
-                registrarPontoAutomatico(); 
-            }, 800);
-        }, 1500);
-    }, 300);
-}
-
-function registrarPontoAutomatico() {
-    const hoje = new Date();
-    const d = hoje.getDate();
-    const m = hoje.getMonth();
-    const a = hoje.getFullYear();
-    const chaveHoje = `${a}-${m}-${d}`;
-    
-    const horaAtual = hoje.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-
-    if (!registros[chaveHoje]) registros[chaveHoje] = {};
-    let r = registros[chaveHoje];
-
-    let msg = "";
-    if (!r.ent1) { r.ent1 = horaAtual; msg = "Entrada 1 registrada"; }
-    else if (!r.sai1) { r.sai1 = horaAtual; msg = "Início de Pausa registrado"; }
-    else if (!r.ent2) { r.ent2 = horaAtual; msg = "Retorno de Pausa registrado"; }
-    else if (!r.sai2) { r.sai2 = horaAtual; msg = "Saída Final registrada"; }
-    
-    mostrarToast(`✅ ${msg} às ${horaAtual}`);
-    
-    ano = a;
-    mes = m;
-    diaSelecionado = d;
-    
-    salvar(true); 
-    recalcularTotais();
-    renderizar();
-}
-
-setInterval(() => {
-    const clockElem = document.getElementById('bio-clock');
-    const dateElem = document.getElementById('bio-date');
-    if (clockElem && dateElem) {
-        const now = new Date();
-        clockElem.innerText = now.toLocaleTimeString('pt-BR', { hour12: false });
-        const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-        let ds = now.toLocaleDateString('pt-BR', options);
-        dateElem.innerText = ds.charAt(0).toUpperCase() + ds.slice(1);
-    }
-}, 1000);
-
-function calcularINSS(base) {
-    const faixas = [
-        { limite: 1518.00, aliquota: 0.075 },
-        { limite: 2793.88, aliquota: 0.09 },
-        { limite: 4190.83, aliquota: 0.12 },
-        { limite: 8157.41, aliquota: 0.14 }
-    ];
-    let inss = 0;
-    let anterior = 0;
-    for (let f of faixas) {
-        if (base > anterior) {
-            const baseFaixa = Math.min(base, f.limite) - anterior;
-            inss += baseFaixa * f.aliquota;
-            anterior = f.limite;
-        } else break;
-    }
-    return Math.min(inss, 951.62);
-}
-
-function calcularIRRF(base, dependentes = 0) {
-    const deducaoDependente = 189.59;
-    const baseCalculo = base - (dependentes * deducaoDependente);
-    
-    const faixas = [
-        { limite: 2259.20, aliquota: 0, deducao: 0 },
-        { limite: 2826.65, aliquota: 0.075, deducao: 169.44 },
-        { limite: 3751.05, aliquota: 0.15, deducao: 381.44 },
-        { limite: 4664.68, aliquota: 0.225, deducao: 662.77 },
-        { limite: Infinity, aliquota: 0.275, deducao: 896.00 }
-    ];
-    
-    for (let f of faixas) {
-        if (baseCalculo <= f.limite) {
-            const imposto = (baseCalculo * f.aliquota) - f.deducao;
-            return Math.max(0, imposto);
-        }
-    }
-    return 0;
-}
-
-function calcularFGTS(base) {
-    return base * 0.08;
-}
-
-function gerarDemonstrativo() {
-    recalcularTotais();
-    
-    const salarioBaseAuto = (jornadaDiaria / 60) * valorHoraNormal * 30;
-    const salarioBase = salarioBaseMensal !== null && salarioBaseMensal > 0 ? salarioBaseMensal : salarioBaseAuto;
-    
-    // Contar dias trabalhados (com registro, exceto domingos e feriados)
-    const diasTrabalhados = contarDiasTrabalhados();
-    const valorDiasNormais = (salarioBase / 30) * diasTrabalhados;
-    
-    const horas100 = cacheTotais.extra100 / 60;
-    const valorHoras100 = horas100 * valorHoraNormal * 2.0;
-    
-    let horas50 = 0;
-    let valorHoras50 = 0;
-    let labelTrimestre = null;
-    
-    const trimPag = getTrimestrePagamento(mes);
-    if (trimPag) {
-        const dadosTrim = calcularTrimestrePersonalizado(trimPag.trimestre, ano);
-        horas50 = dadosTrim.extra50 / 60;
-        valorHoras50 = horas50 * valorHoraNormal * 1.5;
-        labelTrimestre = trimPag.label;
-    }
-    
-    // DSR = (HE 50% + HE 100%) / 5
-    const dsr = (valorHoras50 + valorHoras100) / 5;
-    
-    const chaveMes = `${ano}-${mes}`;
-    const extrasMes = extrasPorMes[chaveMes] || [];
-    const todosExtras = [...extrasFixos, ...extrasMes];
-    
-    const extrasVenc = todosExtras.filter(e => e.tipo === 'vencimento');
-    const extrasDesc = todosExtras.filter(e => e.tipo === 'desconto');
-    
-    const totalExtrasVenc = extrasVenc.reduce((acc, e) => acc + (parseFloat(e.valor) || 0), 0);
-    const totalExtrasDesc = extrasDesc.reduce((acc, e) => acc + (parseFloat(e.valor) || 0), 0);
-    
-    const totalVencimentos = valorDiasNormais + valorHoras100 + valorHoras50 + dsr + totalExtrasVenc;
-    
-    const inss = calcularINSS(totalVencimentos);
-    const baseIRRFcalc = totalVencimentos - inss;
-    const irrf = calcularIRRF(baseIRRFcalc, dependentesIRRF);
-    const totalDescontos = inss + irrf + adiantamentoMensal + totalExtrasDesc;
-    
-    const valorLiquido = totalVencimentos - totalDescontos;
-    
-    const baseINSS = totalVencimentos;
-    const baseFGTS = totalVencimentos;
-    const valorFGTS = calcularFGTS(baseFGTS);
-    const baseIRRF = baseIRRFcalc;
-    
-    return {
-        salarioBase,
-        diasTrabalhados,
-        valorDiasNormais,
-        horas50, horas100,
-        valorHoras50, valorHoras100,
-        dsr, labelTrimestre,
-        totalExtrasVenc, totalExtrasDesc,
-        extrasVenc, extrasDesc,
-        totalVencimentos,
-        inss, irrf, adiantamento: adiantamentoMensal, totalDescontos,
-        valorLiquido,
-        baseINSS, baseFGTS, valorFGTS, baseIRRF,
-        dependentesIRRF
-    };
-}
-
-function fmtMoeda(v) {
-    return v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-window.salvarConfiguracoes = function() {
-    const jEl = document.getElementById('cfg-jornada');
-    const vhEl = document.getElementById('cfg-valor-hora');
-    const salEl = document.getElementById('cfg-salario');
-    const adiEl = document.getElementById('cfg-adiantamento');
-    const depEl = document.getElementById('cfg-dependentes');
-    
-    if (jEl) {
-        const v = parseFloat(jEl.value.replace(',', '.'));
-        if (!isNaN(v) && v > 0) jornadaDiaria = Math.round(v * 60);
-    }
-    
-    if (vhEl) {
-        const v = parseFloat(vhEl.value.replace(',', '.'));
-        if (!isNaN(v) && v > 0) valorHoraNormal = v;
-    }
-    
-    if (salEl) {
-        const v = parseFloat(salEl.value.replace(',', '.'));
-        salarioBaseMensal = (isNaN(v) || v <= 0) ? null : v;
-    }
-    
-    if (adiEl) {
-        const v = parseFloat(adiEl.value.replace(',', '.'));
-        adiantamentoMensal = (isNaN(v) || v < 0) ? 0 : v;
-    }
-    
-    if (depEl) {
-        const v = parseInt(depEl.value);
-        dependentesIRRF = (isNaN(v) || v < 0) ? 0 : v;
-    }
-    
-    salvar(true);
-    recalcularTotais();
-    renderizar();
-    mostrarToast('✅ Configurações salvas!');
-};
-
-window.exportarBackup = function() {
-    const dados = {
-        _meta: {
-            app: 'CheckPonto',
-            versao: 'v4.6',
-            exportadoEm: new Date().toISOString(),
-            chave: CHAVE_ATUAL
-        },
-        registros: registros,
-        jornadaDiaria: jornadaDiaria,
-        valorHoraNormal: valorHoraNormal,
-        observacoes: observacoes,
-        salarioBaseMensal: salarioBaseMensal,
-        adiantamentoMensal: adiantamentoMensal,
-        dependentesIRRF: dependentesIRRF,
-        extrasFixos: extrasFixos,
-        extrasPorMes: extrasPorMes
-    };
-    
-    const json = JSON.stringify(dados, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    
-    const data = new Date();
-    const dia = data.getDate().toString().padStart(2,'0');
-    const mes = (data.getMonth() + 1).toString().padStart(2,'0');
-    const ano = data.getFullYear();
-    const hora = data.getHours().toString().padStart(2,'0');
-    const min = data.getMinutes().toString().padStart(2,'0');
-    
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `CheckPonto_Backup_${ano}-${mes}-${dia}_${hora}${min}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    
-    mostrarToast('📥 Backup exportado com sucesso!');
-};
-
-window.importarBackup = function(event) {
-    const file = event.target.files && event.target.files[0];
-    if (!file) return;
-    
-    const reader = new FileReader();
-    
-    reader.onload = function(e) {
-        try {
-            const dados = JSON.parse(e.target.result);
-            
-            if (!dados || (!dados.registros && !dados.jornadaDiaria && !dados.extrasFixos)) {
-                mostrarToast('⚠️ Arquivo inválido!');
-                event.target.value = '';
-                return;
+                    chartDiario = new Chart(diarioCtx.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: labelsDias,
+                            datasets: [
+                                { label: '50%', data: data50, borderColor: '#ec4899', backgroundColor: 'rgba(236, 72, 153, 0.15)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#ec4899', pointBorderColor: '#fff', pointBorderWidth: 1, borderWidth: 2.5 },
+                                { label: '100%', data: data100, borderColor: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.15)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#8b5cf6', pointBorderColor: '#fff', pointBorderWidth: 1, borderWidth: 2.5 }
+                            ]
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: false,
+                            scales: { 
+                                x: { 
+                                    title: { display: true, text: 'Dias do Mês', color: '#94a3b8', font: { weight: 'bold', size: 12 } },
+                                    ticks: { color: '#94a3b8', stepSize: 1, autoSkip: false, maxRotation: 90, minRotation: 45, font: { size: 9 } },
+                                    grid: { color: 'rgba(255,255,255,0.05)' }
+                                }, 
+                                y: { 
+                                    beginAtZero: true, 
+                                    title: { display: true, text: 'Horas Extras', color: '#94a3b8', font: { weight: 'bold', size: 12 } },
+                                    ticks: { color: '#94a3b8', callback: function(value) { return value.toFixed(1) + 'h'; } },
+                                    grid: { color: 'rgba(255,255,255,0.05)' }
+                                } 
+                            },
+                            plugins: { 
+                                legend: { labels: { color: '#94a3b8', font: { size: 12, weight: 'bold' }, boxWidth: 15, padding: 15 } },
+                                tooltip: {
+                                    backgroundColor: 'rgba(11, 16, 38, 0.9)', titleColor: '#fff', bodyColor: '#fff',
+                                    borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1,
+                                    callbacks: { label: function(context) { return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + 'h'; } }
+                                }
+                            },
+                            interaction: { intersect: false, mode: 'index' }
+                        }
+                    });
+                }
             }
-            
-            const qtdRegistros = dados.registros ? Object.keys(dados.registros).length : 0;
-            const qtdExtras = dados.extrasFixos ? dados.extrasFixos.length : 0;
-            
-            const msg = `⚠️ ATENÇÃO!\n\n` +
-                        `Isso vai SUBSTITUIR todos os seus dados atuais pelos dados do arquivo:\n\n` +
-                        `📅 Registros de ponto: ${qtdRegistros}\n` +
-                        `📌 Lançamentos fixos: ${qtdExtras}\n\n` +
-                        `Deseja continuar?`;
-            
-            if (!confirm(msg)) {
-                event.target.value = '';
-                return;
+        }
+
+        function salvar(silencioso = false) { 
+            localStorage.setItem(CHAVE_ATUAL, JSON.stringify({ 
+                registros, jornadaDiaria, valorHoraNormal, observacoes,
+                extrasFixos, extrasPorMes
+            })); 
+            if(!silencioso) mostrarToast('✅ Dados guardados!'); 
+        }
+        
+        function salvarObservacao() {
+            const textarea = document.getElementById('obs-textarea');
+            if (textarea) {
+                const obsKey = `${ano}-${mes}`;
+                observacoes[obsKey] = textarea.value;
+                salvar(true);
+                mostrarToast('✅ Observação salva com sucesso!');
             }
+        }
+
+        function toggleFeriadoManual(chave) {
+            if (!registros[chave]) registros[chave] = {};
+            registros[chave].feriadoManual = !registros[chave].feriadoManual; 
+            salvar(true); 
+            recalcularTotais();
+            renderizar();
+        }
+
+        function toggleFeriadoManualDoDia() {
+            const chave = `${ano}-${mes}-${diaSelecionado}`;
+            const eraManual = registros[chave] && registros[chave].feriadoManual === true;
             
-            registros = dados.registros || {};
-            jornadaDiaria = dados.jornadaDiaria || 480;
-            valorHoraNormal = dados.valorHoraNormal || 10.32;
-            observacoes = dados.observacoes || {};
-            salarioBaseMensal = dados.salarioBaseMensal !== undefined ? dados.salarioBaseMensal : null;
-            adiantamentoMensal = dados.adiantamentoMensal || 0;
-            dependentesIRRF = dados.dependentesIRRF || 0;
-            extrasFixos = dados.extrasFixos || [];
-            extrasPorMes = dados.extrasPorMes || {};
-            extrasEmEdicao = {};
+            if (!registros[chave]) registros[chave] = {};
+            registros[chave].feriadoManual = !registros[chave].feriadoManual;
             
             salvar(true);
             recalcularTotais();
             renderizar();
             
-            mostrarToast(`✅ Backup restaurado! ${qtdRegistros} registros carregados.`);
+            if (!eraManual) {
+                mostrarToast('✅ Dia marcado como 100%');
+            } else {
+                mostrarToast('↩️ Marcação 100% removida');
+            }
+        }
+
+        function mudarDia(delta) {
+            let d = diaSelecionado + delta;
+            let m = mes;
+            let a = ano;
             
-        } catch (err) {
-            console.error(err);
-            mostrarToast('❌ Erro ao ler o arquivo!');
+            if (d < 1) {
+                m--;
+                if (m < 0) { m = 11; a--; }
+                d = diasNoMes(a, m);
+            } else if (d > diasNoMes(a, m)) {
+                m++;
+                if (m > 11) { m = 0; a++; }
+                d = 1;
+            }
+            
+            diaSelecionado = d;
+            mes = m;
+            ano = a;
+            recalcularTotais();
+            renderizar();
         }
-        
-        event.target.value = '';
-    };
-    
-    reader.onerror = function() {
-        mostrarToast('❌ Erro ao ler o arquivo!');
-        event.target.value = '';
-    };
-    
-    reader.readAsText(file);
-};
 
-window.toggleFormExtra = function() {
-    const form = document.getElementById('form-extra');
-    if (!form) return;
-    if (form.style.display === 'none' || form.style.display === '') {
-        form.style.display = 'block';
-        const desc = document.getElementById('extra-desc');
-        if (desc) setTimeout(() => desc.focus(), 100);
-    } else {
-        form.style.display = 'none';
-        ['extra-cod','extra-desc','extra-ref','extra-valor'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.value = '';
+        function irParaHoje() {
+            const hoje = new Date();
+            ano = hoje.getFullYear();
+            mes = hoje.getMonth();
+            diaSelecionado = hoje.getDate();
+            recalcularTotais();
+            renderizar();
+            mostrarToast('📅 Voltou para hoje');
+        }
+
+        function toggleCalendario(event) {
+            if (event) event.stopPropagation();
+            const pop = document.getElementById('calendar-popover');
+            if (!pop) return;
+            
+            calMesAberto = mes;
+            calAnoAberto = ano;
+            
+            const isOpen = pop.classList.contains('open');
+            if (isOpen) {
+                pop.classList.remove('open');
+            } else {
+                renderCalendario();
+                pop.classList.add('open');
+            }
+        }
+
+        function fecharCalendario() {
+            const pop = document.getElementById('calendar-popover');
+            if (pop) pop.classList.remove('open');
+        }
+
+        function calMudarMes(delta) {
+            calMesAberto += delta;
+            if (calMesAberto < 0) { calMesAberto = 11; calAnoAberto--; }
+            if (calMesAberto > 11) { calMesAberto = 0; calAnoAberto++; }
+            renderCalendario();
+        }
+
+        function renderCalendario() {
+            const pop = document.getElementById('calendar-popover');
+            if (!pop) return;
+            
+            const hoje = new Date();
+            const primeiroDia = new Date(calAnoAberto, calMesAberto, 1).getDay();
+            const totalDias = diasNoMes(calAnoAberto, calMesAberto);
+            const diasMesAnterior = diasNoMes(calAnoAberto, calMesAberto - 1);
+            
+            let gridHTML = '';
+            
+            for (let i = primeiroDia - 1; i >= 0; i--) {
+                const d = diasMesAnterior - i;
+                gridHTML += `<div class="calendar-day other-month">${d}</div>`;
+            }
+            
+            for (let d = 1; d <= totalDias; d++) {
+                const dt = new Date(calAnoAberto, calMesAberto, d);
+                const sem = dt.getDay();
+                const chave = `${calAnoAberto}-${calMesAberto}-${d}`;
+                const reg = registros[chave];
+                const fer = isFeriado(calMesAberto, d, calAnoAberto);
+                
+                let classes = 'calendar-day';
+                if (sem === 0) classes += ' weekend sunday';
+                else if (sem === 6) classes += ' weekend';
+                if (calAnoAberto === hoje.getFullYear() && calMesAberto === hoje.getMonth() && d === hoje.getDate()) classes += ' today';
+                if (calAnoAberto === ano && calMesAberto === mes && d === diaSelecionado) classes += ' selected';
+                if (fer) classes += ' feriado';
+                if (reg && (reg.ent1 || reg.sai1 || reg.ent2 || reg.sai2) && !fer) classes += ' has-record';
+                
+                gridHTML += `<div class="${classes}" onclick="selecionarDiaCalendario(${calAnoAberto}, ${calMesAberto}, ${d})">${d}</div>`;
+            }
+            
+            const totalCells = primeiroDia + totalDias;
+            const resto = totalCells % 7;
+            if (resto !== 0) {
+                for (let i = 1; i <= (7 - resto); i++) {
+                    gridHTML += `<div class="calendar-day other-month">${i}</div>`;
+                }
+            }
+            
+            pop.innerHTML = `
+                <div class="calendar-header">
+                    <button class="cal-nav" onclick="calMudarMes(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                    <span class="cal-month">${mesesNomesCurto[calMesAberto]} ${calAnoAberto}</span>
+                    <button class="cal-nav" onclick="calMudarMes(1)"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+                <div class="calendar-weekdays">
+                    <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
+                </div>
+                <div class="calendar-grid">${gridHTML}</div>
+            `;
+        }
+
+        function selecionarDiaCalendario(a, m, d) {
+            ano = a;
+            mes = m;
+            diaSelecionado = d;
+            fecharCalendario();
+            recalcularTotais();
+            renderizar();
+        }
+
+        document.addEventListener('click', function(e) {
+            const pop = document.getElementById('calendar-popover');
+            const center = document.querySelector('.day-picker .day-center');
+            if (!pop || !pop.classList.contains('open')) return;
+            if (pop.contains(e.target)) return;
+            if (center && center.contains(e.target)) return;
+            fecharCalendario();
         });
-        const fixo = document.getElementById('extra-fixo');
-        if (fixo) fixo.checked = false;
-        const tipo = document.getElementById('extra-tipo');
-        if (tipo) tipo.value = 'vencimento';
-    }
-};
 
-window.adicionarExtra = function() {
-    const cod = document.getElementById('extra-cod');
-    const desc = document.getElementById('extra-desc');
-    const ref = document.getElementById('extra-ref');
-    const val = document.getElementById('extra-valor');
-    const tipo = document.getElementById('extra-tipo');
-    const fixo = document.getElementById('extra-fixo');
-    
-    if (!desc || !val) return;
-    
-    const descVal = desc.value.trim();
-    const valNum = parseFloat(val.value);
-    
-    if (!descVal) {
-        mostrarToast('⚠️ Digite uma descrição!');
-        return;
-    }
-    if (isNaN(valNum) || valNum <= 0) {
-        mostrarToast('⚠️ Digite um valor válido!');
-        return;
-    }
-    
-    const item = {
-        id: 'ext_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
-        cod: cod ? cod.value.trim() : '',
-        desc: descVal,
-        ref: ref ? ref.value.trim() : '',
-        valor: valNum,
-        tipo: tipo ? tipo.value : 'vencimento'
-    };
-    
-    if (fixo && fixo.checked) {
-        extrasFixos.push(item);
-    } else {
-        const chaveMes = `${ano}-${mes}`;
-        if (!extrasPorMes[chaveMes]) extrasPorMes[chaveMes] = [];
-        extrasPorMes[chaveMes].push(item);
-    }
-    
-    salvar(true);
-    renderizar();
-    mostrarToast('✅ Lançamento adicionado!');
-};
-
-window.removerExtra = function(id, isFixo) {
-    if (!confirm('Deseja realmente apagar este lançamento?')) return;
-    
-    if (isFixo) {
-        extrasFixos = extrasFixos.filter(e => e.id !== id);
-    } else {
-        const chaveMes = `${ano}-${mes}`;
-        if (extrasPorMes[chaveMes]) {
-            extrasPorMes[chaveMes] = extrasPorMes[chaveMes].filter(e => e.id !== id);
+        function salvarManualPrimeiraTela() {
+            const chaveSel = `${ano}-${mes}-${diaSelecionado}`;
+            
+            const e1 = document.getElementById('manual-ent1').value.trim();
+            const s1 = document.getElementById('manual-sai1').value.trim();
+            const e2 = document.getElementById('manual-ent2').value.trim();
+            const s2 = document.getElementById('manual-sai2').value.trim();
+            
+            const validarHora = (h) => {
+                if (!h) return true;
+                const regex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+                return regex.test(h);
+            };
+            
+            if (!validarHora(e1) || !validarHora(s1) || !validarHora(e2) || !validarHora(s2)) {
+                mostrarToast('⚠️ Formato inválido! Use HH:MM');
+                return;
+            }
+            
+            if (!registros[chaveSel]) registros[chaveSel] = {};
+            
+            if (e1) registros[chaveSel].ent1 = e1; else delete registros[chaveSel].ent1;
+            if (s1) registros[chaveSel].sai1 = s1; else delete registros[chaveSel].sai1;
+            if (e2) registros[chaveSel].ent2 = e2; else delete registros[chaveSel].ent2;
+            if (s2) registros[chaveSel].sai2 = s2; else delete registros[chaveSel].sai2;
+            
+            salvar(true);
+            recalcularTotais();
+            renderizar();
+            mostrarToast(`✅ Horários de ${diaSelecionado}/${mes+1} salvos!`);
         }
-    }
-    delete extrasEmEdicao[id];
-    salvar(true);
-    renderizar();
-    mostrarToast('🗑️ Lançamento apagado!');
-};
 
-window.iniciarEdicaoExtra = function(id) {
-    extrasEmEdicao[id] = true;
-    renderizar();
-};
+        function limparManualPrimeiraTela() {
+            document.getElementById('manual-ent1').value = '';
+            document.getElementById('manual-sai1').value = '';
+            document.getElementById('manual-ent2').value = '';
+            document.getElementById('manual-sai2').value = '';
+        }
 
-window.cancelarEdicaoExtra = function(id) {
-    delete extrasEmEdicao[id];
-    renderizar();
-};
+        function mascaraHora(input) {
+            let v = input.value.replace(/\D/g, '');
+            if (v.length > 4) v = v.slice(0, 4);
+            if (v.length >= 3) v = v.slice(0, 2) + ':' + v.slice(2);
+            input.value = v;
+        }
 
-window.salvarEdicaoExtra = function(id, isFixo) {
-    const codEl = document.getElementById('edit-cod-' + id);
-    const descEl = document.getElementById('edit-desc-' + id);
-    const refEl = document.getElementById('edit-ref-' + id);
-    const tipoEl = document.getElementById('edit-tipo-' + id);
-    const valEl = document.getElementById('edit-valor-' + id);
-    
-    if (!descEl || !valEl) return;
-    
-    const descVal = descEl.value.trim();
-    const valNum = parseFloat(valEl.value);
-    
-    if (!descVal) {
-        mostrarToast('⚠️ Digite uma descrição!');
-        return;
-    }
-    if (isNaN(valNum) || valNum <= 0) {
-        mostrarToast('⚠️ Digite um valor válido!');
-        return;
-    }
-    
-    const lista = isFixo ? extrasFixos : (extrasPorMes[`${ano}-${mes}`] || []);
-    const item = lista.find(e => e.id === id);
-    if (!item) return;
-    
-    item.cod = codEl ? codEl.value.trim() : '';
-    item.desc = descVal;
-    item.ref = refEl ? refEl.value.trim() : '';
-    item.tipo = tipoEl ? tipoEl.value : 'vencimento';
-    item.valor = valNum;
-    
-    delete extrasEmEdicao[id];
-    salvar(true);
-    renderizar();
-    mostrarToast('✅ Lançamento atualizado!');
-};
+        function mudarMes(delta) { 
+            mes += delta; 
+            if (mes<0){mes=11;ano--;} 
+            if (mes>11){mes=0;ano++;} 
+            const maxDia = diasNoMes(ano, mes);
+            if (diaSelecionado > maxDia) diaSelecionado = maxDia;
+            extrasEmEdicao = {};
+            recalcularTotais(); renderizar(); 
+            if (abaAtiva === 'dashboard' || abaAtiva === 'relatorio') setTimeout(initCharts, 50); 
+        }
+        function mostrarToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3000); }
+        function mudarAba(nova) { abaAtiva = nova; fecharCalendario(); extrasEmEdicao = {}; renderizar(); if (nova === 'dashboard' || nova === 'relatorio') setTimeout(initCharts, 100); }
 
+        function requestBiometrics() {
+            const modal = document.getElementById('biometric-modal');
+            const progress = document.getElementById('auth-progress');
+            const status = document.getElementById('auth-status');
+            const icon = document.getElementById('modal-icon');
+            
+            modal.style.display = 'flex';
+            progress.style.width = '0%';
+            progress.style.transition = 'none';
+            status.innerText = "Lendo digital...";
+            status.style.color = "#94a3b8";
+            icon.className = "fa-solid fa-fingerprint animate-pulse";
+            icon.style.color = "var(--primary)";
+
+            setTimeout(() => {
+                progress.style.transition = 'width 1.5s ease-in-out';
+                progress.style.width = '100%';
+                status.innerText = "Autenticando no servidor...";
+                status.style.color = "var(--primary)";
+                
+                setTimeout(() => {
+                    status.innerText = "Sucesso!";
+                    status.style.color = "#10b981";
+                    icon.className = "fa-solid fa-check-circle";
+                    icon.style.color = "#10b981";
+                    
+                    setTimeout(() => {
+                        modal.style.display = 'none';
+                        registrarPontoAutomatico(); 
+                    }, 800);
+                }, 1500);
+            }, 300);
+        }
+
+        function registrarPontoAutomatico() {
+            const hoje = new Date();
+            const d = hoje.getDate();
+            const m = hoje.getMonth();
+            const a = hoje.getFullYear();
+            const chaveHoje = `${a}-${m}-${d}`;
+            
+            const horaAtual = hoje.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+            if (!registros[chaveHoje]) registros[chaveHoje] = {};
+            let r = registros[chaveHoje];
+
+            let msg = "";
+            if (!r.ent1) { r.ent1 = horaAtual; msg = "Entrada 1 registrada"; }
+            else if (!r.sai1) { r.sai1 = horaAtual; msg = "Início de Pausa registrado"; }
+            else if (!r.ent2) { r.ent2 = horaAtual; msg = "Retorno de Pausa registrado"; }
+            else if (!r.sai2) { r.sai2 = horaAtual; msg = "Saída Final registrada"; }
+            
+            mostrarToast(`✅ ${msg} às ${horaAtual}`);
+            
+            ano = a;
+            mes = m;
+            diaSelecionado = d;
+            
+            salvar(true); 
+            recalcularTotais();
+            renderizar();
+        }
+
+        setInterval(() => {
+            const clockElem = document.getElementById('bio-clock');
+            const dateElem = document.getElementById('bio-date');
+            if (clockElem && dateElem) {
+                const now = new Date();
+                clockElem.innerText = now.toLocaleTimeString('pt-BR', { hour12: false });
+                const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+                let ds = now.toLocaleDateString('pt-BR', options);
+                dateElem.innerText = ds.charAt(0).toUpperCase() + ds.slice(1);
+            }
+        }, 1000);
+
+        window.exportarBackup = function() {
+            const dados = {
+                _meta: {
+                    app: 'CheckPonto',
+                    versao: 'v4.7',
+                    exportadoEm: new Date().toISOString(),
+                    chave: CHAVE_ATUAL
+                },
+                registros: registros,
+                jornadaDiaria: jornadaDiaria,
+                valorHoraNormal: valorHoraNormal,
+                observacoes: observacoes,
+                extrasFixos: extrasFixos,
+                extrasPorMes: extrasPorMes
+            };
+            
+            const json = JSON.stringify(dados, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const data = new Date();
+            const dia = data.getDate().toString().padStart(2,'0');
+            const mes = (data.getMonth() + 1).toString().padStart(2,'0');
+            const ano = data.getFullYear();
+            const hora = data.getHours().toString().padStart(2,'0');
+            const min = data.getMinutes().toString().padStart(2,'0');
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `CheckPonto_Backup_${ano}-${mes}-${dia}_${hora}${min}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            mostrarToast('📥 Backup exportado com sucesso!');
+        };
+
+        window.importarBackup = function(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    const dados = JSON.parse(e.target.result);
+                    
+                    if (!dados || (!dados.registros && !dados.jornadaDiaria && !dados.extrasFixos)) {
+                        mostrarToast('⚠️ Arquivo inválido!');
+                        event.target.value = '';
+                        return;
+                    }
+                    
+                    const qtdRegistros = dados.registros ? Object.keys(dados.registros).length : 0;
+                    const qtdExtras = dados.extrasFixos ? dados.extrasFixos.length : 0;
+                    
+                    const msg = `⚠️ ATENÇÃO!\n\n` +
+                                `Isso vai SUBSTITUIR todos os seus dados atuais pelos dados do arquivo:\n\n` +
+                                `📅 Registros de ponto: ${qtdRegistros}\n` +
+                                `📌 Lançamentos fixos: ${qtdExtras}\n\n` +
+                                `Deseja continuar?`;
+                    
+                    if (!confirm(msg)) {
+                        event.target.value = '';
+                        return;
+                    }
+                    
+                    registros = dados.registros || {};
+                    jornadaDiaria = dados.jornadaDiaria || 480;
+                    valorHoraNormal = dados.valorHoraNormal || 10.32;
+                    observacoes = dados.observacoes || {};
+                    extrasFixos = dados.extrasFixos || [];
+                    extrasPorMes = dados.extrasPorMes || {};
+                    extrasEmEdicao = {};
+                    
+                    salvar(true);
+                    recalcularTotais();
+                    renderizar();
+                    
+                    mostrarToast(`✅ Backup restaurado! ${qtdRegistros} registros carregados.`);
+                    
+                } catch (err) {
+                    console.error(err);
+                    mostrarToast('❌ Erro ao ler o arquivo!');
+                }
+                
+                event.target.value = '';
+            };
+            
+            reader.onerror = function() {
+                mostrarToast('❌ Erro ao ler o arquivo!');
+                event.target.value = '';
+            };
+            
+            reader.readAsText(file);
+        };
+        
         function renderizar() {
             let corpo = '';
             const td = diasNoMes(ano, mes);
@@ -2913,319 +2156,10 @@ window.salvarEdicaoExtra = function(id, isFixo) {
                         </div>
                     </div>
                 </div>`;
-            } else if (abaAtiva === 'demonstrativo') {
-                const d = gerarDemonstrativo();
-                
-                const linhasVenc = [
-                    { cod: '00503', desc: 'DIAS NORMAIS', ref: `${d.diasTrabalhados.toFixed(2)}`, valor: d.valorDiasNormais },
-                    { cod: '00565', desc: 'HORA EXTRA 100%', ref: `${d.horas100.toFixed(2)}h`, valor: d.valorHoras100 }
-                ];
-                
-                if (d.horas50 > 0) {
-                    linhasVenc.push({ 
-                        cod: '00182', 
-                        desc: `HORA EXTRA 50% (${d.labelTrimestre})`, 
-                        ref: `${d.horas50.toFixed(2)}h`, 
-                        valor: d.valorHoras50 
-                    });
-                }
-                
-                if (d.dsr > 0) {
-                    linhasVenc.push({ 
-                        cod: '00678', 
-                        desc: 'DSR S/ HORAS EXTRAS', 
-                        ref: '1,00', 
-                        valor: d.dsr 
-                    });
-                }
-                
-                d.extrasVenc.forEach(e => {
-                    linhasVenc.push({ 
-                        cod: e.cod || e.id.slice(-4).toUpperCase(), 
-                        desc: e.desc.toUpperCase(), 
-                        ref: e.ref || '1,00', 
-                        valor: parseFloat(e.valor) 
-                    });
-                });
-                
-                const linhasDesc = [
-                    { cod: '99881', desc: 'INSS', ref: '1,00', valor: d.inss },
-                    { cod: '99882', desc: 'IRRF', ref: '1,00', valor: d.irrf },
-                    { cod: '99883', desc: 'ADIANTAMENTO', ref: '1,00', valor: d.adiantamento }
-                ].filter(l => l.valor > 0);
-                
-                d.extrasDesc.forEach(e => {
-                    linhasDesc.push({ 
-                        cod: e.cod || e.id.slice(-4).toUpperCase(), 
-                        desc: e.desc.toUpperCase(), 
-                        ref: e.ref || '1,00', 
-                        valor: parseFloat(e.valor) 
-                    });
-                });
-                
-                const maxLinhas = Math.max(linhasVenc.length, linhasDesc.length);
-                let rows = '';
-                
-                for (let i = 0; i < maxLinhas; i++) {
-                    const v = linhasVenc[i] || { cod: '', desc: '', ref: '', valor: null };
-                    const dc = linhasDesc[i] || { cod: '', desc: '', ref: '', valor: null };
-                    
-                    rows += `<tr>
-                        <td style="text-align:left; font-family:monospace; color:#94a3b8;">${v.cod || ''}</td>
-                        <td style="text-align:left; color:#cbd5e1;">${v.desc || ''}</td>
-                        <td style="color:#94a3b8;">${v.ref || ''}</td>
-                        <td class="col-divider" style="text-align:right; color:#10b981; font-weight:700;">${v.valor !== null ? fmtMoeda(v.valor) : ''}</td>
-                        <td style="text-align:left; font-family:monospace; color:#94a3b8;">${dc.cod || ''}</td>
-                        <td style="text-align:left; color:#cbd5e1;">${dc.desc || ''}</td>
-                        <td style="color:#94a3b8;">${dc.ref || ''}</td>
-                        <td style="text-align:right; color:#ef4444; font-weight:700;">${dc.valor !== null ? fmtMoeda(dc.valor) : ''}</td>
-                    </tr>`;
-                }
-                
-                const chaveMes = `${ano}-${mes}`;
-                const extrasMes = extrasPorMes[chaveMes] || [];
-                const todosExtras = [...extrasFixos.map(e => ({...e, isFixo: true})), ...extrasMes.map(e => ({...e, isFixo: false}))];
-                
-                let extrasHTML = '';
-                if (todosExtras.length === 0) {
-                    extrasHTML = '<div class="empty-extras">Nenhum lançamento extra cadastrado. Clique em "+ Adicionar" para criar.</div>';
-                } else {
-                    extrasHTML = todosExtras.map(e => {
-                        const isVenc = e.tipo === 'vencimento';
-                        const emEdicao = extrasEmEdicao[e.id] === true;
-                        
-                        if (emEdicao) {
-                            return `
-                            <div class="extra-card ${isVenc ? 'is-venc' : 'is-desc'}">
-                                <div class="extra-edit">
-                                    <div class="extra-edit-header">
-                                        <i class="fa-solid fa-pen-to-square"></i> Editando lançamento
-                                    </div>
-                                    <div class="extra-edit-grid">
-                                        <div class="extra-edit-field">
-                                            <label>Cód.</label>
-                                            <input type="text" id="edit-cod-${e.id}" value="${e.cod || ''}" maxlength="10">
-                                        </div>
-                                        <div class="extra-edit-field desc">
-                                            <label>Descrição</label>
-                                            <input type="text" id="edit-desc-${e.id}" value="${e.desc}">
-                                        </div>
-                                        <div class="extra-edit-field">
-                                            <label>Ref.</label>
-                                            <input type="text" id="edit-ref-${e.id}" value="${e.ref || ''}">
-                                        </div>
-                                        <div class="extra-edit-field">
-                                            <label>Tipo</label>
-                                            <select id="edit-tipo-${e.id}">
-                                                <option value="vencimento" ${isVenc ? 'selected' : ''}>Vencimento</option>
-                                                <option value="desconto" ${!isVenc ? 'selected' : ''}>Desconto</option>
-                                            </select>
-                                        </div>
-                                        <div class="extra-edit-field">
-                                            <label>Valor (R$)</label>
-                                            <input type="number" step="0.01" id="edit-valor-${e.id}" value="${e.valor}">
-                                        </div>
-                                    </div>
-                                    <div class="extra-edit-actions">
-                                        <button class="btn-extra-cancel" onclick="cancelarEdicaoExtra('${e.id}')">
-                                            <i class="fa-solid fa-xmark"></i> Cancelar
-                                        </button>
-                                        <button class="btn-extra-save" onclick="salvarEdicaoExtra('${e.id}', ${e.isFixo})">
-                                            <i class="fa-solid fa-check"></i> Salvar
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            `;
-                        }
-                        
-                        return `
-                        <div class="extra-card ${isVenc ? 'is-venc' : 'is-desc'}">
-                            <div class="extra-view">
-                                <div class="extra-view-info">
-                                    <div class="extra-view-top">
-                                        ${e.cod ? `<span class="extra-card-badge" style="background:rgba(199,125,255,0.15); color:#C77DFF; border:1px solid rgba(199,125,255,0.3); font-family:monospace;">${e.cod}</span>` : ''}
-                                        <span class="extra-view-desc">${e.desc}</span>
-                                        ${e.isFixo ? '<span class="extra-card-badge fixo"><i class="fa-solid fa-thumbtack"></i> FIXO</span>' : ''}
-                                        <span class="extra-card-badge ${isVenc ? 'venc' : 'desc'}">${isVenc ? 'VENCIMENTO' : 'DESCONTO'}</span>
-                                    </div>
-                                    <div class="extra-view-meta">
-                                        ${e.ref ? `<span>Ref: <strong>${e.ref}</strong></span>` : ''}
-                                        <span>Valor: <strong class="extra-view-valor">R$ ${fmtMoeda(parseFloat(e.valor))}</strong></span>
-                                    </div>
-                                </div>
-                                <div class="extra-actions">
-                                    <button class="btn-extra-action edit" onclick="iniciarEdicaoExtra('${e.id}')" title="Editar">
-                                        <i class="fa-solid fa-pen"></i>
-                                    </button>
-                                    <button class="btn-extra-action delete" onclick="removerExtra('${e.id}', ${e.isFixo})" title="Apagar">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        `;
-                    }).join('');
-                }
-                
-                corpo = `
-                <div class="aba-card">
-                    <div class="aba-title"><i class="fa-solid fa-file-invoice-dollar"></i> Demonstrativo Mensal — ${mesesNomes[mes]}/${ano}</div>
-                    
-                    <div class="table-container">
-                        <div class="scroll-area">
-                            <table class="demonstrativo-table" style="min-width:900px;">
-                                <thead>
-                                    <tr>
-                                        <th colspan="4" class="venc-header col-divider" style="text-align:center; font-size:0.75rem;">VENCIMENTOS</th>
-                                        <th colspan="4" class="desc-header" style="text-align:center; font-size:0.75rem;">DESCONTOS</th>
-                                    </tr>
-                                    <tr>
-                                        <th>Cód.</th>
-                                        <th>Descrição</th>
-                                        <th>Ref.</th>
-                                        <th class="col-divider" style="text-align:right;">Valor (R$)</th>
-                                        <th>Cód.</th>
-                                        <th>Descrição</th>
-                                        <th>Ref.</th>
-                                        <th style="text-align:right;">Valor (R$)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${rows}
-                                </tbody>
-                                <tfoot style="background:rgba(57,198,255,0.08); font-weight:900;">
-                                    <tr>
-                                        <td colspan="3" style="text-align:right; color:#10b981; padding-right:10px;">TOTAL VENCIMENTOS</td>
-                                        <td class="col-divider" style="text-align:right; color:#10b981;" id="total-venc">R$ ${fmtMoeda(d.totalVencimentos)}</td>
-                                        <td colspan="3" style="text-align:right; color:#ef4444; padding-right:10px;">TOTAL DESCONTOS</td>
-                                        <td style="text-align:right; color:#ef4444;" id="total-desc">R$ ${fmtMoeda(d.totalDescontos)}</td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-                    
-                    <div class="liquido-box">
-                        <span class="label">Valor Líquido</span>
-                        <span class="valor" id="total-liq">R$ ${fmtMoeda(d.valorLiquido)}</span>
-                    </div>
-                    
-                    <div class="stats-grid" style="margin-top:20px; grid-template-columns:repeat(3,1fr);">
-                        <div class="stat-box blue"><span class="stat-label">Salário Base</span><div class="stat-val" style="font-size:1.1rem;">R$ ${fmtMoeda(d.salarioBase)}</div></div>
-                        <div class="stat-box purple"><span class="stat-label">Base INSS</span><div class="stat-val" style="font-size:1.1rem;">R$ ${fmtMoeda(d.baseINSS)}</div></div>
-                        <div class="stat-box orange"><span class="stat-label">Base FGTS</span><div class="stat-val" style="font-size:1.1rem;">R$ ${fmtMoeda(d.baseFGTS)}</div></div>
-                        <div class="stat-box green"><span class="stat-label">Valor FGTS (8%)</span><div class="stat-val" style="font-size:1.1rem;">R$ ${fmtMoeda(d.valorFGTS)}</div></div>
-                        <div class="stat-box pink"><span class="stat-label">Base IRRF</span><div class="stat-val" style="font-size:1.1rem;">R$ ${fmtMoeda(d.baseIRRF)}</div></div>
-                        <div class="stat-box blue"><span class="stat-label">Total Horas</span><div class="stat-val" style="font-size:1.1rem;">${minToHora(cacheTotais.trab)}</div></div>
-                    </div>
-                    
-                    <div class="extras-section">
-                        <div class="extras-header">
-                            <div class="extras-title">
-                                <i class="fa-solid fa-plus-circle"></i>
-                                <span>Lançamentos Extras</span>
-                            </div>
-                            <button class="btn-add-extra" onclick="toggleFormExtra()">
-                                <i class="fa-solid fa-plus"></i> Adicionar
-                            </button>
-                        </div>
-                        
-                        <div id="form-extra" class="extra-form-card" style="display:none;">
-                            <div class="form-title">
-                                <i class="fa-solid fa-plus-circle"></i> Novo Lançamento
-                            </div>
-                            <div class="extra-form-grid">
-                                <div class="extra-form-field">
-                                    <label>Cód.</label>
-                                    <input type="text" id="extra-cod" placeholder="00000" maxlength="10">
-                                </div>
-                                <div class="extra-form-field desc">
-                                    <label>Descrição</label>
-                                    <input type="text" id="extra-desc" placeholder="Ex: Trainee, Plano Odontológico">
-                                </div>
-                                <div class="extra-form-field">
-                                    <label>Ref.</label>
-                                    <input type="text" id="extra-ref" placeholder="1,00">
-                                </div>
-                                <div class="extra-form-field">
-                                    <label>Tipo</label>
-                                    <select id="extra-tipo">
-                                        <option value="vencimento">Vencimento</option>
-                                        <option value="desconto">Desconto</option>
-                                    </select>
-                                </div>
-                                <div class="extra-form-field">
-                                    <label>Valor (R$)</label>
-                                    <input type="number" step="0.01" id="extra-valor" placeholder="0,00">
-                                </div>
-                            </div>
-                            <div class="extra-form-footer">
-                                <label class="extra-checkbox-label">
-                                    <input type="checkbox" id="extra-fixo">
-                                    <span>Fixar em todos os meses (recorrente)</span>
-                                </label>
-                                <div class="extra-form-actions">
-                                    <button class="btn-cancel-extra" onclick="toggleFormExtra()">Cancelar</button>
-                                    <button class="btn-confirm-extra" onclick="adicionarExtra()">
-                                        <i class="fa-solid fa-check"></i> Adicionar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div id="extras-lista" class="extras-lista">
-                            ${extrasHTML}
-                        </div>
-                    </div>
-                </div>`;
             } else if (abaAtiva === 'config') {
-                const jornadaHoras = (jornadaDiaria / 60).toFixed(2).replace('.', ',');
-                const salarioBaseAtual = salarioBaseMensal !== null ? salarioBaseMensal : ((jornadaDiaria / 60) * valorHoraNormal * 30);
-                
                 corpo = `
                 <div class="aba-card">
                     <div class="aba-title"><i class="fa-solid fa-gear"></i> Configurações</div>
-                    
-                    <div class="config-section">
-                        <div class="config-section-title">
-                            <i class="fa-solid fa-clock"></i> Jornada de Trabalho
-                        </div>
-                        <div class="config-grid">
-                            <div class="config-field">
-                                <label>Jornada Diária (horas)</label>
-                                <input type="text" id="cfg-jornada" value="${jornadaHoras}" placeholder="8,00">
-                            </div>
-                            <div class="config-field">
-                                <label>Valor da Hora (R$)</label>
-                                <input type="text" id="cfg-valor-hora" value="${valorHoraNormal.toFixed(2).replace('.', ',')}" placeholder="10,32">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="config-section">
-                        <div class="config-section-title">
-                            <i class="fa-solid fa-file-invoice-dollar"></i> Demonstrativo Mensal
-                        </div>
-                        <div class="config-grid">
-                            <div class="config-field">
-                                <label>Salário Base Mensal (R$)</label>
-                                <input type="text" id="cfg-salario" value="${salarioBaseAtual.toFixed(2).replace('.', ',')}" placeholder="0,00">
-                            </div>
-                            <div class="config-field">
-                                <label>Adiantamento (R$)</label>
-                                <input type="text" id="cfg-adiantamento" value="${adiantamentoMensal.toFixed(2).replace('.', ',')}" placeholder="0,00">
-                            </div>
-                            <div class="config-field">
-                                <label>Dependentes IRRF</label>
-                                <input type="number" step="1" min="0" id="cfg-dependentes" value="${dependentesIRRF}" placeholder="0">
-                            </div>
-                        </div>
-                        <div class="config-hint">
-                            <i class="fa-solid fa-circle-info"></i>
-                            <span>Se o Salário Base for deixado em 0, será calculado automaticamente usando: Jornada × Valor Hora × 30.</span>
-                        </div>
-                    </div>
                     
                     <div class="config-section">
                         <div class="config-section-title">
@@ -3241,18 +2175,15 @@ window.salvarEdicaoExtra = function(id, isFixo) {
                             <button class="btn-backup import" onclick="document.getElementById('import-file').click()">
                                 <i class="fa-solid fa-upload"></i> Importar Dados
                             </button>
+                            <button class="btn-backup pdf" onclick="exportarPDF()">
+                                <i class="fa-solid fa-file-pdf"></i> Gerar Relatório PDF
+                            </button>
                         </div>
                         <input type="file" id="import-file" accept=".json,application/json" style="display:none;" onchange="importarBackup(event)">
                         <div class="backup-hint">
                             <i class="fa-solid fa-circle-info"></i>
-                            <span>O arquivo exportado contém todos os registros de ponto, lançamentos extras, observações e configurações.</span>
+                            <span>O arquivo exportado contém todos os registros de ponto, lançamentos extras, observações e configurações. O PDF gera o relatório do mês atual.</span>
                         </div>
-                    </div>
-                    
-                    <div class="config-save-area">
-                        <button class="btn-save-config" onclick="salvarConfiguracoes()">
-                            <i class="fa-solid fa-floppy-disk"></i> Salvar Configurações
-                        </button>
                     </div>
                 </div>`;
             } else if (abaAtiva === 'bater_ponto') {
@@ -3427,20 +2358,17 @@ window.salvarEdicaoExtra = function(id, isFixo) {
                               <path d="M650 530 Q760 570 880 515" stroke="url(#neonBlue)" stroke-width="10" fill="none" stroke-linecap="round" filter="url(#glow)"/>
                             </svg>
                         </div>
-                        <h1 class="brand-title">Check Ponto <span class="version-tag">v4.6</span></h1>
+                        <h1 class="brand-title">Check Ponto <span class="version-tag">v4.7</span></h1>
                     </div>
 
-                    <div class="header-row-2">
-                        <div class="date-stepper">
-                            <button class="btn-nav" onclick="mudarMes(-1)">❮</button>
-                            <div class="date-display">${mesesNomes[mes]} ${ano}</div>
-                            <button class="btn-nav" onclick="mudarMes(1)">❯</button>
-                        </div>
+                    <div class="date-stepper-big">
+                        <button class="btn-nav" onclick="mudarMes(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                        <div class="date-display-big">${mesesNomes[mes]} ${ano}</div>
+                        <button class="btn-nav" onclick="mudarMes(1)"><i class="fa-solid fa-chevron-right"></i></button>
                     </div>
 
                     <div class="header-row-4">
                         <button class="btn-primary" onclick="salvar()">💾 SALVAR</button>
-                        <button class="btn-pdf" onclick="exportarPDF()">📄 PDF</button>
                     </div>
                 </header>
 
@@ -3449,7 +2377,6 @@ window.salvarEdicaoExtra = function(id, isFixo) {
                     <button class="tab-btn ${abaAtiva==='lancamentos'?'active':''}" onclick="mudarAba('lancamentos')">LANÇAMENTOS</button>
                     <button class="tab-btn ${abaAtiva==='dashboard'?'active':''}" onclick="mudarAba('dashboard')">DASHBOARD</button>
                     <button class="tab-btn ${abaAtiva==='relatorio'?'active':''}" onclick="mudarAba('relatorio')">RELATÓRIO</button>
-                    <button class="tab-btn ${abaAtiva==='demonstrativo'?'active':''}" onclick="mudarAba('demonstrativo')">DEMONSTRATIVO</button>
                     <button class="tab-btn ${abaAtiva==='config'?'active':''}" onclick="mudarAba('config')">CONFIG</button>
                 </nav>
 
@@ -3458,7 +2385,7 @@ window.salvarEdicaoExtra = function(id, isFixo) {
                 <footer class="footer">
                     <div class="footer-content">
                         <span class="footer-text">Criado por <b>Deh Januário</b></span>
-                        <span class="footer-brand">Check Ponto • v4.6 Premium</span>
+                        <span class="footer-brand">Check Ponto • v4.7 Premium</span>
                     </div>
                 </footer>
                 <div id="toast" class="toast"></div>
@@ -3482,15 +2409,8 @@ window.salvarEdicaoExtra = function(id, isFixo) {
         window.toggleCalendario = toggleCalendario;
         window.calMudarMes = calMudarMes;
         window.selecionarDiaCalendario = selecionarDiaCalendario;
-        window.salvarConfiguracoes = salvarConfiguracoes;
         window.exportarBackup = exportarBackup;
         window.importarBackup = importarBackup;
-        window.toggleFormExtra = toggleFormExtra;
-        window.adicionarExtra = adicionarExtra;
-        window.removerExtra = removerExtra;
-        window.iniciarEdicaoExtra = iniciarEdicaoExtra;
-        window.cancelarEdicaoExtra = cancelarEdicaoExtra;
-        window.salvarEdicaoExtra = salvarEdicaoExtra;
 
         recalcularTotais(); renderizar(); 
     })();
