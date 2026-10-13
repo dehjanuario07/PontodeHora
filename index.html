@@ -45,7 +45,6 @@
 
         .container { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; }
 
-        /* HEADER */
         .header-card {
             background: rgba(11, 16, 38, 0.65) !important;
             backdrop-filter: blur(18px);
@@ -99,7 +98,6 @@
             font-weight: 700; margin-left: 6px; vertical-align: middle;
         }
 
-        /* NOVO STEPPER GRANDE */
         .date-stepper-big {
             display: flex;
             align-items: center;
@@ -173,7 +171,6 @@
         .btn-primary { background: linear-gradient(135deg, #39C6FF, #7B2EFF); color: white; box-shadow: 0 5px 15px rgba(57, 198, 255, 0.3); }
         .btn-nav { background: transparent; color: var(--primary); font-size: 1.2rem; padding: 5px 15px; }
 
-        /* CARDS DAS ABAS */
         .aba-card {
             background: rgba(20, 25, 55, 0.7);
             backdrop-filter: blur(14px);
@@ -203,7 +200,6 @@
             font-size: 1rem;
         }
 
-        /* STATS */
         .stat-box { border-bottom: 4px solid rgba(255,255,255,0.1); padding: 12px 15px; border-radius: 12px; background: rgba(255,255,255,0.02); }
         .stat-box.blue { border-bottom-color: #39C6FF; }
         .stat-box.purple { border-bottom-color: #7B2EFF; }
@@ -980,6 +976,75 @@
 
         .config-section-title i { font-size: 0.9rem; }
 
+        .config-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+
+        .config-field { display: flex; flex-direction: column; gap: 6px; }
+
+        .config-field label {
+            font-size: 0.65rem;
+            color: #94a3b8;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .config-field input {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 0.95rem;
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 0.5px;
+            height: 48px;
+        }
+
+        .config-field input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(57, 198, 255, 0.25);
+        }
+
+        .config-hint {
+            margin-top: 10px;
+            font-size: 0.7rem;
+            color: #64748b;
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            line-height: 1.4;
+        }
+
+        .config-hint i { color: var(--primary); margin-top: 2px; flex-shrink: 0; }
+
+        .config-save-area { display: flex; justify-content: center; margin-top: 18px; }
+
+        .btn-save-config {
+            background: linear-gradient(135deg, #39C6FF, #7B2EFF);
+            color: #fff;
+            border: none;
+            padding: 12px 34px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(57, 198, 255, 0.35);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-save-config:hover {
+            box-shadow: 0 0 30px rgba(57, 198, 255, 0.6);
+            transform: translateY(-2px);
+        }
+
         .backup-actions {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -1105,6 +1170,8 @@
             td { font-size: 0.7rem; padding: 6px 4px; }
             .config-section { padding: 16px; }
             .config-section-title { font-size: 0.7rem; }
+            .config-grid { grid-template-columns: 1fr; gap: 12px; }
+            .btn-save-config { padding: 12px 28px; font-size: 0.75rem; }
             .backup-actions { grid-template-columns: 1fr; }
         }
 
@@ -1174,6 +1241,8 @@
             .readonly-badge { font-size: 0.55rem; padding: 3px 6px; }
             .config-section { padding: 12px; }
             .config-section-title { font-size: 0.65rem; }
+            .config-field input { padding: 10px 12px; font-size: 0.85rem; height: 44px; }
+            .btn-save-config { padding: 10px 22px; font-size: 0.7rem; }
             .backup-actions { grid-template-columns: 1fr; }
         }
     </style>
@@ -1935,6 +2004,26 @@
             }
         }, 1000);
 
+        window.salvarConfiguracoes = function() {
+            const jEl = document.getElementById('cfg-jornada');
+            const vhEl = document.getElementById('cfg-valor-hora');
+            
+            if (jEl) {
+                const v = parseFloat(jEl.value.replace(',', '.'));
+                if (!isNaN(v) && v > 0) jornadaDiaria = Math.round(v * 60);
+            }
+            
+            if (vhEl) {
+                const v = parseFloat(vhEl.value.replace(',', '.'));
+                if (!isNaN(v) && v > 0) valorHoraNormal = v;
+            }
+            
+            salvar(true);
+            recalcularTotais();
+            renderizar();
+            mostrarToast('✅ Configurações salvas!');
+        };
+
         window.exportarBackup = function() {
             const dados = {
                 _meta: {
@@ -2157,9 +2246,36 @@
                     </div>
                 </div>`;
             } else if (abaAtiva === 'config') {
+                const jornadaHoras = (jornadaDiaria / 60).toFixed(2).replace('.', ',');
+                
                 corpo = `
                 <div class="aba-card">
                     <div class="aba-title"><i class="fa-solid fa-gear"></i> Configurações</div>
+                    
+                    <div class="config-section">
+                        <div class="config-section-title">
+                            <i class="fa-solid fa-clock"></i> Jornada de Trabalho
+                        </div>
+                        <div class="config-grid">
+                            <div class="config-field">
+                                <label>Jornada Diária (horas)</label>
+                                <input type="text" id="cfg-jornada" value="${jornadaHoras}" placeholder="8,00">
+                            </div>
+                            <div class="config-field">
+                                <label>Valor da Hora (R$)</label>
+                                <input type="text" id="cfg-valor-hora" value="${valorHoraNormal.toFixed(2).replace('.', ',')}" placeholder="10,32">
+                            </div>
+                        </div>
+                        <div class="config-hint">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span>Altere o valor da hora quando o salário mínimo for reajustado. Isso afeta os cálculos de horas extras no Dashboard e Relatório.</span>
+                        </div>
+                        <div class="config-save-area">
+                            <button class="btn-save-config" onclick="salvarConfiguracoes()">
+                                <i class="fa-solid fa-floppy-disk"></i> Salvar Configurações
+                            </button>
+                        </div>
+                    </div>
                     
                     <div class="config-section">
                         <div class="config-section-title">
@@ -2409,6 +2525,7 @@
         window.toggleCalendario = toggleCalendario;
         window.calMudarMes = calMudarMes;
         window.selecionarDiaCalendario = selecionarDiaCalendario;
+        window.salvarConfiguracoes = salvarConfiguracoes;
         window.exportarBackup = exportarBackup;
         window.importarBackup = importarBackup;
 
