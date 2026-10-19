@@ -1591,7 +1591,6 @@
         let jornadaDiaria = 480; 
         let valorHoraNormal = 10.32; 
         let salarioBaseMensal = null;
-        let adiantamentoMensal = 0;
         
         const feriadosFixos = { '0-1': 'Ano Novo', '3-21': 'Tiradentes', '4-1': 'Dia do Trabalho', '5-13': 'Santo Antônio', '8-7': 'Independência', '9-12': 'N. Sra Aparecida', '10-2': 'Finados', '10-15': 'Proclamação', '10-20': 'Consc. Negra', '11-25': 'Natal' };
         
@@ -1661,7 +1660,6 @@
                         jornadaDiaria = p.jornadaDiaria || 480; 
                         valorHoraNormal = p.valorHoraNormal || 10.32; 
                         salarioBaseMensal = p.salarioBaseMensal || null;
-                        adiantamentoMensal = p.adiantamentoMensal || 0;
                         observacoes = p.observacoes || {};
                         ferias = p.ferias || {};
                         dadosRecuperados = true;
@@ -1814,21 +1812,24 @@
             return 0;
         }
 
-        function calcularPrevisao() {
+        function calcularPrevisao(mesParam = mes, anoParam = ano) {
             recalcularTotais();
             const salarioBase = getSalarioBase();
-            const valorHe50 = cacheTotais.extra50 / 60 * valorHoraNormal * 1.5;
+
+            const pagamento = getTrimestrePagamento(mesParam);
+            const temHE50 = pagamento !== null;
+
+            const valorHe50 = temHE50 ? (cacheTotais.extra50 / 60 * valorHoraNormal * 1.5) : 0;
             const valorHe100 = cacheTotais.extra100 / 60 * valorHoraNormal * 2.0;
             const dsr = (valorHe50 + valorHe100) / 5;
-            
+
             const totalBruto = salarioBase + valorHe50 + valorHe100 + dsr;
             const inss = calcularINSS(totalBruto);
             const baseIRRF = totalBruto - inss;
             const irrf = calcularIRRF(baseIRRF);
-            const adiantamento = adiantamentoMensal;
-            
-            const liquido = totalBruto - inss - irrf - adiantamento;
-            
+
+            const liquido = totalBruto - inss - irrf;
+
             return {
                 salarioBase,
                 valorHe50,
@@ -1837,8 +1838,9 @@
                 totalBruto,
                 inss,
                 irrf,
-                adiantamento,
-                liquido
+                liquido,
+                temHE50,
+                pagamento
             };
         }
 
@@ -2149,7 +2151,7 @@
         function salvar(silencioso = false) { 
             localStorage.setItem(CHAVE_ATUAL, JSON.stringify({ 
                 registros, jornadaDiaria, valorHoraNormal, observacoes, 
-                adiantamentoMensal, salarioBaseMensal, ferias
+                salarioBaseMensal, ferias
             })); 
             if(!silencioso) mostrarToast('✅ Dados guardados!'); 
         }
@@ -2157,7 +2159,7 @@
         function salvarAuto() {
             localStorage.setItem(CHAVE_ATUAL, JSON.stringify({ 
                 registros, jornadaDiaria, valorHoraNormal, observacoes, 
-                adiantamentoMensal, salarioBaseMensal, ferias
+                salarioBaseMensal, ferias
             }));
         }
         
@@ -2199,25 +2201,6 @@
             } else {
                 mostrarToast('↩️ Marcação 100% removida');
             }
-        }
-
-        function toggleFeriasDia() {
-            const chave = `${ano}-${mes}-${diaSelecionado}`;
-            
-            if (ferias[chave]) {
-                delete ferias[chave];
-                mostrarToast('↩️ Férias removidas deste dia');
-            } else {
-                ferias[chave] = { inicio: true, fim: true };
-                if (registros[chave]) {
-                    delete registros[chave];
-                }
-                mostrarToast('🏖️ Dia marcado como férias');
-            }
-            
-            salvarAuto();
-            recalcularTotais();
-            renderizar();
         }
 
         function abrirModalFerias() {
@@ -2594,6 +2577,15 @@
                 
                 const nomeMesAnt = mesesNomes[mAnt].substring(0,3);
 
+                let prevHE50Line = '';
+                if (prev.temHE50) {
+                    prevHE50Line = `
+                        <div class="previsao-linha">
+                            <span class="prev-label">Horas Extras 50% (${prev.pagamento.label})</span>
+                            <span class="prev-value">R$ ${fmtMoeda(prev.valorHe50)}</span>
+                        </div>`;
+                }
+
                 corpo = `
                 <div class="aba-card">
                     <div class="aba-title"><i class="fa-solid fa-chart-pie"></i> Dashboard do Mês</div>
@@ -2604,8 +2596,43 @@
                         <div class="stat-box purple"><span class="stat-label">Extra 100%</span><div class="stat-val">${minToHora(cacheTotais.extra100)}</div><div class="stat-money">R$ ${(cacheTotais.extra100/60 * valorHoraNormal * 2.0).toFixed(2)}</div></div>
                         <div class="stat-box orange"><span class="stat-label">Total Geral</span><div class="stat-val">${minToHora(cacheTotais.trab)}</div></div>
                     </div>
+
+                    <div class="previsao-box">
+                        <div class="prev-title"><i class="fa-solid fa-money-bill-wave"></i> Previsão de Recebimento</div>
+                        
+                        <div class="previsao-linha">
+                            <span class="prev-label">Salário Base</span>
+                            <span class="prev-value">R$ ${fmtMoeda(prev.salarioBase)}</span>
+                        </div>
+                        ${prevHE50Line}
+                        <div class="previsao-linha">
+                            <span class="prev-label">Horas Extras 100%</span>
+                            <span class="prev-value">R$ ${fmtMoeda(prev.valorHe100)}</span>
+                        </div>
+                        <div class="previsao-linha">
+                            <span class="prev-label">DSR sobre HE</span>
+                            <span class="prev-value">R$ ${fmtMoeda(prev.dsr)}</span>
+                        </div>
+                        <div class="previsao-linha" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; margin-top: 8px;">
+                            <span class="prev-label" style="color:#10b981; font-weight:800;">Total Bruto</span>
+                            <span class="prev-value" style="color:#10b981;">R$ ${fmtMoeda(prev.totalBruto)}</span>
+                        </div>
+                        <div class="previsao-linha desconto">
+                            <span class="prev-label">INSS</span>
+                            <span class="prev-value">- R$ ${fmtMoeda(prev.inss)}</span>
+                        </div>
+                        <div class="previsao-linha desconto">
+                            <span class="prev-label">IRRF</span>
+                            <span class="prev-value">- R$ ${fmtMoeda(prev.irrf)}</span>
+                        </div>
+                        
+                        <div class="previsao-total">
+                            <span class="prev-label">💰 Líquido Previsto</span>
+                            <span class="prev-value">R$ ${fmtMoeda(prev.liquido)}</span>
+                        </div>
+                    </div>
                     
-                    <div class="chart-card" style="height: 250px; margin-bottom: 20px;"><canvas id="chartDist"></canvas></div>
+                    <div class="chart-card" style="height: 250px; margin-top: 20px; margin-bottom: 20px;"><canvas id="chartDist"></canvas></div>
                     
                     <div class="aba-title" style="margin-top: 25px;"><i class="fa-solid fa-chart-line"></i> Evolução Mensal (6 meses)</div>
                     <div class="chart-card" style="height: 280px; margin-bottom: 20px;"><canvas id="chartDistLinha"></canvas></div>
@@ -2631,48 +2658,6 @@
                             <span class="cmp-vs">vs ${nomeMesAnt}</span>
                         </div>
                     </div>
-                    
-                    <div class="previsao-box">
-                        <div class="prev-title"><i class="fa-solid fa-money-bill-wave"></i> Previsão de Recebimento</div>
-                        
-                        <div class="previsao-linha">
-                            <span class="prev-label">Salário Base</span>
-                            <span class="prev-value">R$ ${fmtMoeda(prev.salarioBase)}</span>
-                        </div>
-                        <div class="previsao-linha">
-                            <span class="prev-label">Horas Extras 50%</span>
-                            <span class="prev-value">R$ ${fmtMoeda(prev.valorHe50)}</span>
-                        </div>
-                        <div class="previsao-linha">
-                            <span class="prev-label">Horas Extras 100%</span>
-                            <span class="prev-value">R$ ${fmtMoeda(prev.valorHe100)}</span>
-                        </div>
-                        <div class="previsao-linha">
-                            <span class="prev-label">DSR sobre HE</span>
-                            <span class="prev-value">R$ ${fmtMoeda(prev.dsr)}</span>
-                        </div>
-                        <div class="previsao-linha" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; margin-top: 8px;">
-                            <span class="prev-label" style="color:#10b981; font-weight:800;">Total Bruto</span>
-                            <span class="prev-value" style="color:#10b981;">R$ ${fmtMoeda(prev.totalBruto)}</span>
-                        </div>
-                        <div class="previsao-linha desconto">
-                            <span class="prev-label">INSS</span>
-                            <span class="prev-value">- R$ ${fmtMoeda(prev.inss)}</span>
-                        </div>
-                        <div class="previsao-linha desconto">
-                            <span class="prev-label">IRRF</span>
-                            <span class="prev-value">- R$ ${fmtMoeda(prev.irrf)}</span>
-                        </div>
-                        <div class="previsao-linha desconto">
-                            <span class="prev-label">Adiantamento</span>
-                            <span class="prev-value">- R$ ${fmtMoeda(prev.adiantamento)}</span>
-                        </div>
-                        
-                        <div class="previsao-total">
-                            <span class="prev-label">💰 Líquido Previsto</span>
-                            <span class="prev-value">R$ ${fmtMoeda(prev.liquido)}</span>
-                        </div>
-                    </div>
                 </div>`;
             } else if (abaAtiva === 'relatorio') {
                 const dados = getDadosTrimestres(relAnoSelecionado);
@@ -2686,11 +2671,6 @@
                         <div class="q-money">R$ ${(d.extra50/60 * valorHoraNormal * 1.5).toFixed(2)}</div>
                     </div>`;
                 }).join('');
-
-                const mesAtual = calcularMes(relMesSelecionado, relAnoSelecionado);
-                const mesMoney = (mesAtual.trab / 60 * valorHoraNormal).toFixed(2);
-                const anoTotalMin = dados.reduce((acc, d) => acc + d.trab, 0);
-                const anoMoney = (anoTotalMin / 60 * valorHoraNormal).toFixed(2);
 
                 let opcoesMes = '';
                 for (let i = 0; i < 12; i++) {
@@ -2710,19 +2690,6 @@
                         <select id="rel-mes-selector" onchange="mudarMesRelatorio()">
                             ${opcoesMes}
                         </select>
-                    </div>
-                    
-                    <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px;">
-                        <div class="stat-box blue" style="flex:1; min-width:150px;">
-                            <span class="stat-label">📅 ${mesesNomes[relMesSelecionado]}/${relAnoSelecionado}</span>
-                            <div class="stat-val" style="font-size: 1.2rem;">${minToHora(mesAtual.trab)}</div>
-                            <div class="stat-money">R$ ${mesMoney}</div>
-                        </div>
-                        <div class="stat-box purple" style="flex:1; min-width:150px;">
-                            <span class="stat-label">📊 Ano ${relAnoSelecionado}</span>
-                            <div class="stat-val" style="font-size: 1.2rem;">${minToHora(anoTotalMin)}</div>
-                            <div class="stat-money">R$ ${anoMoney}</div>
-                        </div>
                     </div>
 
                     <div class="relatorio-wrapper">
@@ -2827,10 +2794,6 @@
                                 <label>Salário Base (R$)</label>
                                 <input type="text" id="cfg-salario-base" value="${salarioBaseAtual.toFixed(2).replace('.', ',')}">
                             </div>
-                            <div class="config-field">
-                                <label>Adiantamento (R$)</label>
-                                <input type="text" id="cfg-adiantamento" value="${adiantamentoMensal.toFixed(2).replace('.', ',')}">
-                            </div>
                         </div>
                         <div class="config-hint">
                             <i class="fa-solid fa-circle-info"></i>
@@ -2918,8 +2881,6 @@
                 const diaSemanaCurto = `${diasNomes[semSel]}, ${diaSelecionado.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')}`;
 
                 const podeMarcar100 = !isDomingo && !feriadoDia && !isFer;
-                const btnFeriasText = isFer ? 'Remover Férias' : 'Marcar Férias';
-                const btnFeriasClass = isFer ? 'btn-ferias active' : 'btn-ferias';
 
                 corpo = `
                 <div class="aba-card">
@@ -2953,20 +2914,15 @@
                             <div id="calendar-popover" class="calendar-popover"></div>
                         </div>
 
-                        <div class="action-row">
-                            ${podeMarcar100 ? `
+                        ${podeMarcar100 ? `
+                        <div class="action-row full">
                             <button class="btn-100-neon ${isManual100 ? 'active' : ''}" onclick="toggleFeriadoManualDoDia()" title="${isManual100 ? 'Remover marcação 100%' : 'Marcar dia como 100%'}">
                                 <i class="fa-solid fa-bolt"></i>
                                 <span>${isManual100 ? '100% Ativo' : 'Marcar 100%'}</span>
                                 <span class="badge-off">${isManual100 ? 'ATIVO' : '100%'}</span>
                             </button>
-                            ` : '<div></div>'}
-                            
-                            <button class="${btnFeriasClass}" onclick="toggleFeriasDia()" title="${btnFeriasText}">
-                                <i class="fa-solid fa-umbrella-beach"></i>
-                                <span>${btnFeriasText}</span>
-                            </button>
                         </div>
+                        ` : ''}
 
                         ${isHoje && !isFer ? `
                         <div style="text-align: center; margin-bottom: 20px;">
@@ -3141,7 +3097,6 @@
             const jEl = document.getElementById('cfg-jornada');
             const vhEl = document.getElementById('cfg-valor-hora');
             const sbEl = document.getElementById('cfg-salario-base');
-            const adEl = document.getElementById('cfg-adiantamento');
             
             if (jEl) {
                 const v = parseFloat(jEl.value.replace(',', '.'));
@@ -3158,15 +3113,9 @@
                 if (!isNaN(v) && v > 0) valorHoraNormal = v;
             }
             
-            // Se salário base foi alterado, recalcula o valor da hora (Salário ÷ 220)
             if (salarioBaseMensal !== null && salarioBaseMensal > 0) {
                 valorHoraNormal = salarioBaseMensal / 220;
                 if (vhEl) vhEl.value = valorHoraNormal.toFixed(2).replace('.', ',');
-            }
-            
-            if (adEl) {
-                const v = parseFloat(adEl.value.replace(',', '.'));
-                if (!isNaN(v) && v >= 0) adiantamentoMensal = v;
             }
             
             salvarAuto();
@@ -3187,7 +3136,6 @@
                 jornadaDiaria: jornadaDiaria,
                 valorHoraNormal: valorHoraNormal,
                 salarioBaseMensal: salarioBaseMensal,
-                adiantamentoMensal: adiantamentoMensal,
                 observacoes: observacoes,
                 ferias: ferias
             };
@@ -3247,7 +3195,6 @@
                     jornadaDiaria = dados.jornadaDiaria || 480;
                     valorHoraNormal = dados.valorHoraNormal || 10.32;
                     salarioBaseMensal = dados.salarioBaseMensal || null;
-                    adiantamentoMensal = dados.adiantamentoMensal || 0;
                     observacoes = dados.observacoes || {};
                     ferias = dados.ferias || {};
                     
@@ -3282,7 +3229,6 @@
         window.salvarObservacao = salvarObservacao;
         window.toggleFeriadoManual = toggleFeriadoManual;
         window.toggleFeriadoManualDoDia = toggleFeriadoManualDoDia;
-        window.toggleFeriasDia = toggleFeriasDia;
         window.abrirModalFerias = abrirModalFerias;
         window.limparFerias = limparFerias;
         window.salvarManualPrimeiraTela = salvarManualPrimeiraTela;
