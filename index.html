@@ -1591,7 +1591,6 @@
         let jornadaDiaria = 480; 
         let valorHoraNormal = 10.32; 
         let salarioBaseMensal = null;
-        let adiantamentoMensal = 0;
         
         const feriadosFixos = { '0-1': 'Ano Novo', '3-21': 'Tiradentes', '4-1': 'Dia do Trabalho', '5-13': 'Santo Antônio', '8-7': 'Independência', '9-12': 'N. Sra Aparecida', '10-2': 'Finados', '10-15': 'Proclamação', '10-20': 'Consc. Negra', '11-25': 'Natal' };
         
@@ -1661,7 +1660,6 @@
                         jornadaDiaria = p.jornadaDiaria || 480; 
                         valorHoraNormal = p.valorHoraNormal || 10.32; 
                         salarioBaseMensal = p.salarioBaseMensal || null;
-                        adiantamentoMensal = p.adiantamentoMensal || 0;
                         observacoes = p.observacoes || {};
                         ferias = p.ferias || {};
                         dadosRecuperados = true;
@@ -1684,9 +1682,6 @@
                 mostrarToast(`✅ Dados recuperados de ${chaveOrigem}!`);
             }
         }, 500);
-        
-        console.log('🔍 Chaves no localStorage:', Object.keys(localStorage));
-        console.log('📦 Dados recuperados:', dadosRecuperados ? 'Sim' : 'Não');
         
         const mesesNomes = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
         const mesesNomesCurto = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
@@ -1815,30 +1810,59 @@
         }
 
         function calcularPrevisao() {
-            recalcularTotais();
             const salarioBase = getSalarioBase();
-            const valorHe50 = cacheTotais.extra50 / 60 * valorHoraNormal * 1.5;
-            const valorHe100 = cacheTotais.extra100 / 60 * valorHoraNormal * 2.0;
-            const dsr = (valorHe50 + valorHe100) / 5;
             
-            const totalBruto = salarioBase + valorHe50 + valorHe100 + dsr;
+            let he100Mes = 0;
+            const dias = diasNoMes(ano, mes);
+            for (let d = 1; d <= dias; d++) {
+                const chave = `${ano}-${mes}-${d}`;
+                const reg = registros[chave];
+                if (!reg) continue;
+                const temBatida = reg.ent1 || reg.sai1 || reg.ent2 || reg.sai2;
+                if (!temBatida && !reg.feriadoManual) continue;
+                const dt = new Date(ano, mes, d);
+                const st = calcularValoresDia(chave, dt.getDay(), mes, d, ano);
+                he100Mes += st.extra100;
+            }
+            const valorHe100 = he100Mes / 60 * valorHoraNormal * 2.0;
+            const dsr100 = valorHe100 / 5;
+            
+            const trimPag = getTrimestrePagamento(mes);
+            let he50TrimMin = 0;
+            let valorHe50 = 0;
+            let dsr50 = 0;
+            
+            if (trimPag) {
+                const mesesTrim = getMesesTrimestre(trimPag.trimestre, ano);
+                mesesTrim.forEach(({ mes: m, ano: a }) => {
+                    const r = calcularMes(m, a);
+                    he50TrimMin += r.extra50;
+                });
+                valorHe50 = he50TrimMin / 60 * valorHoraNormal * 1.5;
+                dsr50 = valorHe50 / 5;
+            }
+            
+            const totalBruto = salarioBase + valorHe100 + dsr100 + valorHe50 + dsr50;
+            
             const inss = calcularINSS(totalBruto);
             const baseIRRF = totalBruto - inss;
             const irrf = calcularIRRF(baseIRRF);
-            const adiantamento = adiantamentoMensal;
-            
-            const liquido = totalBruto - inss - irrf - adiantamento;
+            const liquido = totalBruto - inss - irrf;
             
             return {
                 salarioBase,
-                valorHe50,
                 valorHe100,
-                dsr,
+                dsr100,
+                valorHe50,
+                dsr50,
+                he50MinTrim,
+                he100Min: he100Mes,
                 totalBruto,
                 inss,
                 irrf,
-                adiantamento,
-                liquido
+                liquido,
+                trimPag,
+                isMesPagamento: !!trimPag
             };
         }
 
@@ -1919,237 +1943,246 @@
         }
 
         function initCharts() {
-            if (abaAtiva === 'dashboard') {
-                const distCtx = document.getElementById('chartDist');
-                if (distCtx) {
-                    if (chartDist) chartDist.destroy();
-                    chartDist = new Chart(distCtx.getContext('2d'), {
-                        type: 'bar',
-                        data: { 
-                            labels: ['Normal', '50%', '100%'], 
-                            datasets: [{ 
-                                data: [cacheTotais.normal/60, cacheTotais.extra50/60, cacheTotais.extra100/60], 
-                                backgroundColor: ['#39C6FF', '#ec4899', '#8b5cf6'], 
-                                borderRadius: 6 
-                            }] 
-                        },
-                        options: { 
-                            responsive: true, maintainAspectRatio: false, 
-                            plugins: { legend: { display: false } },
-                            scales: {
-                                y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } },
-                                x: { ticks: { color: '#94a3b8' } }
+            try {
+                const appEl = document.getElementById('app');
+                if (!appEl || !appEl.innerHTML) return;
+
+                if (abaAtiva === 'dashboard') {
+                    const distCtx = document.getElementById('chartDist');
+                    if (distCtx && distCtx.offsetWidth > 0 && distCtx.offsetHeight > 0) {
+                        try {
+                            if (chartDist) { chartDist.destroy(); chartDist = null; }
+                            chartDist = new Chart(distCtx.getContext('2d'), {
+                                type: 'bar',
+                                data: { 
+                                    labels: ['Normal', '50%', '100%'], 
+                                    datasets: [{ 
+                                        data: [cacheTotais.normal/60, cacheTotais.extra50/60, cacheTotais.extra100/60], 
+                                        backgroundColor: ['#39C6FF', '#ec4899', '#8b5cf6'], 
+                                        borderRadius: 6 
+                                    }] 
+                                },
+                                options: { 
+                                    responsive: true, maintainAspectRatio: false, 
+                                    plugins: { legend: { display: false } },
+                                    scales: {
+                                        y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } },
+                                        x: { ticks: { color: '#94a3b8' } }
+                                    }
+                                }
+                            });
+                        } catch(e) { console.warn('chartDist:', e); }
+                    }
+
+                    const linhaCtx = document.getElementById('chartDistLinha');
+                    if (linhaCtx && linhaCtx.offsetWidth > 0 && linhaCtx.offsetHeight > 0) {
+                        try {
+                            if (chartDistLinha) { chartDistLinha.destroy(); chartDistLinha = null; }
+                            const mesesLabels = [];
+                            const dataNormal = [], dataHE = [], dataTotal = [];
+                            for (let i = 5; i >= 0; i--) {
+                                let m = mes - i, a = ano;
+                                if (m < 0) { m += 12; a--; }
+                                const r = calcularMes(m, a);
+                                mesesLabels.push(`${mesesNomes[m].substring(0,3)}/${a.toString().substring(2)}`);
+                                dataNormal.push(r.normal / 60);
+                                dataHE.push((r.extra50 + r.extra100) / 60);
+                                dataTotal.push(r.trab / 60);
                             }
-                        }
-                    });
-                }
-
-                const linhaCtx = document.getElementById('chartDistLinha');
-                if (linhaCtx) {
-                    if (chartDistLinha) chartDistLinha.destroy();
-                    
-                    const mesesLabels = [];
-                    const dataNormal = [], dataHE = [], dataTotal = [];
-                    for (let i = 5; i >= 0; i--) {
-                        let m = mes - i, a = ano;
-                        if (m < 0) { m += 12; a--; }
-                        const r = calcularMes(m, a);
-                        mesesLabels.push(`${mesesNomes[m].substring(0,3)}/${a.toString().substring(2)}`);
-                        dataNormal.push(r.normal / 60);
-                        dataHE.push((r.extra50 + r.extra100) / 60);
-                        dataTotal.push(r.trab / 60);
-                    }
-
-                    chartDistLinha = new Chart(linhaCtx.getContext('2d'), {
-                        type: 'line',
-                        data: {
-                            labels: mesesLabels,
-                            datasets: [
-                                { label: 'Normal', data: dataNormal, borderColor: '#39C6FF', backgroundColor: 'rgba(57,198,255,0.1)', tension: 0.4, pointRadius: 5, borderWidth: 2.5, fill: true },
-                                { label: 'HE', data: dataHE, borderColor: '#ec4899', backgroundColor: 'rgba(236,72,153,0.1)', tension: 0.4, pointRadius: 5, borderWidth: 2.5, fill: true },
-                                { label: 'Total', data: dataTotal, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', tension: 0.4, pointRadius: 5, borderWidth: 2.5, fill: false, borderDash: [5, 5] }
-                            ]
-                        },
-                        options: {
-                            responsive: true, maintainAspectRatio: false,
-                            scales: {
-                                y: { beginAtZero: true, ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-                                x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } }
-                            },
-                            plugins: {
-                                legend: { labels: { color: '#94a3b8', font: { size: 11 } } },
-                                tooltip: {
-                                    backgroundColor: 'rgba(11, 16, 38, 0.95)', titleColor: '#fff', bodyColor: '#fff',
-                                    borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1,
-                                    callbacks: { label: function(context) { return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + 'h'; } }
+                            chartDistLinha = new Chart(linhaCtx.getContext('2d'), {
+                                type: 'line',
+                                data: {
+                                    labels: mesesLabels,
+                                    datasets: [
+                                        { label: 'Normal', data: dataNormal, borderColor: '#39C6FF', backgroundColor: 'rgba(57,198,255,0.1)', tension: 0.4, pointRadius: 5, borderWidth: 2.5, fill: true },
+                                        { label: 'HE', data: dataHE, borderColor: '#ec4899', backgroundColor: 'rgba(236,72,153,0.1)', tension: 0.4, pointRadius: 5, borderWidth: 2.5, fill: true },
+                                        { label: 'Total', data: dataTotal, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', tension: 0.4, pointRadius: 5, borderWidth: 2.5, fill: false, borderDash: [5, 5] }
+                                    ]
+                                },
+                                options: {
+                                    responsive: true, maintainAspectRatio: false,
+                                    scales: {
+                                        y: { beginAtZero: true, ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                                        x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                                    },
+                                    plugins: {
+                                        legend: { labels: { color: '#94a3b8', font: { size: 11 } } },
+                                        tooltip: {
+                                            backgroundColor: 'rgba(11, 16, 38, 0.95)', titleColor: '#fff', bodyColor: '#fff',
+                                            borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1,
+                                            callbacks: { label: function(context) { return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + 'h'; } }
+                                        }
+                                    },
+                                    interaction: { intersect: false, mode: 'index' }
                                 }
-                            },
-                            interaction: { intersect: false, mode: 'index' }
-                        }
-                    });
-                }
-            }
-
-            if (abaAtiva === 'relatorio') {
-                const trimCtx = document.getElementById('chartTrimestre');
-                const mensalCtx = document.getElementById('chartMensal');
-                const semanalCtx = document.getElementById('chartSemanal');
-                const diarioCtx = document.getElementById('chartDiario');
-                const mesAno = relMesSelecionado;
-                const anoAno = relAnoSelecionado;
-                
-                if (trimCtx) {
-                    if (chartTrimestre) chartTrimestre.destroy();
-                    const dados = getDadosTrimestres(anoAno);
-                    const labelsTrim = getLabelsTrimestres();
-                    const extra50 = dados.map(d => d.extra50 / 60);
-                    const extra100 = dados.map(d => d.extra100 / 60);
-
-                    chartTrimestre = new Chart(trimCtx.getContext('2d'), {
-                        type: 'bar',
-                        data: {
-                            labels: labelsTrim,
-                            datasets: [
-                                { label: '50%', data: extra50, backgroundColor: '#ec4899' },
-                                { label: '100%', data: extra100, backgroundColor: '#8b5cf6' }
-                            ]
-                        },
-                        options: {
-                            responsive: true, maintainAspectRatio: false,
-                            scales: { 
-                                x: { ticks: { color: '#94a3b8' } }, 
-                                y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } } 
-                            },
-                            plugins: { legend: { labels: { color: '#94a3b8' } } }
-                        }
-                    });
-                }
-
-                if (mensalCtx) {
-                    if (chartMensal) chartMensal.destroy();
-                    const mesesLabels = [];
-                    const dadosMeses = [];
-                    for (let i = 2; i >= 0; i--) {
-                        let m = mesAno - i, a = anoAno;
-                        if (m < 0) { m += 12; a--; }
-                        mesesLabels.push(`${mesesNomes[m].substring(0,3)}/${a}`);
-                        dadosMeses.push(calcularMes(m, a));
+                            });
+                        } catch(e) { console.warn('chartDistLinha:', e); }
                     }
-
-                    chartMensal = new Chart(mensalCtx.getContext('2d'), {
-                        type: 'line',
-                        data: {
-                            labels: mesesLabels,
-                            datasets: [
-                                { label: '50%', data: dadosMeses.map(d => d.extra50 / 60), borderColor: '#ec4899', backgroundColor: '#ec4899', tension: 0.3, pointRadius: 6 },
-                                { label: '100%', data: dadosMeses.map(d => d.extra100 / 60), borderColor: '#8b5cf6', backgroundColor: '#8b5cf6', tension: 0.3, pointRadius: 6 }
-                            ]
-                        },
-                        options: {
-                            responsive: true, maintainAspectRatio: false,
-                            scales: { 
-                                y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } },
-                                x: { ticks: { color: '#94a3b8' } }
-                            },
-                            plugins: { legend: { labels: { color: '#94a3b8' } } }
-                        }
-                    });
                 }
 
-                if (semanalCtx) {
-                    if (chartSemanal) chartSemanal.destroy();
-                    const semanas = [];
-                    const diasMes = diasNoMes(anoAno, mesAno);
-                    let semanaAtual = [];
-                    for (let d = 1; d <= diasMes; d++) {
-                        const dt = new Date(anoAno, mesAno, d);
-                        const s = calcularValoresDia(`${anoAno}-${mesAno}-${d}`, dt.getDay(), mesAno, d, anoAno);
-                        semanaAtual.push(s);
-                        if (dt.getDay() === 6 || d === diasMes) { semanas.push(semanaAtual); semanaAtual = []; }
-                    }
-
-                    const labelsSemana = semanas.map((s, i) => `Sem ${i+1}`);
-                    const data50 = semanas.map(s => s.reduce((acc, v) => acc + v.extra50, 0) / 60);
-                    const data100 = semanas.map(s => s.reduce((acc, v) => acc + v.extra100, 0) / 60);
-
-                    chartSemanal = new Chart(semanalCtx.getContext('2d'), {
-                        type: 'bar',
-                        data: {
-                            labels: labelsSemana,
-                            datasets: [
-                                { label: '50%', data: data50, backgroundColor: '#ec4899' },
-                                { label: '100%', data: data100, backgroundColor: '#8b5cf6' }
-                            ]
-                        },
-                        options: {
-                            responsive: true, maintainAspectRatio: false,
-                            scales: { 
-                                x: { ticks: { color: '#94a3b8' } }, 
-                                y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } } 
-                            },
-                            plugins: { legend: { labels: { color: '#94a3b8' } } }
-                        }
-                    });
-                }
-
-                if (diarioCtx) {
-                    if (chartDiario) chartDiario.destroy();
-                    const diasMes = diasNoMes(anoAno, mesAno);
-                    const labelsDias = [];
-                    const data50 = [];
-                    const data100 = [];
+                if (abaAtiva === 'relatorio') {
+                    const mesAno = relMesSelecionado;
+                    const anoAno = relAnoSelecionado;
                     
-                    for (let d = 1; d <= diasMes; d++) {
-                        const dt = new Date(anoAno, mesAno, d);
-                        const s = calcularValoresDia(`${anoAno}-${mesAno}-${d}`, dt.getDay(), mesAno, d, anoAno);
-                        labelsDias.push(`${d}`);
-                        data50.push(s.extra50 / 60);
-                        data100.push(s.extra100 / 60);
+                    const trimCtx = document.getElementById('chartTrimestre');
+                    if (trimCtx && trimCtx.offsetWidth > 0 && trimCtx.offsetHeight > 0) {
+                        try {
+                            if (chartTrimestre) { chartTrimestre.destroy(); chartTrimestre = null; }
+                            const dados = getDadosTrimestres(anoAno);
+                            const labelsTrim = getLabelsTrimestres();
+                            chartTrimestre = new Chart(trimCtx.getContext('2d'), {
+                                type: 'bar',
+                                data: {
+                                    labels: labelsTrim,
+                                    datasets: [
+                                        { label: '50%', data: dados.map(d => d.extra50 / 60), backgroundColor: '#ec4899' },
+                                        { label: '100%', data: dados.map(d => d.extra100 / 60), backgroundColor: '#8b5cf6' }
+                                    ]
+                                },
+                                options: {
+                                    responsive: true, maintainAspectRatio: false,
+                                    scales: { 
+                                        x: { ticks: { color: '#94a3b8' } }, 
+                                        y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } } 
+                                    },
+                                    plugins: { legend: { labels: { color: '#94a3b8' } } }
+                                }
+                            });
+                        } catch(e) { console.warn('chartTrimestre:', e); }
                     }
 
-                    chartDiario = new Chart(diarioCtx.getContext('2d'), {
-                        type: 'line',
-                        data: {
-                            labels: labelsDias,
-                            datasets: [
-                                { label: '50%', data: data50, borderColor: '#ec4899', backgroundColor: 'rgba(236, 72, 153, 0.15)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#ec4899', pointBorderColor: '#fff', pointBorderWidth: 1, borderWidth: 2.5 },
-                                { label: '100%', data: data100, borderColor: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.15)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#8b5cf6', pointBorderColor: '#fff', pointBorderWidth: 1, borderWidth: 2.5 }
-                            ]
-                        },
-                        options: {
-                            responsive: true, maintainAspectRatio: false,
-                            scales: { 
-                                x: { 
-                                    title: { display: true, text: 'Dias do Mês', color: '#94a3b8', font: { weight: 'bold', size: 12 } },
-                                    ticks: { color: '#94a3b8', stepSize: 1, autoSkip: false, maxRotation: 90, minRotation: 45, font: { size: 9 } },
-                                    grid: { color: 'rgba(255,255,255,0.05)' }
-                                }, 
-                                y: { 
-                                    beginAtZero: true, 
-                                    title: { display: true, text: 'Horas Extras', color: '#94a3b8', font: { weight: 'bold', size: 12 } },
-                                    ticks: { color: '#94a3b8', callback: function(value) { return value.toFixed(1) + 'h'; } },
-                                    grid: { color: 'rgba(255,255,255,0.05)' }
-                                } 
-                            },
-                            plugins: { 
-                                legend: { labels: { color: '#94a3b8', font: { size: 12, weight: 'bold' }, boxWidth: 15, padding: 15 } },
-                                tooltip: {
-                                    backgroundColor: 'rgba(11, 16, 38, 0.9)', titleColor: '#fff', bodyColor: '#fff',
-                                    borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1,
-                                    callbacks: { label: function(context) { return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + 'h'; } }
+                    const mensalCtx = document.getElementById('chartMensal');
+                    if (mensalCtx && mensalCtx.offsetWidth > 0 && mensalCtx.offsetHeight > 0) {
+                        try {
+                            if (chartMensal) { chartMensal.destroy(); chartMensal = null; }
+                            const mesesLabels = [];
+                            const dadosMeses = [];
+                            for (let i = 2; i >= 0; i--) {
+                                let m = mesAno - i, a = anoAno;
+                                if (m < 0) { m += 12; a--; }
+                                mesesLabels.push(`${mesesNomes[m].substring(0,3)}/${a}`);
+                                dadosMeses.push(calcularMes(m, a));
+                            }
+                            chartMensal = new Chart(mensalCtx.getContext('2d'), {
+                                type: 'line',
+                                data: {
+                                    labels: mesesLabels,
+                                    datasets: [
+                                        { label: '50%', data: dadosMeses.map(d => d.extra50 / 60), borderColor: '#ec4899', backgroundColor: '#ec4899', tension: 0.3, pointRadius: 6 },
+                                        { label: '100%', data: dadosMeses.map(d => d.extra100 / 60), borderColor: '#8b5cf6', backgroundColor: '#8b5cf6', tension: 0.3, pointRadius: 6 }
+                                    ]
+                                },
+                                options: {
+                                    responsive: true, maintainAspectRatio: false,
+                                    scales: { 
+                                        y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } },
+                                        x: { ticks: { color: '#94a3b8' } }
+                                    },
+                                    plugins: { legend: { labels: { color: '#94a3b8' } } }
                                 }
-                            },
-                            interaction: { intersect: false, mode: 'index' }
-                        }
-                    });
+                            });
+                        } catch(e) { console.warn('chartMensal:', e); }
+                    }
+
+                    const semanalCtx = document.getElementById('chartSemanal');
+                    if (semanalCtx && semanalCtx.offsetWidth > 0 && semanalCtx.offsetHeight > 0) {
+                        try {
+                            if (chartSemanal) { chartSemanal.destroy(); chartSemanal = null; }
+                            const semanas = [];
+                            const diasMes = diasNoMes(anoAno, mesAno);
+                            let semanaAtual = [];
+                            for (let d = 1; d <= diasMes; d++) {
+                                const dt = new Date(anoAno, mesAno, d);
+                                const s = calcularValoresDia(`${anoAno}-${mesAno}-${d}`, dt.getDay(), mesAno, d, anoAno);
+                                semanaAtual.push(s);
+                                if (dt.getDay() === 6 || d === diasMes) { semanas.push(semanaAtual); semanaAtual = []; }
+                            }
+                            const labelsSemana = semanas.map((s, i) => `Sem ${i+1}`);
+                            const data50 = semanas.map(s => s.reduce((acc, v) => acc + v.extra50, 0) / 60);
+                            const data100 = semanas.map(s => s.reduce((acc, v) => acc + v.extra100, 0) / 60);
+                            chartSemanal = new Chart(semanalCtx.getContext('2d'), {
+                                type: 'bar',
+                                data: {
+                                    labels: labelsSemana,
+                                    datasets: [
+                                        { label: '50%', data: data50, backgroundColor: '#ec4899' },
+                                        { label: '100%', data: data100, backgroundColor: '#8b5cf6' }
+                                    ]
+                                },
+                                options: {
+                                    responsive: true, maintainAspectRatio: false,
+                                    scales: { 
+                                        x: { ticks: { color: '#94a3b8' } }, 
+                                        y: { beginAtZero: true, title: { display: true, text: 'Horas', color: '#94a3b8' }, ticks: { color: '#94a3b8' } } 
+                                    },
+                                    plugins: { legend: { labels: { color: '#94a3b8' } } }
+                                }
+                            });
+                        } catch(e) { console.warn('chartSemanal:', e); }
+                    }
+
+                    const diarioCtx = document.getElementById('chartDiario');
+                    if (diarioCtx && diarioCtx.offsetWidth > 0 && diarioCtx.offsetHeight > 0) {
+                        try {
+                            if (chartDiario) { chartDiario.destroy(); chartDiario = null; }
+                            const diasMes = diasNoMes(anoAno, mesAno);
+                            const labelsDias = [];
+                            const data50 = [];
+                            const data100 = [];
+                            for (let d = 1; d <= diasMes; d++) {
+                                const dt = new Date(anoAno, mesAno, d);
+                                const s = calcularValoresDia(`${anoAno}-${mesAno}-${d}`, dt.getDay(), mesAno, d, anoAno);
+                                labelsDias.push(`${d}`);
+                                data50.push(s.extra50 / 60);
+                                data100.push(s.extra100 / 60);
+                            }
+                            chartDiario = new Chart(diarioCtx.getContext('2d'), {
+                                type: 'line',
+                                data: {
+                                    labels: labelsDias,
+                                    datasets: [
+                                        { label: '50%', data: data50, borderColor: '#ec4899', backgroundColor: 'rgba(236, 72, 153, 0.15)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#ec4899', pointBorderColor: '#fff', pointBorderWidth: 1, borderWidth: 2.5 },
+                                        { label: '100%', data: data100, borderColor: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.15)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#8b5cf6', pointBorderColor: '#fff', pointBorderWidth: 1, borderWidth: 2.5 }
+                                    ]
+                                },
+                                options: {
+                                    responsive: true, maintainAspectRatio: false,
+                                    scales: { 
+                                        x: { 
+                                            title: { display: true, text: 'Dias do Mês', color: '#94a3b8', font: { weight: 'bold', size: 12 } },
+                                            ticks: { color: '#94a3b8', stepSize: 1, autoSkip: false, maxRotation: 90, minRotation: 45, font: { size: 9 } },
+                                            grid: { color: 'rgba(255,255,255,0.05)' }
+                                        }, 
+                                        y: { 
+                                            beginAtZero: true, 
+                                            title: { display: true, text: 'Horas Extras', color: '#94a3b8', font: { weight: 'bold', size: 12 } },
+                                            ticks: { color: '#94a3b8', callback: function(value) { return value.toFixed(1) + 'h'; } },
+                                            grid: { color: 'rgba(255,255,255,0.05)' }
+                                        } 
+                                    },
+                                    plugins: { 
+                                        legend: { labels: { color: '#94a3b8', font: { size: 12, weight: 'bold' }, boxWidth: 15, padding: 15 } },
+                                        tooltip: {
+                                            backgroundColor: 'rgba(11, 16, 38, 0.9)', titleColor: '#fff', bodyColor: '#fff',
+                                            borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1,
+                                            callbacks: { label: function(context) { return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + 'h'; } }
+                                        }
+                                    },
+                                    interaction: { intersect: false, mode: 'index' }
+                                }
+                            });
+                        } catch(e) { console.warn('chartDiario:', e); }
+                    }
                 }
+            } catch (e) {
+                console.error('initCharts erro geral:', e);
             }
         }
 
         function salvar(silencioso = false) { 
             localStorage.setItem(CHAVE_ATUAL, JSON.stringify({ 
                 registros, jornadaDiaria, valorHoraNormal, observacoes, 
-                adiantamentoMensal, salarioBaseMensal, ferias
+                salarioBaseMensal, ferias
             })); 
             if(!silencioso) mostrarToast('✅ Dados guardados!'); 
         }
@@ -2157,13 +2190,9 @@
         function salvarAuto() {
             localStorage.setItem(CHAVE_ATUAL, JSON.stringify({ 
                 registros, jornadaDiaria, valorHoraNormal, observacoes, 
-                adiantamentoMensal, salarioBaseMensal, ferias
+                salarioBaseMensal, ferias
             }));
         }
-        
-        // ============================================
-        // AÇÕES E NAVEGAÇÃO
-        // ============================================
 
         function salvarObservacao() {
             const textarea = document.getElementById('obs-textarea');
@@ -2186,35 +2215,24 @@
         function toggleFeriadoManualDoDia() {
             const chave = `${ano}-${mes}-${diaSelecionado}`;
             const eraManual = registros[chave] && registros[chave].feriadoManual === true;
-            
             if (!registros[chave]) registros[chave] = {};
             registros[chave].feriadoManual = !registros[chave].feriadoManual;
-            
             salvarAuto();
             recalcularTotais();
             renderizar();
-            
-            if (!eraManual) {
-                mostrarToast('✅ Dia marcado como 100%');
-            } else {
-                mostrarToast('↩️ Marcação 100% removida');
-            }
+            mostrarToast(!eraManual ? '✅ Dia marcado como 100%' : '↩️ Marcação 100% removida');
         }
 
         function toggleFeriasDia() {
             const chave = `${ano}-${mes}-${diaSelecionado}`;
-            
             if (ferias[chave]) {
                 delete ferias[chave];
                 mostrarToast('↩️ Férias removidas deste dia');
             } else {
                 ferias[chave] = { inicio: true, fim: true };
-                if (registros[chave]) {
-                    delete registros[chave];
-                }
+                if (registros[chave]) delete registros[chave];
                 mostrarToast('🏖️ Dia marcado como férias');
             }
-            
             salvarAuto();
             recalcularTotais();
             renderizar();
@@ -2225,25 +2243,20 @@
             if (!inicio) return;
             const fim = prompt('Dia de FIM das férias (1-31):', inicio);
             if (!fim) return;
-            
             const di = parseInt(inicio);
             const df = parseInt(fim);
-            
             if (isNaN(di) || isNaN(df) || di < 1 || di > 31 || df < 1 || df > 31 || di > df) {
                 mostrarToast('⚠️ Período inválido!');
                 return;
             }
-            
             const maxDia = diasNoMes(ano, mes);
             const ini = Math.min(di, maxDia);
             const fmm = Math.min(df, maxDia);
-            
             for (let d = ini; d <= fmm; d++) {
                 const chave = `${ano}-${mes}-${d}`;
                 ferias[chave] = { inicio: (d === ini), fim: (d === fmm) };
                 if (registros[chave]) delete registros[chave];
             }
-            
             salvarAuto();
             recalcularTotais();
             renderizar();
@@ -2252,10 +2265,7 @@
 
         function limparFerias() {
             const chaves = Object.keys(ferias).filter(k => k.startsWith(`${ano}-${mes}-`));
-            if (chaves.length === 0) {
-                mostrarToast('⚠️ Nenhuma férias neste mês');
-                return;
-            }
+            if (chaves.length === 0) { mostrarToast('⚠️ Nenhuma férias neste mês'); return; }
             if (!confirm(`Limpar todas as férias de ${mesesNomes[mes]}/${ano}?`)) return;
             chaves.forEach(k => delete ferias[k]);
             salvarAuto();
@@ -2268,7 +2278,6 @@
             let d = diaSelecionado + delta;
             let m = mes;
             let a = ano;
-            
             if (d < 1) {
                 m--;
                 if (m < 0) { m = 11; a--; }
@@ -2278,7 +2287,6 @@
                 if (m > 11) { m = 0; a++; }
                 d = 1;
             }
-            
             diaSelecionado = d;
             mes = m;
             ano = a;
@@ -2300,10 +2308,8 @@
             if (event) event.stopPropagation();
             const pop = document.getElementById('calendar-popover');
             if (!pop) return;
-            
             calMesAberto = mes;
             calAnoAberto = ano;
-            
             const isOpen = pop.classList.contains('open');
             if (isOpen) {
                 pop.classList.remove('open');
@@ -2328,19 +2334,15 @@
         function renderCalendario() {
             const pop = document.getElementById('calendar-popover');
             if (!pop) return;
-            
             const hoje = new Date();
             const primeiroDia = new Date(calAnoAberto, calMesAberto, 1).getDay();
             const totalDias = diasNoMes(calAnoAberto, calMesAberto);
             const diasMesAnterior = diasNoMes(calAnoAberto, calMesAberto - 1);
-            
             let gridHTML = '';
-            
             for (let i = primeiroDia - 1; i >= 0; i--) {
                 const d = diasMesAnterior - i;
                 gridHTML += `<div class="calendar-day other-month">${d}</div>`;
             }
-            
             for (let d = 1; d <= totalDias; d++) {
                 const dt = new Date(calAnoAberto, calMesAberto, d);
                 const sem = dt.getDay();
@@ -2348,7 +2350,6 @@
                 const reg = registros[chave];
                 const fer = isFeriado(calMesAberto, d, calAnoAberto);
                 const fer2 = ferias[chave];
-                
                 let classes = 'calendar-day';
                 if (sem === 0) classes += ' weekend sunday';
                 else if (sem === 6) classes += ' weekend';
@@ -2357,10 +2358,8 @@
                 if (fer) classes += ' feriado';
                 if (fer2) classes += ' ferias';
                 if (reg && (reg.ent1 || reg.sai1 || reg.ent2 || reg.sai2) && !fer && !fer2) classes += ' has-record';
-                
                 gridHTML += `<div class="${classes}" onclick="selecionarDiaCalendario(${calAnoAberto}, ${calMesAberto}, ${d})">${d}</div>`;
             }
-            
             const totalCells = primeiroDia + totalDias;
             const resto = totalCells % 7;
             if (resto !== 0) {
@@ -2368,7 +2367,6 @@
                     gridHTML += `<div class="calendar-day other-month">${i}</div>`;
                 }
             }
-            
             pop.innerHTML = `
                 <div class="calendar-header">
                     <button class="cal-nav" onclick="calMudarMes(-1)"><i class="fa-solid fa-chevron-left"></i></button>
@@ -2391,6 +2389,7 @@
             renderizar();
         }
 
+        // Event delegation global para o calendário (fechar ao clicar fora)
         document.addEventListener('click', function(e) {
             const pop = document.getElementById('calendar-popover');
             const center = document.querySelector('.day-picker .day-center');
@@ -2400,32 +2399,37 @@
             fecharCalendario();
         });
 
+        // Event delegation global para as ABAS (resolvendo o problema de clique)
+        document.addEventListener('click', function(e) {
+            const tabBtn = e.target.closest('.tab-btn[data-aba]');
+            if (tabBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                const nova = tabBtn.getAttribute('data-aba');
+                console.log('🖱️ Clique na aba:', nova);
+                mudarAba(nova);
+            }
+        });
+
         function salvarManualPrimeiraTela() {
             const chaveSel = `${ano}-${mes}-${diaSelecionado}`;
-            
             const e1 = document.getElementById('manual-ent1').value.trim();
             const s1 = document.getElementById('manual-sai1').value.trim();
             const e2 = document.getElementById('manual-ent2').value.trim();
             const s2 = document.getElementById('manual-sai2').value.trim();
-            
             const validarHora = (h) => {
                 if (!h) return true;
-                const regex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
-                return regex.test(h);
+                return /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(h);
             };
-            
             if (!validarHora(e1) || !validarHora(s1) || !validarHora(e2) || !validarHora(s2)) {
                 mostrarToast('⚠️ Formato inválido! Use HH:MM');
                 return;
             }
-            
             if (!registros[chaveSel]) registros[chaveSel] = {};
-            
             if (e1) registros[chaveSel].ent1 = e1; else delete registros[chaveSel].ent1;
             if (s1) registros[chaveSel].sai1 = s1; else delete registros[chaveSel].sai1;
             if (e2) registros[chaveSel].ent2 = e2; else delete registros[chaveSel].ent2;
             if (s2) registros[chaveSel].sai2 = s2; else delete registros[chaveSel].sai2;
-            
             salvarAuto();
             recalcularTotais();
             renderizar();
@@ -2453,11 +2457,16 @@
             const maxDia = diasNoMes(ano, mes);
             if (diaSelecionado > maxDia) diaSelecionado = maxDia;
             recalcularTotais(); renderizar(); 
-            if (abaAtiva === 'dashboard' || abaAtiva === 'relatorio') setTimeout(initCharts, 50); 
+            if (abaAtiva === 'dashboard' || abaAtiva === 'relatorio') {
+                setTimeout(() => {
+                    requestAnimationFrame(() => requestAnimationFrame(() => initCharts()));
+                }, 50);
+            }
         }
         
         function mostrarToast(msg) { 
             const t = document.getElementById('toast'); 
+            if (!t) return;
             t.innerText = msg; 
             t.style.display = 'block'; 
             setTimeout(() => t.style.display = 'none', 3000); 
@@ -2467,7 +2476,11 @@
             abaAtiva = nova; 
             fecharCalendario(); 
             renderizar(); 
-            if (nova === 'dashboard' || nova === 'relatorio') setTimeout(initCharts, 100); 
+            if (nova === 'dashboard' || nova === 'relatorio') {
+                setTimeout(() => {
+                    requestAnimationFrame(() => requestAnimationFrame(() => initCharts()));
+                }, 50);
+            }
         }
 
         function mudarMesRelatorio() {
@@ -2476,7 +2489,9 @@
             const partes = sel.value.split('-');
             relAnoSelecionado = parseInt(partes[0]);
             relMesSelecionado = parseInt(partes[1]);
-            setTimeout(initCharts, 50);
+            setTimeout(() => {
+                requestAnimationFrame(() => requestAnimationFrame(() => initCharts()));
+            }, 50);
         }
 
         function requestBiometrics() {
@@ -2519,7 +2534,6 @@
             const m = hoje.getMonth();
             const a = hoje.getFullYear();
             const chaveHoje = `${a}-${m}-${d}`;
-            
             const horaAtual = hoje.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
             if (!registros[chaveHoje]) registros[chaveHoje] = {};
@@ -2539,13 +2553,10 @@
             
             mostrarToast(`✅ ${msg} às ${horaAtual}`);
             
-            ano = a;
-            mes = m;
-            diaSelecionado = d;
+            ano = a; mes = m; diaSelecionado = d;
             
             salvarAuto(); 
             recalcularTotais();
-            
             setTimeout(renderizar, 1000);
         }
 
@@ -2561,587 +2572,604 @@
             }
         }, 1000);
 
-        // ============================================
-        // RENDERIZAÇÃO PRINCIPAL
-        // ============================================
-
         function renderizar() {
-            let corpo = '';
-            const td = diasNoMes(ano, mes);
-            recalcularTotais();
+            try {
+                console.log('🎨 renderizar() chamado, abaAtiva =', abaAtiva);
+                let corpo = '';
+                const td = diasNoMes(ano, mes);
+                recalcularTotais();
 
-            if (abaAtiva === 'dashboard') {
-                const prev = calcularPrevisao();
-                
-                const mesAtual = calcularMes(mes, ano);
-                let mAnt = mes - 1, aAnt = ano;
-                if (mAnt < 0) { mAnt = 11; aAnt--; }
-                const mesAnterior = calcularMes(mAnt, aAnt);
-                
-                const diffNormal = (mesAtual.normal - mesAnterior.normal) / 60;
-                const diffHE50 = (mesAtual.extra50 - mesAnterior.extra50) / 60;
-                const diffHE100 = (mesAtual.extra100 - mesAnterior.extra100) / 60;
-                
-                function fmtDiff(v) {
-                    const sinal = v > 0 ? '+' : '';
-                    const txt = sinal + v.toFixed(1) + 'h';
-                    let arrow, cls;
-                    if (v > 0.5) { arrow = '▲'; cls = 'up'; }
-                    else if (v < -0.5) { arrow = '▼'; cls = 'down'; }
-                    else { arrow = '—'; cls = 'same'; }
-                    return `<span class="cmp-diff ${cls}">${arrow} ${txt}</span>`;
-                }
-                
-                const nomeMesAnt = mesesNomes[mAnt].substring(0,3);
-
-                corpo = `
-                <div class="aba-card">
-                    <div class="aba-title"><i class="fa-solid fa-chart-pie"></i> Dashboard do Mês</div>
-                    
-                    <div class="stats-grid">
-                        <div class="stat-box blue"><span class="stat-label">Normal</span><div class="stat-val">${minToHora(cacheTotais.normal)}</div></div>
-                        <div class="stat-box pink"><span class="stat-label">Extra 50%</span><div class="stat-val">${minToHora(cacheTotais.extra50)}</div><div class="stat-money">R$ ${(cacheTotais.extra50/60 * valorHoraNormal * 1.5).toFixed(2)}</div></div>
-                        <div class="stat-box purple"><span class="stat-label">Extra 100%</span><div class="stat-val">${minToHora(cacheTotais.extra100)}</div><div class="stat-money">R$ ${(cacheTotais.extra100/60 * valorHoraNormal * 2.0).toFixed(2)}</div></div>
-                        <div class="stat-box orange"><span class="stat-label">Total Geral</span><div class="stat-val">${minToHora(cacheTotais.trab)}</div></div>
-                    </div>
-                    
-                    <div class="chart-card" style="height: 250px; margin-bottom: 20px;"><canvas id="chartDist"></canvas></div>
-                    
-                    <div class="aba-title" style="margin-top: 25px;"><i class="fa-solid fa-chart-line"></i> Evolução Mensal (6 meses)</div>
-                    <div class="chart-card" style="height: 280px; margin-bottom: 20px;"><canvas id="chartDistLinha"></canvas></div>
-                    
-                    <div class="aba-title" style="margin-top: 25px;"><i class="fa-solid fa-arrows-left-right"></i> Comparativo com ${nomeMesAnt}</div>
-                    <div class="compare-grid">
-                        <div class="compare-card">
-                            <div class="cmp-label">Normal</div>
-                            <div class="cmp-value" style="color:#39C6FF;">${minToHora(mesAtual.normal)}</div>
-                            ${fmtDiff(diffNormal)}
-                            <span class="cmp-vs">vs ${nomeMesAnt}</span>
-                        </div>
-                        <div class="compare-card">
-                            <div class="cmp-label">HE 50%</div>
-                            <div class="cmp-value" style="color:#ec4899;">${minToHora(mesAtual.extra50)}</div>
-                            ${fmtDiff(diffHE50)}
-                            <span class="cmp-vs">vs ${nomeMesAnt}</span>
-                        </div>
-                        <div class="compare-card">
-                            <div class="cmp-label">HE 100%</div>
-                            <div class="cmp-value" style="color:#8b5cf6;">${minToHora(mesAtual.extra100)}</div>
-                            ${fmtDiff(diffHE100)}
-                            <span class="cmp-vs">vs ${nomeMesAnt}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="previsao-box">
-                        <div class="prev-title"><i class="fa-solid fa-money-bill-wave"></i> Previsão de Recebimento</div>
-                        
-                        <div class="previsao-linha">
-                            <span class="prev-label">Salário Base</span>
-                            <span class="prev-value">R$ ${fmtMoeda(prev.salarioBase)}</span>
-                        </div>
-                        <div class="previsao-linha">
-                            <span class="prev-label">Horas Extras 50%</span>
-                            <span class="prev-value">R$ ${fmtMoeda(prev.valorHe50)}</span>
-                        </div>
-                        <div class="previsao-linha">
-                            <span class="prev-label">Horas Extras 100%</span>
-                            <span class="prev-value">R$ ${fmtMoeda(prev.valorHe100)}</span>
-                        </div>
-                        <div class="previsao-linha">
-                            <span class="prev-label">DSR sobre HE</span>
-                            <span class="prev-value">R$ ${fmtMoeda(prev.dsr)}</span>
-                        </div>
-                        <div class="previsao-linha" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; margin-top: 8px;">
-                            <span class="prev-label" style="color:#10b981; font-weight:800;">Total Bruto</span>
-                            <span class="prev-value" style="color:#10b981;">R$ ${fmtMoeda(prev.totalBruto)}</span>
-                        </div>
-                        <div class="previsao-linha desconto">
-                            <span class="prev-label">INSS</span>
-                            <span class="prev-value">- R$ ${fmtMoeda(prev.inss)}</span>
-                        </div>
-                        <div class="previsao-linha desconto">
-                            <span class="prev-label">IRRF</span>
-                            <span class="prev-value">- R$ ${fmtMoeda(prev.irrf)}</span>
-                        </div>
-                        <div class="previsao-linha desconto">
-                            <span class="prev-label">Adiantamento</span>
-                            <span class="prev-value">- R$ ${fmtMoeda(prev.adiantamento)}</span>
-                        </div>
-                        
-                        <div class="previsao-total">
-                            <span class="prev-label">💰 Líquido Previsto</span>
-                            <span class="prev-value">R$ ${fmtMoeda(prev.liquido)}</span>
-                        </div>
-                    </div>
-                </div>`;
-            } else if (abaAtiva === 'relatorio') {
-                const dados = getDadosTrimestres(relAnoSelecionado);
-                const labels = getLabelsTrimestres();
-                const cores = ['r1', 'r2', 'r3', 'r4'];
-                
-                let cards50 = dados.map((d, i) => {
-                    return `<div class="relatorio-card ${cores[i]}">
-                        <div class="q-label">${labels[i]}</div>
-                        <div class="q-total">${minToHora(d.extra50)}</div>
-                        <div class="q-money">R$ ${(d.extra50/60 * valorHoraNormal * 1.5).toFixed(2)}</div>
-                    </div>`;
-                }).join('');
-
-                const mesAtual = calcularMes(relMesSelecionado, relAnoSelecionado);
-                const mesMoney = (mesAtual.trab / 60 * valorHoraNormal).toFixed(2);
-                const anoTotalMin = dados.reduce((acc, d) => acc + d.trab, 0);
-                const anoMoney = (anoTotalMin / 60 * valorHoraNormal).toFixed(2);
-
-                let opcoesMes = '';
-                for (let i = 0; i < 12; i++) {
-                    const sel = (i === relMesSelecionado) ? 'selected' : '';
-                    opcoesMes += `<option value="${relAnoSelecionado}-${i}" ${sel}>${mesesNomes[i]}/${relAnoSelecionado}</option>`;
-                }
-                for (let i = 0; i < 12; i++) {
-                    opcoesMes += `<option value="${relAnoSelecionado-1}-${i}">${mesesNomes[i]}/${relAnoSelecionado-1}</option>`;
-                }
-
-                corpo = `
-                <div class="aba-card">
-                    <div class="aba-title"><i class="fa-solid fa-calendar-alt"></i> Relatório</div>
-                    
-                    <div class="mes-selector">
-                        <label><i class="fa-solid fa-filter"></i> Período:</label>
-                        <select id="rel-mes-selector" onchange="mudarMesRelatorio()">
-                            ${opcoesMes}
-                        </select>
-                    </div>
-                    
-                    <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px;">
-                        <div class="stat-box blue" style="flex:1; min-width:150px;">
-                            <span class="stat-label">📅 ${mesesNomes[relMesSelecionado]}/${relAnoSelecionado}</span>
-                            <div class="stat-val" style="font-size: 1.2rem;">${minToHora(mesAtual.trab)}</div>
-                            <div class="stat-money">R$ ${mesMoney}</div>
-                        </div>
-                        <div class="stat-box purple" style="flex:1; min-width:150px;">
-                            <span class="stat-label">📊 Ano ${relAnoSelecionado}</span>
-                            <div class="stat-val" style="font-size: 1.2rem;">${minToHora(anoTotalMin)}</div>
-                            <div class="stat-money">R$ ${anoMoney}</div>
-                        </div>
-                    </div>
-
-                    <div class="relatorio-wrapper">
-                        <div class="relatorio-section">
-                            <div class="section-title"><i class="fa-regular fa-clock"></i> Horas Extras 50% por Trimestre</div>
-                            <div class="relatorio-grid">${cards50}</div>
-                        </div>
-                    </div>
-
-                    <div class="chart-grid-3">
-                        <div class="chart-card"><canvas id="chartTrimestre"></canvas></div>
-                        <div class="chart-card"><canvas id="chartMensal"></canvas></div>
-                        <div class="chart-card"><canvas id="chartSemanal"></canvas></div>
-                        <div class="chart-card chart-card-full" style="height: 350px;"><canvas id="chartDiario"></canvas></div>
-                    </div>
-                </div>`;
-            } else if (abaAtiva === 'lancamentos') {
-                let rows = '';
-                for (let d = 1; d <= td; d++) {
-                    const dt = new Date(ano, mes, d), sem = dt.getDay(), k = `${ano}-${mes}-${d}`, st = calcularValoresDia(k, sem, mes, d, ano), fer = isFeriado(mes, d, ano);
-                    const reg = registros[k] || {};
-                    const isFer = estaDeFerias(k);
-                    let rowClass = (sem === 6) ? 'weekend-sat' : (sem === 0) ? 'weekend-sun' : 'weekday';
-                    if (isFer) rowClass = 'ferias-row';
-
-                    const isFeriadoManual = reg.feriadoManual ? true : false;
-                    const btn100 = `<span onclick="toggleFeriadoManual('${k}')" style="cursor:pointer; display:inline-block; margin-left:6px; padding: 2px 5px; border-radius:6px; font-size:0.6rem; font-weight:800; background:${isFeriadoManual ? '#C77DFF' : 'rgba(255,255,255,0.05)'}; color:${isFeriadoManual ? '#fff' : '#64748b'}; border: 1px solid ${isFeriadoManual ? '#C77DFF' : '#475569'}; transition: all 0.2s;" title="Ativar/Desativar 100% Manual">100%</span>`;
-
-                    const cellHora = (v) => v ? `<span class="hora-cell">${v}</span>` : `<span class="hora-cell vazia">--:--</span>`;
-
-                    if (isFer) {
-                        rows += `<tr class="${rowClass}">
-                            <td style="font-weight:800">${d.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')}</td>
-                            <td>${diasNomes[sem]} 🏖️ FÉRIAS</td>
-                            <td colspan="8" style="color:#C77DFF; font-style:italic;">Período de férias</td>
-                        </tr>`;
-                    } else {
-                        rows += `<tr class="${rowClass}">
-                            <td style="font-weight:800">${d.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')}</td>
-                            <td style="color:${sem===0?'#7B2EFF':(sem===6?'#39C6FF':'#94a3b8')}">
-                                ${diasNomes[sem]}${fer ? ' (' + fer + ')' : ''} ${sem !== 0 ? btn100 : ''}
-                            </td>
-                            <td>${cellHora(reg.ent1)}</td>
-                            <td>${cellHora(reg.sai1)}</td>
-                            <td>${cellHora(reg.ent2)}</td>
-                            <td>${cellHora(reg.sai2)}</td>
-                            <td class="col-total" style="font-weight:900">${minToHora(st.trab)}</td>
-                            <td class="col-norm" style="color:#39C6FF">${minToHora(st.normal)}</td>
-                            <td class="col-50" style="color:#C77DFF">${minToHora(st.extra50)}</td>
-                            <td class="col-100" style="color:#7B2EFF">${minToHora(st.extra100)}</td>
-                        </tr>`;
+                if (abaAtiva === 'dashboard') {
+                    let prev;
+                    try {
+                        prev = calcularPrevisao();
+                    } catch(err) {
+                        console.error('❌ Erro em calcularPrevisao:', err);
+                        prev = {
+                            salarioBase: 0, valorHe100: 0, dsr100: 0, valorHe50: 0, dsr50: 0,
+                            he50MinTrim: 0, he100Min: 0, totalBruto: 0, inss: 0, irrf: 0,
+                            liquido: 0, trimPag: null, isMesPagamento: false
+                        };
                     }
-                }
-                
-                const obsKey = `${ano}-${mes}`;
-                const obsValue = observacoes[obsKey] || '';
-
-                corpo = `
-                <div class="aba-card">
-                    <div class="aba-title">
-                        <i class="fa-solid fa-list-check"></i> Lançamentos
-                        <span class="readonly-badge"><i class="fa-solid fa-eye"></i> Somente Leitura</span>
-                    </div>
-                    <div class="table-container"><div class="scroll-area"><table>
-                        <thead><tr><th>Data</th><th>Dia</th><th>E1</th><th>S1</th><th>E2</th><th>S2</th><th>Total</th><th>Norm</th><th>50%</th><th>100%</th></tr></thead>
-                        <tbody>${rows}</tbody>
-                        <tfoot style="background: rgba(57, 198, 255, 0.1); font-weight: bold;">
-                            <tr><td colspan="6" style="text-align: right; padding-right: 15px;">TOTAIS</td>
-                            <td class="tot-trab">${minToHora(cacheTotais.trab)}</td><td class="tot-norm" style="color:#39C6FF">${minToHora(cacheTotais.normal)}</td><td class="tot-50" style="color:#C77DFF">${minToHora(cacheTotais.extra50)}</td><td class="tot-100" style="color:#7B2EFF">${minToHora(cacheTotais.extra100)}</td></tr>
-                        </tfoot>
-                    </table></div></div>
                     
-                    <div class="obs-container">
-                        <div class="obs-title"><i class="fa-regular fa-note-sticky"></i> Observações do Mês</div>
-                        <textarea id="obs-textarea" class="obs-textarea" placeholder="Digite suas observações sobre este mês..." onchange="salvarObservacao()">${obsValue}</textarea>
-                        <div class="obs-footer">
-                            <button class="btn-save-obs" onclick="salvarObservacao()"><i class="fa-regular fa-floppy-disk"></i> Salvar</button>
-                        </div>
-                    </div>
-                </div>`;
-            } else if (abaAtiva === 'config') {
-                const salarioBaseAtual = getSalarioBase();
-                
-                corpo = `
-                <div class="aba-card">
-                    <div class="aba-title"><i class="fa-solid fa-gear"></i> Configurações</div>
+                    const mesAtual = calcularMes(mes, ano);
+                    let mAnt = mes - 1, aAnt = ano;
+                    if (mAnt < 0) { mAnt = 11; aAnt--; }
+                    const mesAnterior = calcularMes(mAnt, aAnt);
                     
-                    <div class="config-section">
-                        <div class="config-section-title">
-                            <i class="fa-solid fa-money-bill-wave"></i> Jornada e Salário
-                        </div>
-                        <div class="config-grid">
-                            <div class="config-field">
-                                <label>Jornada Diária (horas)</label>
-                                <input type="text" id="cfg-jornada" value="${(jornadaDiaria/60).toFixed(2).replace('.', ',')}">
-                            </div>
-                            <div class="config-field">
-                                <label>Valor da Hora (R$)</label>
-                                <input type="text" id="cfg-valor-hora" value="${valorHoraNormal.toFixed(2).replace('.', ',')}">
-                            </div>
-                            <div class="config-field">
-                                <label>Salário Base (R$)</label>
-                                <input type="text" id="cfg-salario-base" value="${salarioBaseAtual.toFixed(2).replace('.', ',')}">
-                            </div>
-                            <div class="config-field">
-                                <label>Adiantamento (R$)</label>
-                                <input type="text" id="cfg-adiantamento" value="${adiantamentoMensal.toFixed(2).replace('.', ',')}">
-                            </div>
-                        </div>
-                        <div class="config-hint">
-                            <i class="fa-solid fa-circle-info"></i>
-                            <span>Ao alterar o <b>Salário Base</b>, o Valor da Hora é recalculado (Salário ÷ 220). Se deixar 0, calcula automático (Jornada × Valor Hora × 30).</span>
-                        </div>
-                        <div class="config-save-area">
-                            <button class="btn-save-config" onclick="salvarConfiguracoes()">
-                                <i class="fa-solid fa-floppy-disk"></i> Salvar Configurações
-                            </button>
-                        </div>
-                    </div>
+                    const diffNormal = (mesAtual.normal - mesAnterior.normal) / 60;
+                    const diffHE50 = (mesAtual.extra50 - mesAnterior.extra50) / 60;
+                    const diffHE100 = (mesAtual.extra100 - mesAnterior.extra100) / 60;
                     
-                    <div class="config-section">
-                        <div class="config-section-title">
-                            <i class="fa-solid fa-umbrella-beach"></i> Férias
-                        </div>
-                        <p style="font-size:0.75rem; color:#94a3b8; margin:0 0 12px 0; line-height:1.4;">
-                            Marque um período de férias no mês atual. Os dias ficam roxos e não contam como falta.
-                        </p>
-                        <div class="backup-actions">
-                            <button class="btn-backup" onclick="abrirModalFerias()">
-                                <i class="fa-solid fa-plus"></i> Marcar Férias
-                            </button>
-                            <button class="btn-backup import" onclick="limparFerias()">
-                                <i class="fa-solid fa-trash"></i> Limpar Férias
-                            </button>
-                        </div>
-                    </div>
+                    function fmtDiff(v) {
+                        const sinal = v > 0 ? '+' : '';
+                        const txt = sinal + v.toFixed(1) + 'h';
+                        let arrow, cls;
+                        if (v > 0.5) { arrow = '▲'; cls = 'up'; }
+                        else if (v < -0.5) { arrow = '▼'; cls = 'down'; }
+                        else { arrow = '—'; cls = 'same'; }
+                        return `<span class="cmp-diff ${cls}">${arrow} ${txt}</span>`;
+                    }
                     
-                    <div class="config-section">
-                        <div class="config-section-title">
-                            <i class="fa-solid fa-shield-halved"></i> Backup e Restauração
+                    const nomeMesAnt = mesesNomes[mAnt].substring(0,3);
+                    const trimLabel = prev.trimPag ? prev.trimPag.label : '';
+                    const prev50Html = prev.isMesPagamento ? `
+                        <div class="previsao-linha" style="background: rgba(199,125,255,0.08); border-radius: 8px; padding: 10px; margin: 8px 0;">
+                            <span class="prev-label" style="color:#C77DFF; font-weight:800;">🏦 HE 50% Trimestre (${trimLabel}) — ${minToHora(prev.he50MinTrim)}</span>
+                            <span class="prev-value" style="color:#C77DFF;">R$ ${fmtMoeda(prev.valorHe50)}</span>
                         </div>
-                        <p style="font-size:0.75rem; color:#94a3b8; margin:0 0 4px 0; line-height:1.4;">
-                            Faça backup dos seus dados regularmente para não perder nada em atualizações.
-                        </p>
-                        <div class="backup-actions">
-                            <button class="btn-backup" onclick="exportarBackup()">
-                                <i class="fa-solid fa-download"></i> Exportar Dados
-                            </button>
-                            <button class="btn-backup import" onclick="document.getElementById('import-file').click()">
-                                <i class="fa-solid fa-upload"></i> Importar Dados
-                            </button>
-                            <button class="btn-backup pdf" onclick="exportarPDF()">
-                                <i class="fa-solid fa-file-pdf"></i> Gerar Relatório PDF
-                            </button>
+                        <div class="previsao-linha" style="background: rgba(199,125,255,0.05); border-radius: 8px; padding: 8px 10px; margin-bottom: 8px;">
+                            <span class="prev-label" style="color:#C77DFF;">DSR s/ HE 50% (trimestre)</span>
+                            <span class="prev-value" style="color:#C77DFF;">R$ ${fmtMoeda(prev.dsr50)}</span>
                         </div>
-                        <input type="file" id="import-file" accept=".json,application/json" style="display:none;" onchange="importarBackup(event)">
-                        <div class="backup-hint">
-                            <i class="fa-solid fa-circle-info"></i>
-                            <span>O arquivo exportado contém todos os registros de ponto, férias, observações e configurações.</span>
+                    ` : `
+                        <div class="previsao-linha" style="opacity:0.55; font-style:italic;">
+                            <span class="prev-label">HE 50% (banco — só paga em Fev/Mai/Ago/Nov)</span>
+                            <span class="prev-value">R$ 0,00</span>
                         </div>
-                    </div>
-                </div>`;
-            } else if (abaAtiva === 'bater_ponto') {
-                const chaveSel = `${ano}-${mes}-${diaSelecionado}`;
-                const regDia = registros[chaveSel] || {};
-                const dtSel = new Date(ano, mes, diaSelecionado);
-                const semSel = dtSel.getDay();
-                
-                const stDia = calcularValoresDia(chaveSel, semSel, mes, diaSelecionado, ano);
-                const totalTrabalhado = minToHora(stDia.trab);
+                    `;
 
-                const feriadoDia = isFeriado(mes, diaSelecionado, ano);
-                const isDomingo = semSel === 0;
-                const isManual100 = regDia.feriadoManual === true;
-                const isFer = estaDeFerias(chaveSel);
-                const is100 = isDomingo || feriadoDia || isManual100;
-                
-                const hoje = new Date();
-                const isHoje = (ano === hoje.getFullYear() && mes === hoje.getMonth() && diaSelecionado === hoje.getDate());
-                
-                const totalBatidas = (regDia.ent1?1:0) + (regDia.sai1?1:0) + (regDia.ent2?1:0) + (regDia.sai2?1:0);
-                const isBloqueado = isHoje && totalBatidas >= 4;
-                
-                let textStatus = "Pressione para bater o ponto";
-                if (totalBatidas === 1) textStatus = "Pressione para registrar Início da Pausa";
-                if (totalBatidas === 2) textStatus = "Pressione para registrar Retorno da Pausa";
-                if (totalBatidas === 3) textStatus = "Pressione para registrar Saída Final";
-                if (isBloqueado) textStatus = "Expediente de hoje concluído!";
-                if (!isHoje) textStatus = "⚠️ Você está editando outro dia (use lançamento manual abaixo)";
-                if (isFer) textStatus = "🏖️ Este dia está marcado como FÉRIAS";
-
-                const nomeDiaSel = diasNomesLongo[semSel];
-                const diaSemanaCurto = `${diasNomes[semSel]}, ${diaSelecionado.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')}`;
-
-                const podeMarcar100 = !isDomingo && !feriadoDia && !isFer;
-                const btnFeriasText = isFer ? 'Remover Férias' : 'Marcar Férias';
-                const btnFeriasClass = isFer ? 'btn-ferias active' : 'btn-ferias';
-
-                corpo = `
-                <div class="aba-card">
-                    <div class="aba-title"><i class="fa-solid fa-fingerprint"></i> Bater Ponto / Lançamento</div>
-                    <div class="bio-container">
-
-                        <div class="day-picker">
-                            <button class="day-nav-btn" onclick="mudarDia(-1)" title="Dia anterior">
-                                <i class="fa-solid fa-chevron-left"></i>
-                            </button>
-                            
-                            <div class="day-center" onclick="toggleCalendario(event)" title="Clique para abrir o calendário">
-                                <div class="day-number">${diaSelecionado.toString().padStart(2,'0')}<small>/${(mes+1).toString().padStart(2,'0')}</small></div>
-                                <div class="day-meta">
-                                    <div class="day-weekday"><i class="fa-regular fa-calendar day-info-icon"></i>${nomeDiaSel} • ${ano}</div>
-                                    ${(isHoje || feriadoDia || isFer) ? `
-                                    <div class="day-badges">
-                                        ${isHoje ? '<span class="badge-hoje">HOJE</span>' : ''}
-                                        ${feriadoDia ? `<span class="badge-feriado">${feriadoDia}</span>` : ''}
-                                        ${isFer ? '<span class="badge-ferias">🏖️ FÉRIAS</span>' : ''}
-                                    </div>
-                                    ` : ''}
-                                </div>
-                            </div>
-
-                            ${!isHoje 
-                                ? `<button class="btn-hoje-quick" onclick="irParaHoje()" title="Ir para hoje"><i class="fa-solid fa-calendar-day"></i> HOJE</button>`
-                                : `<button class="day-nav-btn" onclick="mudarDia(1)" title="Próximo dia"><i class="fa-solid fa-chevron-right"></i></button>`
-                            }
-                            
-                            <div id="calendar-popover" class="calendar-popover"></div>
-                        </div>
-
-                        <div class="action-row">
-                            ${podeMarcar100 ? `
-                            <button class="btn-100-neon ${isManual100 ? 'active' : ''}" onclick="toggleFeriadoManualDoDia()" title="${isManual100 ? 'Remover marcação 100%' : 'Marcar dia como 100%'}">
-                                <i class="fa-solid fa-bolt"></i>
-                                <span>${isManual100 ? '100% Ativo' : 'Marcar 100%'}</span>
-                                <span class="badge-off">${isManual100 ? 'ATIVO' : '100%'}</span>
-                            </button>
-                            ` : '<div></div>'}
-                            
-                            <button class="${btnFeriasClass}" onclick="toggleFeriasDia()" title="${btnFeriasText}">
-                                <i class="fa-solid fa-umbrella-beach"></i>
-                                <span>${btnFeriasText}</span>
-                            </button>
-                        </div>
-
-                        ${isHoje && !isFer ? `
-                        <div style="text-align: center; margin-bottom: 20px;">
-                            <p style="color: #94a3b8; font-size: 0.9rem;" id="bio-date">Carregando data...</p>
-                            <div style="font-size: 3.5rem; font-weight: 800; margin: 15px 0; font-variant-numeric: tabular-nums; letter-spacing: 2px;" id="bio-clock">--:--:--</div>
-                        </div>
-                        ` : !isFer ? `
-                        <div style="text-align: center; margin-bottom: 20px;">
-                            <p style="color: #f59e0b; font-size: 0.85rem; font-weight: 700;">
-                                <i class="fa-solid fa-pen-to-square"></i> Editando ${diaSemanaCurto}
-                            </p>
-                        </div>
-                        ` : `
-                        <div style="text-align: center; margin-bottom: 20px; padding: 20px; background: rgba(199,125,255,0.1); border-radius: 16px; border: 1px solid rgba(199,125,255,0.3);">
-                            <i class="fa-solid fa-umbrella-beach" style="font-size: 3rem; color: #C77DFF; margin-bottom: 10px;"></i>
-                            <p style="color: #C77DFF; font-weight: 700; margin: 0;">Dia de Férias</p>
-                            <p style="color: #94a3b8; font-size: 0.8rem; margin: 4px 0 0 0;">Nenhum registro necessário</p>
-                        </div>
-                        `}
+                    corpo = `
+                    <div class="aba-card">
+                        <div class="aba-title"><i class="fa-solid fa-chart-pie"></i> Dashboard do Mês</div>
                         
-                        ${!isFer ? `
-                        <div style="text-align: center;">
-                            <button id="fingerprint-btn" onclick="requestBiometrics()" class="fingerprint-btn ${(!isHoje || isBloqueado) ? '' : 'pulse'}" ${(!isHoje || isBloqueado) ? 'disabled' : ''}>
-                                <i class="fa-solid fa-fingerprint"></i>
-                                <div class="check-overlay"><i class="fa-solid fa-check-circle"></i></div>
-                            </button>
-                            <p id="bio-status" style="margin-top: 15px; color: ${(!isHoje || isBloqueado) ? '#94a3b8' : 'var(--primary)'}; font-weight: bold; font-size: 0.95rem;">
-                                ${textStatus}
-                            </p>
-                        </div>
-                        ` : ''}
-
-                        ${!isFer ? `
-                        <div style="margin-top: 30px;">
-                            <h3 style="margin: 0 0 15px 0; font-size: 0.9rem; text-transform: uppercase; color: #94a3b8; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
-                                Registros do Dia <span style="float:right; color: #fff;">${totalBatidas}/4</span>
-                            </h3>
+                        <div class="previsao-box" style="margin-top: 0; margin-bottom: 20px;">
+                            <div class="prev-title"><i class="fa-solid fa-money-bill-wave"></i> 💰 Recebimento do Mês — ${mesesNomes[mes]}/${ano}</div>
                             
-                            <div class="punch-row ${regDia.ent1 ? 'filled' : 'empty'}">
-                                <span><i class="fa-solid fa-arrow-right-to-bracket" style="color: #10b981; margin-right: 10px;"></i> Entrada 1</span>
-                                <strong style="font-size: 1.1rem;">${regDia.ent1 || '--:--'}</strong>
+                            <div class="previsao-linha">
+                                <span class="prev-label">Salário Base</span>
+                                <span class="prev-value">R$ ${fmtMoeda(prev.salarioBase)}</span>
                             </div>
-                            <div class="punch-row ${regDia.sai1 ? 'filled' : 'empty'}">
-                                <span><i class="fa-solid fa-mug-hot" style="color: #f59e0b; margin-right: 10px;"></i> Saída (Pausa)</span>
-                                <strong style="font-size: 1.1rem;">${regDia.sai1 || '--:--'}</strong>
+                            <div class="previsao-linha">
+                                <span class="prev-label">HE 100% (${minToHora(prev.he100Min)})</span>
+                                <span class="prev-value">R$ ${fmtMoeda(prev.valorHe100)}</span>
                             </div>
-                            <div class="punch-row ${regDia.ent2 ? 'filled' : 'empty'}">
-                                <span><i class="fa-solid fa-briefcase" style="color: #3b82f6; margin-right: 10px;"></i> Retorno (Pausa)</span>
-                                <strong style="font-size: 1.1rem;">${regDia.ent2 || '--:--'}</strong>
+                            <div class="previsao-linha">
+                                <span class="prev-label">DSR s/ HE 100%</span>
+                                <span class="prev-value">R$ ${fmtMoeda(prev.dsr100)}</span>
                             </div>
-                            <div class="punch-row ${regDia.sai2 ? 'filled' : 'empty'}">
-                                <span><i class="fa-solid fa-arrow-right-from-bracket" style="color: #ef4444; margin-right: 10px;"></i> Saída Final</span>
-                                <strong style="font-size: 1.1rem;">${regDia.sai2 || '--:--'}</strong>
+                            
+                            ${prev50Html}
+                            
+                            <div class="previsao-linha" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; margin-top: 8px;">
+                                <span class="prev-label" style="color:#10b981; font-weight:800;">Total Bruto</span>
+                                <span class="prev-value" style="color:#10b981;">R$ ${fmtMoeda(prev.totalBruto)}</span>
+                            </div>
+                            <div class="previsao-linha desconto">
+                                <span class="prev-label">INSS</span>
+                                <span class="prev-value">- R$ ${fmtMoeda(prev.inss)}</span>
+                            </div>
+                            <div class="previsao-linha desconto">
+                                <span class="prev-label">IRRF</span>
+                                <span class="prev-value">- R$ ${fmtMoeda(prev.irrf)}</span>
+                            </div>
+                            
+                            <div class="previsao-total">
+                                <span class="prev-label">💰 Líquido Previsto</span>
+                                <span class="prev-value">R$ ${fmtMoeda(prev.liquido)}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-box blue"><span class="stat-label">Normal</span><div class="stat-val">${minToHora(cacheTotais.normal)}</div></div>
+                            <div class="stat-box pink"><span class="stat-label">Extra 50%</span><div class="stat-val">${minToHora(cacheTotais.extra50)}</div><div class="stat-money">R$ ${(cacheTotais.extra50/60 * valorHoraNormal * 1.5).toFixed(2)}</div></div>
+                            <div class="stat-box purple"><span class="stat-label">Extra 100%</span><div class="stat-val">${minToHora(cacheTotais.extra100)}</div><div class="stat-money">R$ ${(cacheTotais.extra100/60 * valorHoraNormal * 2.0).toFixed(2)}</div></div>
+                            <div class="stat-box orange"><span class="stat-label">Total Geral</span><div class="stat-val">${minToHora(cacheTotais.trab)}</div></div>
+                        </div>
+                        
+                        <div class="chart-card" style="height: 250px; margin-bottom: 20px;"><canvas id="chartDist"></canvas></div>
+                        
+                        <div class="aba-title" style="margin-top: 25px;"><i class="fa-solid fa-chart-line"></i> Evolução Mensal (6 meses)</div>
+                        <div class="chart-card" style="height: 280px; margin-bottom: 20px;"><canvas id="chartDistLinha"></canvas></div>
+                        
+                        <div class="aba-title" style="margin-top: 25px;"><i class="fa-solid fa-arrows-left-right"></i> Comparativo com ${nomeMesAnt}</div>
+                        <div class="compare-grid">
+                            <div class="compare-card">
+                                <div class="cmp-label">Normal</div>
+                                <div class="cmp-value" style="color:#39C6FF;">${minToHora(mesAtual.normal)}</div>
+                                ${fmtDiff(diffNormal)}
+                                <span class="cmp-vs">vs ${nomeMesAnt}</span>
+                            </div>
+                            <div class="compare-card">
+                                <div class="cmp-label">HE 50%</div>
+                                <div class="cmp-value" style="color:#ec4899;">${minToHora(mesAtual.extra50)}</div>
+                                ${fmtDiff(diffHE50)}
+                                <span class="cmp-vs">vs ${nomeMesAnt}</span>
+                            </div>
+                            <div class="compare-card">
+                                <div class="cmp-label">HE 100%</div>
+                                <div class="cmp-value" style="color:#8b5cf6;">${minToHora(mesAtual.extra100)}</div>
+                                ${fmtDiff(diffHE100)}
+                                <span class="cmp-vs">vs ${nomeMesAnt}</span>
+                            </div>
+                        </div>
+                    </div>`;
+                } else if (abaAtiva === 'relatorio') {
+                    const dados = getDadosTrimestres(relAnoSelecionado);
+                    const labels = getLabelsTrimestres();
+                    const cores = ['r1', 'r2', 'r3', 'r4'];
+                    
+                    let cards50 = dados.map((d, i) => {
+                        return `<div class="relatorio-card ${cores[i]}">
+                            <div class="q-label">${labels[i]}</div>
+                            <div class="q-total">${minToHora(d.extra50)}</div>
+                            <div class="q-money">R$ ${(d.extra50/60 * valorHoraNormal * 1.5).toFixed(2)}</div>
+                        </div>`;
+                    }).join('');
+
+                    const mesAtual = calcularMes(relMesSelecionado, relAnoSelecionado);
+                    const mesMoney = (mesAtual.trab / 60 * valorHoraNormal).toFixed(2);
+                    const anoTotalMin = dados.reduce((acc, d) => acc + d.trab, 0);
+                    const anoMoney = (anoTotalMin / 60 * valorHoraNormal).toFixed(2);
+
+                    let opcoesMes = '';
+                    for (let i = 0; i < 12; i++) {
+                        const sel = (i === relMesSelecionado) ? 'selected' : '';
+                        opcoesMes += `<option value="${relAnoSelecionado}-${i}" ${sel}>${mesesNomes[i]}/${relAnoSelecionado}</option>`;
+                    }
+                    for (let i = 0; i < 12; i++) {
+                        opcoesMes += `<option value="${relAnoSelecionado-1}-${i}">${mesesNomes[i]}/${relAnoSelecionado-1}</option>`;
+                    }
+
+                    corpo = `
+                    <div class="aba-card">
+                        <div class="aba-title"><i class="fa-solid fa-calendar-alt"></i> Relatório</div>
+                        
+                        <div class="mes-selector">
+                            <label><i class="fa-solid fa-filter"></i> Período:</label>
+                            <select id="rel-mes-selector" onchange="mudarMesRelatorio()">
+                                ${opcoesMes}
+                            </select>
+                        </div>
+                        
+                        <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px;">
+                            <div class="stat-box blue" style="flex:1; min-width:150px;">
+                                <span class="stat-label">📅 ${mesesNomes[relMesSelecionado]}/${relAnoSelecionado}</span>
+                                <div class="stat-val" style="font-size: 1.2rem;">${minToHora(mesAtual.trab)}</div>
+                                <div class="stat-money">R$ ${mesMoney}</div>
+                            </div>
+                            <div class="stat-box purple" style="flex:1; min-width:150px;">
+                                <span class="stat-label">📊 Ano ${relAnoSelecionado}</span>
+                                <div class="stat-val" style="font-size: 1.2rem;">${minToHora(anoTotalMin)}</div>
+                                <div class="stat-money">R$ ${anoMoney}</div>
                             </div>
                         </div>
 
-                        <div class="manual-entry">
-                            <div class="manual-title">
-                                <i class="fa-solid fa-keyboard"></i> Lançamento Manual
-                            </div>
-                            <div class="manual-fields">
-                                <div class="manual-field">
-                                    <label for="manual-ent1">Entrada 1</label>
-                                    <input type="text" id="manual-ent1" inputmode="numeric" placeholder="HH:MM" maxlength="5" value="${regDia.ent1 || ''}" oninput="mascaraHora(this)">
-                                </div>
-                                <div class="manual-field">
-                                    <label for="manual-sai1">Saída Pausa</label>
-                                    <input type="text" id="manual-sai1" inputmode="numeric" placeholder="HH:MM" maxlength="5" value="${regDia.sai1 || ''}" oninput="mascaraHora(this)">
-                                </div>
-                                <div class="manual-field">
-                                    <label for="manual-ent2">Retorno Pausa</label>
-                                    <input type="text" id="manual-ent2" inputmode="numeric" placeholder="HH:MM" maxlength="5" value="${regDia.ent2 || ''}" oninput="mascaraHora(this)">
-                                </div>
-                                <div class="manual-field">
-                                    <label for="manual-sai2">Saída Final</label>
-                                    <input type="text" id="manual-sai2" inputmode="numeric" placeholder="HH:MM" maxlength="5" value="${regDia.sai2 || ''}" oninput="mascaraHora(this)">
-                                </div>
-                            </div>
-                            <div class="manual-actions">
-                                <button class="btn-manual-clear" onclick="limparManualPrimeiraTela()"><i class="fa-regular fa-trash-can"></i> Limpar</button>
-                                <button class="btn-manual-save" onclick="salvarManualPrimeiraTela()"><i class="fa-regular fa-floppy-disk"></i> Salvar Horários</button>
+                        <div class="relatorio-wrapper">
+                            <div class="relatorio-section">
+                                <div class="section-title"><i class="fa-regular fa-clock"></i> Horas Extras 50% por Trimestre</div>
+                                <div class="relatorio-grid">${cards50}</div>
                             </div>
                         </div>
 
-                        <div class="saldo-dia ${is100 ? 'is-100' : ''}">
-                            <span class="label">Saldo do Dia</span>
-                            <span class="valor">${totalTrabalhado}</span>
+                        <div class="chart-grid-3">
+                            <div class="chart-card"><canvas id="chartTrimestre"></canvas></div>
+                            <div class="chart-card"><canvas id="chartMensal"></canvas></div>
+                            <div class="chart-card"><canvas id="chartSemanal"></canvas></div>
+                            <div class="chart-card chart-card-full" style="height: 350px;"><canvas id="chartDiario"></canvas></div>
                         </div>
-                        ` : ''}
-                    </div>
+                    </div>`;
+                } else if (abaAtiva === 'lancamentos') {
+                    let rows = '';
+                    for (let d = 1; d <= td; d++) {
+                        const dt = new Date(ano, mes, d), sem = dt.getDay(), k = `${ano}-${mes}-${d}`, st = calcularValoresDia(k, sem, mes, d, ano), fer = isFeriado(mes, d, ano);
+                        const reg = registros[k] || {};
+                        const isFer = estaDeFerias(k);
+                        let rowClass = (sem === 6) ? 'weekend-sat' : (sem === 0) ? 'weekend-sun' : 'weekday';
+                        if (isFer) rowClass = 'ferias-row';
+
+                        const isFeriadoManual = reg.feriadoManual ? true : false;
+                        const btn100 = `<span onclick="toggleFeriadoManual('${k}')" style="cursor:pointer; display:inline-block; margin-left:6px; padding: 2px 5px; border-radius:6px; font-size:0.6rem; font-weight:800; background:${isFeriadoManual ? '#C77DFF' : 'rgba(255,255,255,0.05)'}; color:${isFeriadoManual ? '#fff' : '#64748b'}; border: 1px solid ${isFeriadoManual ? '#C77DFF' : '#475569'}; transition: all 0.2s;" title="Ativar/Desativar 100% Manual">100%</span>`;
+
+                        const cellHora = (v) => v ? `<span class="hora-cell">${v}</span>` : `<span class="hora-cell vazia">--:--</span>`;
+
+                        if (isFer) {
+                            rows += `<tr class="${rowClass}">
+                                <td style="font-weight:800">${d.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')}</td>
+                                <td>${diasNomes[sem]} 🏖️ FÉRIAS</td>
+                                <td colspan="8" style="color:#C77DFF; font-style:italic;">Período de férias</td>
+                            </tr>`;
+                        } else {
+                            rows += `<tr class="${rowClass}">
+                                <td style="font-weight:800">${d.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')}</td>
+                                <td style="color:${sem===0?'#7B2EFF':(sem===6?'#39C6FF':'#94a3b8')}">
+                                    ${diasNomes[sem]}${fer ? ' (' + fer + ')' : ''} ${sem !== 0 ? btn100 : ''}
+                                </td>
+                                <td>${cellHora(reg.ent1)}</td>
+                                <td>${cellHora(reg.sai1)}</td>
+                                <td>${cellHora(reg.ent2)}</td>
+                                <td>${cellHora(reg.sai2)}</td>
+                                <td class="col-total" style="font-weight:900">${minToHora(st.trab)}</td>
+                                <td class="col-norm" style="color:#39C6FF">${minToHora(st.normal)}</td>
+                                <td class="col-50" style="color:#C77DFF">${minToHora(st.extra50)}</td>
+                                <td class="col-100" style="color:#7B2EFF">${minToHora(st.extra100)}</td>
+                            </tr>`;
+                        }
+                    }
+                    
+                    const obsKey = `${ano}-${mes}`;
+                    const obsValue = observacoes[obsKey] || '';
+
+                    corpo = `
+                    <div class="aba-card">
+                        <div class="aba-title">
+                            <i class="fa-solid fa-list-check"></i> Lançamentos
+                            <span class="readonly-badge"><i class="fa-solid fa-eye"></i> Somente Leitura</span>
+                        </div>
+                        <div class="table-container"><div class="scroll-area"><table>
+                            <thead><tr><th>Data</th><th>Dia</th><th>E1</th><th>S1</th><th>E2</th><th>S2</th><th>Total</th><th>Norm</th><th>50%</th><th>100%</th></tr></thead>
+                            <tbody>${rows}</tbody>
+                            <tfoot style="background: rgba(57, 198, 255, 0.1); font-weight: bold;">
+                                <tr><td colspan="6" style="text-align: right; padding-right: 15px;">TOTAIS</td>
+                                <td class="tot-trab">${minToHora(cacheTotais.trab)}</td><td class="tot-norm" style="color:#39C6FF">${minToHora(cacheTotais.normal)}</td><td class="tot-50" style="color:#C77DFF">${minToHora(cacheTotais.extra50)}</td><td class="tot-100" style="color:#7B2EFF">${minToHora(cacheTotais.extra100)}</td></tr>
+                            </tfoot>
+                        </table></div></div>
+                        
+                        <div class="obs-container">
+                            <div class="obs-title"><i class="fa-regular fa-note-sticky"></i> Observações do Mês</div>
+                            <textarea id="obs-textarea" class="obs-textarea" placeholder="Digite suas observações sobre este mês..." onchange="salvarObservacao()">${obsValue}</textarea>
+                            <div class="obs-footer">
+                                <button class="btn-save-obs" onclick="salvarObservacao()"><i class="fa-regular fa-floppy-disk"></i> Salvar</button>
+                            </div>
+                        </div>
+                    </div>`;
+                } else if (abaAtiva === 'config') {
+                    const salarioBaseAtual = getSalarioBase();
+                    
+                    corpo = `
+                    <div class="aba-card">
+                        <div class="aba-title"><i class="fa-solid fa-gear"></i> Configurações</div>
+                        
+                        <div class="config-section">
+                            <div class="config-section-title">
+                                <i class="fa-solid fa-money-bill-wave"></i> Jornada e Salário
+                            </div>
+                            <div class="config-grid">
+                                <div class="config-field">
+                                    <label>Jornada Diária (horas)</label>
+                                    <input type="text" id="cfg-jornada" value="${(jornadaDiaria/60).toFixed(2).replace('.', ',')}">
+                                </div>
+                                <div class="config-field">
+                                    <label>Valor da Hora (R$)</label>
+                                    <input type="text" id="cfg-valor-hora" value="${valorHoraNormal.toFixed(2).replace('.', ',')}">
+                                </div>
+                                <div class="config-field">
+                                    <label>Salário Base (R$)</label>
+                                    <input type="text" id="cfg-salario-base" value="${salarioBaseAtual.toFixed(2).replace('.', ',')}">
+                                </div>
+                            </div>
+                            <div class="config-hint">
+                                <i class="fa-solid fa-circle-info"></i>
+                                <span>Ao alterar o <b>Salário Base</b>, o Valor da Hora é recalculado (Salário ÷ 220). Se deixar 0, calcula automático (Jornada × Valor Hora × 30).</span>
+                            </div>
+                            <div class="config-save-area">
+                                <button class="btn-save-config" onclick="salvarConfiguracoes()">
+                                    <i class="fa-solid fa-floppy-disk"></i> Salvar Configurações
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="config-section">
+                            <div class="config-section-title">
+                                <i class="fa-solid fa-umbrella-beach"></i> Férias
+                            </div>
+                            <p style="font-size:0.75rem; color:#94a3b8; margin:0 0 12px 0; line-height:1.4;">
+                                Marque um período de férias no mês atual. Os dias ficam roxos e não contam como falta.
+                            </p>
+                            <div class="backup-actions">
+                                <button class="btn-backup" onclick="abrirModalFerias()">
+                                    <i class="fa-solid fa-plus"></i> Marcar Férias
+                                </button>
+                                <button class="btn-backup import" onclick="limparFerias()">
+                                    <i class="fa-solid fa-trash"></i> Limpar Férias
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="config-section">
+                            <div class="config-section-title">
+                                <i class="fa-solid fa-shield-halved"></i> Backup e Restauração
+                            </div>
+                            <p style="font-size:0.75rem; color:#94a3b8; margin:0 0 4px 0; line-height:1.4;">
+                                Faça backup dos seus dados regularmente para não perder nada em atualizações.
+                            </p>
+                            <div class="backup-actions">
+                                <button class="btn-backup" onclick="exportarBackup()">
+                                    <i class="fa-solid fa-download"></i> Exportar Dados
+                                </button>
+                                <button class="btn-backup import" onclick="document.getElementById('import-file').click()">
+                                    <i class="fa-solid fa-upload"></i> Importar Dados
+                                </button>
+                                <button class="btn-backup pdf" onclick="exportarPDF()">
+                                    <i class="fa-solid fa-file-pdf"></i> Gerar Relatório PDF
+                                </button>
+                            </div>
+                            <input type="file" id="import-file" accept=".json,application/json" style="display:none;" onchange="importarBackup(event)">
+                            <div class="backup-hint">
+                                <i class="fa-solid fa-circle-info"></i>
+                                <span>O arquivo exportado contém todos os registros de ponto, férias, observações e configurações.</span>
+                            </div>
+                        </div>
+                    </div>`;
+                } else if (abaAtiva === 'bater_ponto') {
+                    const chaveSel = `${ano}-${mes}-${diaSelecionado}`;
+                    const regDia = registros[chaveSel] || {};
+                    const dtSel = new Date(ano, mes, diaSelecionado);
+                    const semSel = dtSel.getDay();
+                    
+                    const stDia = calcularValoresDia(chaveSel, semSel, mes, diaSelecionado, ano);
+                    const totalTrabalhado = minToHora(stDia.trab);
+
+                    const feriadoDia = isFeriado(mes, diaSelecionado, ano);
+                    const isDomingo = semSel === 0;
+                    const isManual100 = regDia.feriadoManual === true;
+                    const isFer = estaDeFerias(chaveSel);
+                    const is100 = isDomingo || feriadoDia || isManual100;
+                    
+                    const hoje = new Date();
+                    const isHoje = (ano === hoje.getFullYear() && mes === hoje.getMonth() && diaSelecionado === hoje.getDate());
+                    
+                    const totalBatidas = (regDia.ent1?1:0) + (regDia.sai1?1:0) + (regDia.ent2?1:0) + (regDia.sai2?1:0);
+                    const isBloqueado = isHoje && totalBatidas >= 4;
+                    
+                    let textStatus = "Pressione para bater o ponto";
+                    if (totalBatidas === 1) textStatus = "Pressione para registrar Início da Pausa";
+                    if (totalBatidas === 2) textStatus = "Pressione para registrar Retorno da Pausa";
+                    if (totalBatidas === 3) textStatus = "Pressione para registrar Saída Final";
+                    if (isBloqueado) textStatus = "Expediente de hoje concluído!";
+                    if (!isHoje) textStatus = "⚠️ Você está editando outro dia (use lançamento manual abaixo)";
+                    if (isFer) textStatus = "🏖️ Este dia está marcado como FÉRIAS";
+
+                    const nomeDiaSel = diasNomesLongo[semSel];
+                    const diaSemanaCurto = `${diasNomes[semSel]}, ${diaSelecionado.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')}`;
+
+                    const podeMarcar100 = !isDomingo && !feriadoDia && !isFer;
+                    const btnFeriasText = isFer ? 'Remover Férias' : 'Marcar Férias';
+                    const btnFeriasClass = isFer ? 'btn-ferias active' : 'btn-ferias';
+
+                    corpo = `
+                    <div class="aba-card">
+                        <div class="aba-title"><i class="fa-solid fa-fingerprint"></i> Bater Ponto / Lançamento</div>
+                        <div class="bio-container">
+
+                            <div class="day-picker">
+                                <button class="day-nav-btn" onclick="mudarDia(-1)" title="Dia anterior">
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                </button>
+                                
+                                <div class="day-center" onclick="toggleCalendario(event)" title="Clique para abrir o calendário">
+                                    <div class="day-number">${diaSelecionado.toString().padStart(2,'0')}<small>/${(mes+1).toString().padStart(2,'0')}</small></div>
+                                    <div class="day-meta">
+                                        <div class="day-weekday"><i class="fa-regular fa-calendar day-info-icon"></i>${nomeDiaSel} • ${ano}</div>
+                                        ${(isHoje || feriadoDia || isFer) ? `
+                                        <div class="day-badges">
+                                            ${isHoje ? '<span class="badge-hoje">HOJE</span>' : ''}
+                                            ${feriadoDia ? `<span class="badge-feriado">${feriadoDia}</span>` : ''}
+                                            ${isFer ? '<span class="badge-ferias">🏖️ FÉRIAS</span>' : ''}
+                                        </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+
+                                ${!isHoje 
+                                    ? `<button class="btn-hoje-quick" onclick="irParaHoje()" title="Ir para hoje"><i class="fa-solid fa-calendar-day"></i> HOJE</button>`
+                                    : `<button class="day-nav-btn" onclick="mudarDia(1)" title="Próximo dia"><i class="fa-solid fa-chevron-right"></i></button>`
+                                }
+                                
+                                <div id="calendar-popover" class="calendar-popover"></div>
+                            </div>
+
+                            <div class="action-row">
+                                ${podeMarcar100 ? `
+                                <button class="btn-100-neon ${isManual100 ? 'active' : ''}" onclick="toggleFeriadoManualDoDia()" title="${isManual100 ? 'Remover marcação 100%' : 'Marcar dia como 100%'}">
+                                    <i class="fa-solid fa-bolt"></i>
+                                    <span>${isManual100 ? '100% Ativo' : 'Marcar 100%'}</span>
+                                    <span class="badge-off">${isManual100 ? 'ATIVO' : '100%'}</span>
+                                </button>
+                                ` : '<div></div>'}
+                                
+                                <button class="${btnFeriasClass}" onclick="toggleFeriasDia()" title="${btnFeriasText}">
+                                    <i class="fa-solid fa-umbrella-beach"></i>
+                                    <span>${btnFeriasText}</span>
+                                </button>
+                            </div>
+
+                            ${isHoje && !isFer ? `
+                            <div style="text-align: center; margin-bottom: 20px;">
+                                <p style="color: #94a3b8; font-size: 0.9rem;" id="bio-date">Carregando data...</p>
+                                <div style="font-size: 3.5rem; font-weight: 800; margin: 15px 0; font-variant-numeric: tabular-nums; letter-spacing: 2px;" id="bio-clock">--:--:--</div>
+                            </div>
+                            ` : !isFer ? `
+                            <div style="text-align: center; margin-bottom: 20px;">
+                                <p style="color: #f59e0b; font-size: 0.85rem; font-weight: 700;">
+                                    <i class="fa-solid fa-pen-to-square"></i> Editando ${diaSemanaCurto}
+                                </p>
+                            </div>
+                            ` : `
+                            <div style="text-align: center; margin-bottom: 20px; padding: 20px; background: rgba(199,125,255,0.1); border-radius: 16px; border: 1px solid rgba(199,125,255,0.3);">
+                                <i class="fa-solid fa-umbrella-beach" style="font-size: 3rem; color: #C77DFF; margin-bottom: 10px;"></i>
+                                <p style="color: #C77DFF; font-weight: 700; margin: 0;">Dia de Férias</p>
+                                <p style="color: #94a3b8; font-size: 0.8rem; margin: 4px 0 0 0;">Nenhum registro necessário</p>
+                            </div>
+                            `}
+                            
+                            ${!isFer ? `
+                            <div style="text-align: center;">
+                                <button id="fingerprint-btn" onclick="requestBiometrics()" class="fingerprint-btn ${(!isHoje || isBloqueado) ? '' : 'pulse'}" ${(!isHoje || isBloqueado) ? 'disabled' : ''}>
+                                    <i class="fa-solid fa-fingerprint"></i>
+                                    <div class="check-overlay"><i class="fa-solid fa-check-circle"></i></div>
+                                </button>
+                                <p id="bio-status" style="margin-top: 15px; color: ${(!isHoje || isBloqueado) ? '#94a3b8' : 'var(--primary)'}; font-weight: bold; font-size: 0.95rem;">
+                                    ${textStatus}
+                                </p>
+                            </div>
+                            ` : ''}
+
+                            ${!isFer ? `
+                            <div style="margin-top: 30px;">
+                                <h3 style="margin: 0 0 15px 0; font-size: 0.9rem; text-transform: uppercase; color: #94a3b8; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
+                                    Registros do Dia <span style="float:right; color: #fff;">${totalBatidas}/4</span>
+                                </h3>
+                                
+                                <div class="punch-row ${regDia.ent1 ? 'filled' : 'empty'}">
+                                    <span><i class="fa-solid fa-arrow-right-to-bracket" style="color: #10b981; margin-right: 10px;"></i> Entrada 1</span>
+                                    <strong style="font-size: 1.1rem;">${regDia.ent1 || '--:--'}</strong>
+                                </div>
+                                <div class="punch-row ${regDia.sai1 ? 'filled' : 'empty'}">
+                                    <span><i class="fa-solid fa-mug-hot" style="color: #f59e0b; margin-right: 10px;"></i> Saída (Pausa)</span>
+                                    <strong style="font-size: 1.1rem;">${regDia.sai1 || '--:--'}</strong>
+                                </div>
+                                <div class="punch-row ${regDia.ent2 ? 'filled' : 'empty'}">
+                                    <span><i class="fa-solid fa-briefcase" style="color: #3b82f6; margin-right: 10px;"></i> Retorno (Pausa)</span>
+                                    <strong style="font-size: 1.1rem;">${regDia.ent2 || '--:--'}</strong>
+                                </div>
+                                <div class="punch-row ${regDia.sai2 ? 'filled' : 'empty'}">
+                                    <span><i class="fa-solid fa-arrow-right-from-bracket" style="color: #ef4444; margin-right: 10px;"></i> Saída Final</span>
+                                    <strong style="font-size: 1.1rem;">${regDia.sai2 || '--:--'}</strong>
+                                </div>
+                            </div>
+
+                            <div class="manual-entry">
+                                <div class="manual-title">
+                                    <i class="fa-solid fa-keyboard"></i> Lançamento Manual
+                                </div>
+                                <div class="manual-fields">
+                                    <div class="manual-field">
+                                        <label for="manual-ent1">Entrada 1</label>
+                                        <input type="text" id="manual-ent1" inputmode="numeric" placeholder="HH:MM" maxlength="5" value="${regDia.ent1 || ''}" oninput="mascaraHora(this)">
+                                    </div>
+                                    <div class="manual-field">
+                                        <label for="manual-sai1">Saída Pausa</label>
+                                        <input type="text" id="manual-sai1" inputmode="numeric" placeholder="HH:MM" maxlength="5" value="${regDia.sai1 || ''}" oninput="mascaraHora(this)">
+                                    </div>
+                                    <div class="manual-field">
+                                        <label for="manual-ent2">Retorno Pausa</label>
+                                        <input type="text" id="manual-ent2" inputmode="numeric" placeholder="HH:MM" maxlength="5" value="${regDia.ent2 || ''}" oninput="mascaraHora(this)">
+                                    </div>
+                                    <div class="manual-field">
+                                        <label for="manual-sai2">Saída Final</label>
+                                        <input type="text" id="manual-sai2" inputmode="numeric" placeholder="HH:MM" maxlength="5" value="${regDia.sai2 || ''}" oninput="mascaraHora(this)">
+                                    </div>
+                                </div>
+                                <div class="manual-actions">
+                                    <button class="btn-manual-clear" onclick="limparManualPrimeiraTela()"><i class="fa-regular fa-trash-can"></i> Limpar</button>
+                                    <button class="btn-manual-save" onclick="salvarManualPrimeiraTela()"><i class="fa-regular fa-floppy-disk"></i> Salvar Horários</button>
+                                </div>
+                            </div>
+
+                            <div class="saldo-dia ${is100 ? 'is-100' : ''}">
+                                <span class="label">Saldo do Dia</span>
+                                <span class="valor">${totalTrabalhado}</span>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>`;
+                }
+
+                document.getElementById('app').innerHTML = `<div class="container">
+                    <header class="header-card">
+                        <div class="header-row-1">
+                            <div class="futuristic-logo">
+                                <svg viewBox="0 0 1024 620" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <defs>
+                                    <linearGradient id="neonBlue" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#39C6FF"/><stop offset="100%" stop-color="#2E5BFF"/></linearGradient>
+                                    <linearGradient id="neonPurple" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#C77DFF"/><stop offset="100%" stop-color="#7B2EFF"/></linearGradient>
+                                    <linearGradient id="textGradient" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#3ACDFF"/><stop offset="100%" stop-color="#B15CFF"/></linearGradient>
+                                    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="15" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                                  </defs>
+                                  <circle cx="512" cy="310" r="220" stroke="url(#neonBlue)" stroke-width="26" fill="none" filter="url(#glow)" stroke-dasharray="1200" stroke-dashoffset="140"/>
+                                  <path d="M680 120 A220 220 0 0 1 785 280" stroke="url(#neonPurple)" stroke-width="30" fill="none" stroke-linecap="round" filter="url(#glow)"/>
+                                  <path d="M430 315 L505 390 L675 230" stroke="url(#textGradient)" stroke-width="42" stroke-linecap="round" stroke-linejoin="round" fill="none" filter="url(#glow)"/>
+                                  <rect x="500" y="120" width="14" height="42" rx="7" fill="#46CFFF" filter="url(#glow)"/><rect x="500" y="458" width="14" height="42" rx="7" fill="#46CFFF" filter="url(#glow)"/>
+                                  <rect x="328" y="292" width="42" height="14" rx="7" fill="#46CFFF" filter="url(#glow)"/><rect x="654" y="292" width="42" height="14" rx="7" fill="#B15CFF" filter="url(#glow)"/>
+                                  <rect x="675" y="405" width="52" height="120" rx="10" fill="url(#neonBlue)" filter="url(#glow)"/><rect x="740" y="355" width="52" height="170" rx="10" fill="#7F8BFF" filter="url(#glow)"/><rect x="805" y="300" width="52" height="225" rx="10" fill="url(#neonPurple)" filter="url(#glow)"/>
+                                  <path d="M650 530 Q760 570 880 515" stroke="url(#neonBlue)" stroke-width="10" fill="none" stroke-linecap="round" filter="url(#glow)"/>
+                                </svg>
+                            </div>
+                            <h1 class="brand-title">Check Ponto <span class="version-tag">v4.9</span></h1>
+                        </div>
+
+                        <div class="date-stepper-big">
+                            <button class="btn-nav" onclick="mudarMes(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                            <div class="date-display-big">${mesesNomes[mes]} ${ano}</div>
+                            <button class="btn-nav" onclick="mudarMes(1)"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+
+                        <div class="header-summary">
+                            <div class="header-summary-item normal">
+                                <div class="hs-label">Normal</div>
+                                <div class="hs-value">${minToHora(cacheTotais.normal)}</div>
+                            </div>
+                            <div class="header-summary-item he50">
+                                <div class="hs-label">HE 50%</div>
+                                <div class="hs-value">${minToHora(cacheTotais.extra50)}</div>
+                            </div>
+                            <div class="header-summary-item he100">
+                                <div class="hs-label">HE 100%</div>
+                                <div class="hs-value">${minToHora(cacheTotais.extra100)}</div>
+                            </div>
+                        </div>
+
+                        <div class="header-row-4">
+                            <button class="btn-primary" onclick="salvar()">💾 SALVAR</button>
+                        </div>
+                    </header>
+
+                    <nav class="tabs-nav">
+                        <button class="tab-btn ${abaAtiva==='bater_ponto'?'active':''}" data-aba="bater_ponto">PONTO</button>
+                        <button class="tab-btn ${abaAtiva==='lancamentos'?'active':''}" data-aba="lancamentos">LANÇAMENTOS</button>
+                        <button class="tab-btn ${abaAtiva==='dashboard'?'active':''}" data-aba="dashboard">DASHBOARD</button>
+                        <button class="tab-btn ${abaAtiva==='relatorio'?'active':''}" data-aba="relatorio">RELATÓRIO</button>
+                        <button class="tab-btn ${abaAtiva==='config'?'active':''}" data-aba="config">CONFIG</button>
+                    </nav>
+
+                    ${corpo}
+
+                    <footer class="footer">
+                        <div class="footer-content">
+                            <span class="footer-text">Criado por <b>Deh Januário</b></span>
+                            <span class="footer-brand">Check Ponto • v4.9 Premium</span>
+                        </div>
+                    </footer>
+                    <div id="toast" class="toast"></div>
                 </div>`;
-            }
-
-            document.getElementById('app').innerHTML = `<div class="container">
-                <header class="header-card">
-                    <div class="header-row-1">
-                        <div class="futuristic-logo">
-                            <svg viewBox="0 0 1024 620" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <defs>
-                                <linearGradient id="neonBlue" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#39C6FF"/><stop offset="100%" stop-color="#2E5BFF"/></linearGradient>
-                                <linearGradient id="neonPurple" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#C77DFF"/><stop offset="100%" stop-color="#7B2EFF"/></linearGradient>
-                                <linearGradient id="textGradient" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#3ACDFF"/><stop offset="100%" stop-color="#B15CFF"/></linearGradient>
-                                <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="15" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-                              </defs>
-                              <circle cx="512" cy="310" r="220" stroke="url(#neonBlue)" stroke-width="26" fill="none" filter="url(#glow)" stroke-dasharray="1200" stroke-dashoffset="140"/>
-                              <path d="M680 120 A220 220 0 0 1 785 280" stroke="url(#neonPurple)" stroke-width="30" fill="none" stroke-linecap="round" filter="url(#glow)"/>
-                              <path d="M430 315 L505 390 L675 230" stroke="url(#textGradient)" stroke-width="42" stroke-linecap="round" stroke-linejoin="round" fill="none" filter="url(#glow)"/>
-                              <rect x="500" y="120" width="14" height="42" rx="7" fill="#46CFFF" filter="url(#glow)"/><rect x="500" y="458" width="14" height="42" rx="7" fill="#46CFFF" filter="url(#glow)"/>
-                              <rect x="328" y="292" width="42" height="14" rx="7" fill="#46CFFF" filter="url(#glow)"/><rect x="654" y="292" width="42" height="14" rx="7" fill="#B15CFF" filter="url(#glow)"/>
-                              <rect x="675" y="405" width="52" height="120" rx="10" fill="url(#neonBlue)" filter="url(#glow)"/><rect x="740" y="355" width="52" height="170" rx="10" fill="#7F8BFF" filter="url(#glow)"/><rect x="805" y="300" width="52" height="225" rx="10" fill="url(#neonPurple)" filter="url(#glow)"/>
-                              <path d="M650 530 Q760 570 880 515" stroke="url(#neonBlue)" stroke-width="10" fill="none" stroke-linecap="round" filter="url(#glow)"/>
-                            </svg>
-                        </div>
-                        <h1 class="brand-title">Check Ponto <span class="version-tag">v4.9</span></h1>
-                    </div>
-
-                    <div class="date-stepper-big">
-                        <button class="btn-nav" onclick="mudarMes(-1)"><i class="fa-solid fa-chevron-left"></i></button>
-                        <div class="date-display-big">${mesesNomes[mes]} ${ano}</div>
-                        <button class="btn-nav" onclick="mudarMes(1)"><i class="fa-solid fa-chevron-right"></i></button>
-                    </div>
-
-                    <div class="header-summary">
-                        <div class="header-summary-item normal">
-                            <div class="hs-label">Normal</div>
-                            <div class="hs-value">${minToHora(cacheTotais.normal)}</div>
-                        </div>
-                        <div class="header-summary-item he50">
-                            <div class="hs-label">HE 50%</div>
-                            <div class="hs-value">${minToHora(cacheTotais.extra50)}</div>
-                        </div>
-                        <div class="header-summary-item he100">
-                            <div class="hs-label">HE 100%</div>
-                            <div class="hs-value">${minToHora(cacheTotais.extra100)}</div>
-                        </div>
-                    </div>
-
-                    <div class="header-row-4">
-                        <button class="btn-primary" onclick="salvar()">💾 SALVAR</button>
-                    </div>
-                </header>
-
-                <nav class="tabs-nav">
-                    <button class="tab-btn ${abaAtiva==='bater_ponto'?'active':''}" onclick="mudarAba('bater_ponto')">PONTO</button>
-                    <button class="tab-btn ${abaAtiva==='lancamentos'?'active':''}" onclick="mudarAba('lancamentos')">LANÇAMENTOS</button>
-                    <button class="tab-btn ${abaAtiva==='dashboard'?'active':''}" onclick="mudarAba('dashboard')">DASHBOARD</button>
-                    <button class="tab-btn ${abaAtiva==='relatorio'?'active':''}" onclick="mudarAba('relatorio')">RELATÓRIO</button>
-                    <button class="tab-btn ${abaAtiva==='config'?'active':''}" onclick="mudarAba('config')">CONFIG</button>
-                </nav>
-
-                ${corpo}
-
-                <footer class="footer">
-                    <div class="footer-content">
-                        <span class="footer-text">Criado por <b>Deh Januário</b></span>
-                        <span class="footer-brand">Check Ponto • v4.9 Premium</span>
-                    </div>
-                </footer>
-                <div id="toast" class="toast"></div>
-            </div>`;
-            
-            if (abaAtiva === 'dashboard' || abaAtiva === 'relatorio') {
-                setTimeout(initCharts, 100);
+                
+                if (abaAtiva === 'dashboard' || abaAtiva === 'relatorio') {
+                    setTimeout(() => {
+                        requestAnimationFrame(() => requestAnimationFrame(() => initCharts()));
+                    }, 50);
+                }
+            } catch(err) {
+                console.error('❌ ERRO em renderizar():', err);
+                console.error('Stack:', err.stack);
+                mostrarToast('⚠️ Erro ao renderizar. Veja o console (F12).');
             }
         }
-
-        // ============================================
-        // FUNÇÕES GLOBAIS FINAIS
-        // ============================================
 
         window.salvarConfiguracoes = function() {
             const jEl = document.getElementById('cfg-jornada');
             const vhEl = document.getElementById('cfg-valor-hora');
             const sbEl = document.getElementById('cfg-salario-base');
-            const adEl = document.getElementById('cfg-adiantamento');
             
             if (jEl) {
                 const v = parseFloat(jEl.value.replace(',', '.'));
@@ -3158,15 +3186,9 @@
                 if (!isNaN(v) && v > 0) valorHoraNormal = v;
             }
             
-            // Se salário base foi alterado, recalcula o valor da hora (Salário ÷ 220)
             if (salarioBaseMensal !== null && salarioBaseMensal > 0) {
                 valorHoraNormal = salarioBaseMensal / 220;
                 if (vhEl) vhEl.value = valorHoraNormal.toFixed(2).replace('.', ',');
-            }
-            
-            if (adEl) {
-                const v = parseFloat(adEl.value.replace(',', '.'));
-                if (!isNaN(v) && v >= 0) adiantamentoMensal = v;
             }
             
             salvarAuto();
@@ -3187,7 +3209,6 @@
                 jornadaDiaria: jornadaDiaria,
                 valorHoraNormal: valorHoraNormal,
                 salarioBaseMensal: salarioBaseMensal,
-                adiantamentoMensal: adiantamentoMensal,
                 observacoes: observacoes,
                 ferias: ferias
             };
@@ -3247,7 +3268,6 @@
                     jornadaDiaria = dados.jornadaDiaria || 480;
                     valorHoraNormal = dados.valorHoraNormal || 10.32;
                     salarioBaseMensal = dados.salarioBaseMensal || null;
-                    adiantamentoMensal = dados.adiantamentoMensal || 0;
                     observacoes = dados.observacoes || {};
                     ferias = dados.ferias || {};
                     
