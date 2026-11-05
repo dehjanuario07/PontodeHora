@@ -404,6 +404,7 @@ async function exportarPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'mm', 'a4');
 
+    // --- PÁGINA 1: CABEÇALHO E TABELA ---
     doc.setFont("helvetica", "bold"); doc.setFontSize(22); doc.setTextColor(57, 198, 255); doc.text("CHECK PONTO", 20, 20);
     doc.setFontSize(10); doc.setTextColor(100, 100, 100); doc.text(`Relatório Oficial Premium v4.9 • Gerado em ${new Date().toLocaleDateString()}`, 20, 28); doc.line(20, 32, 190, 32);
     doc.setFontSize(11); doc.setTextColor(0, 0, 0); doc.text(`Período: ${mesesNomes[mes]} de ${ano}`, 20, 42); doc.text(`Jornada: ${Math.floor(jornadaDiaria/60)}h | Valor Hora: R$ ${valorHoraNormal.toFixed(2)}`, 110, 42);
@@ -416,53 +417,94 @@ async function exportarPDF() {
         tableBody.push([ `${d.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')}`, nomeDiaStr, reg.ent1 || '-', reg.sai1 || '-', reg.ent2 || '-', reg.sai2 || '-', minToHora(st.trab), minToHora(st.extra50), minToHora(st.extra100) ]);
     }
     
-    const val50 = (cacheTotais.extra50 / 60 * valorHoraNormal * 1.5).toFixed(2); const val100 = (cacheTotais.extra100 / 60 * valorHoraNormal * 2.0).toFixed(2);
-    const valNoturno = (cacheTotais.noturno / 60) * (valorHoraNormal * (adicionalNoturnoPct / 100));
-    const bonusListPDF = extras[`${ano}-${mes}`]?.bonus || []; const descontosListPDF = extras[`${ano}-${mes}`]?.descontos || [];
-    const totalBonusPDF = bonusListPDF.reduce((acc, curr) => acc + curr.valor, 0); const totalDescontoPDF = descontosListPDF.reduce((acc, curr) => acc + curr.valor, 0);
-    
-    const prev = calcularPrevisao();
-    const salarioBase = prev.salarioBase; const totalBruto = prev.totalBruto; const inss = prev.inss; const irrf = prev.irrf; const liquido = prev.liquido;
-
     doc.autoTable({
-        startY: 48, head: [['Data', 'Dia', 'E1', 'S1', 'E2', 'S2', 'Total', '50%', '100%']], body: tableBody, theme: 'grid',
-        headStyles: { fillColor: [57, 198, 255], halign: 'center', textColor: 255 }, styles: { fontSize: 8, halign: 'center' },
-        foot: [
-            [ { content: 'TOTAIS (HORAS)', colSpan: 6, styles: { halign: 'right', fontStyle: 'bold' } }, { content: minToHora(cacheTotais.trab), styles: { halign: 'center', fontStyle: 'bold' } }, { content: minToHora(cacheTotais.extra50), styles: { halign: 'center', fontStyle: 'bold' } }, { content: minToHora(cacheTotais.extra100), styles: { halign: 'center', fontStyle: 'bold' } } ],
-            [ { content: 'SALDO EM DINHEIRO (R$)', colSpan: 6, styles: { halign: 'right', fontStyle: 'bold' } }, { content: '-', styles: { halign: 'center', fontStyle: 'bold' } }, { content: `R$ ${val50}`, styles: { halign: 'center', fontStyle: 'bold' } }, { content: `R$ ${val100}`, styles: { halign: 'center', fontStyle: 'bold' } } ],
-            [ { content: 'BONIFICAÇÕES (R$)', colSpan: 6, styles: { halign: 'right', fontStyle: 'bold' } }, { content: '-', colSpan: 2, styles: { halign: 'center', fontStyle: 'bold' } }, { content: `R$ ${totalBonusPDF.toFixed(2)}`, styles: { halign: 'center', fontStyle: 'bold' } } ],
-            [ { content: 'DESCONTOS EXTRAS (R$)', colSpan: 6, styles: { halign: 'right', fontStyle: 'bold' } }, { content: '-', colSpan: 2, styles: { halign: 'center', fontStyle: 'bold' } }, { content: `R$ ${totalDescontoPDF.toFixed(2)}`, styles: { halign: 'center', fontStyle: 'bold' } } ],
-            [ { content: `ADIC. NOTURNO (${adicionalNoturnoPct}%)`, colSpan: 6, styles: { halign: 'right', fontStyle: 'bold' } }, { content: minToHora(cacheTotais.noturno), styles: { halign: 'center', fontStyle: 'bold' } }, { content: '-', styles: { halign: 'center', fontStyle: 'bold' } }, { content: `R$ ${valNoturno.toFixed(2)}`, styles: { halign: 'center', fontStyle: 'bold' } } ]
-        ], footStyles: { fillColor: [240, 240, 240], textColor: 0, lineWidth: 0.1 }
+        startY: 48, 
+        head: [['Data', 'Dia', 'E1', 'S1', 'E2', 'S2', 'Total', '50%', '100%']], 
+        body: tableBody, 
+        theme: 'grid',
+        headStyles: { fillColor: [57, 198, 255], halign: 'center', textColor: 255 }, 
+        styles: { fontSize: 8, halign: 'center' }
     });
 
-    let finalY = doc.lastAutoTable.finalY + 10;
-    if (finalY > 200) { doc.addPage(); finalY = 20; }
+    // --- PÁGINA 2: RESUMO FINANCEIRO E TOTAIS ---
+    doc.addPage();
+    let finalY = 20;
 
+    // Calculando os valores para exibir
+    const val50 = (cacheTotais.extra50 / 60 * valorHoraNormal * 1.5).toFixed(2); 
+    const val100 = (cacheTotais.extra100 / 60 * valorHoraNormal * 2.0).toFixed(2);
+    const valNoturno = (cacheTotais.noturno / 60) * (valorHoraNormal * (adicionalNoturnoPct / 100));
+    const bonusListPDF = extras[`${ano}-${mes}`]?.bonus || []; 
+    const descontosListPDF = extras[`${ano}-${mes}`]?.descontos || [];
+    const totalBonusPDF = bonusListPDF.reduce((acc, curr) => acc + curr.valor, 0); 
+    const totalDescontoPDF = descontosListPDF.reduce((acc, curr) => acc + curr.valor, 0);
+
+    // -- BLOCO 1: RESUMO DE HORAS E VALORES --
+    doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.setTextColor(0, 0, 0);
+    doc.text("Resumo de Horas e Valores", 20, finalY);
+    finalY += 10;
+    
+    doc.setFontSize(11); doc.setFont("helvetica", "normal");
+    
+    // Coluna 1 (Esquerda)
+    doc.text(`Total Trabalhado:`, 20, finalY);
+    doc.text(`${minToHora(cacheTotais.trab)}`, 80, finalY);
+    doc.text(`Saldo Normal:`, 20, finalY + 8);
+    doc.text(`R$ ${(cacheTotais.normal/60 * valorHoraNormal).toFixed(2)}`, 80, finalY + 8);
+    doc.text(`Bonificações:`, 20, finalY + 16);
+    doc.text(`R$ ${totalBonusPDF.toFixed(2)}`, 80, finalY + 16);
+
+    // Coluna 2 (Direita)
+    doc.text(`Extra 50%:`, 110, finalY);
+    doc.text(`${minToHora(cacheTotais.extra50)}`, 170, finalY);
+    doc.text(`Saldo 50%:`, 110, finalY + 8);
+    doc.text(`R$ ${val50}`, 170, finalY + 8);
+    doc.text(`Descontos:`, 110, finalY + 16);
+    doc.text(`R$ ${totalDescontoPDF.toFixed(2)}`, 170, finalY + 16);
+    
+    // Coluna 3 (Mais à direita, mas agora cabe)
+    doc.text(`Extra 100%:`, 20, finalY + 24);
+    doc.text(`${minToHora(cacheTotais.extra100)}`, 80, finalY + 24);
+    doc.text(`Saldo 100%:`, 20, finalY + 32);
+    doc.text(`R$ ${val100}`, 80, finalY + 32);
+    doc.text(`Noturno:`, 110, finalY + 24);
+    doc.text(`R$ ${valNoturno.toFixed(2)}`, 170, finalY + 24);
+
+    finalY += 45;
+
+    // -- BLOCO 2: GRÁFICO --
     const canvasGrafico = document.getElementById('chartDist');
     if (canvasGrafico) {
-        doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(0, 0, 0); doc.text("Distribuição de Horas", 20, finalY);
+        doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.setTextColor(0, 0, 0);
+        doc.text("Distribuição de Horas", 20, finalY);
         const imgData = canvasGrafico.toDataURL('image/png', 1.0);
-        doc.addImage(imgData, 'PNG', 15, finalY + 5, 180, 60);
-        finalY += 70;
+        // Ajustei para o gráfico ficar mais compacto e não empurrar o resumo para fora da página
+        doc.addImage(imgData, 'PNG', 15, finalY + 5, 150, 60); 
+        finalY += 75;
     }
 
-    doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(0, 0, 0); doc.text("Resumo Financeiro do Mês", 20, finalY);
-    doc.setFont("helvetica", "normal"); doc.setFontSize(10); finalY += 8;
-    doc.text(`Salário Base: R$ ${salarioBase.toFixed(2)}`, 20, finalY); finalY += 6;
-    doc.text(`Total Bruto: R$ ${totalBruto.toFixed(2)}`, 20, finalY); finalY += 6;
-    doc.setTextColor(239, 68, 68); doc.text(`INSS: - R$ ${inss.toFixed(2)}`, 20, finalY); finalY += 6;
-    doc.text(`IRRF: - R$ ${irrf.toFixed(2)}`, 20, finalY); finalY += 8;
-    doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(16, 185, 129); doc.text(`Líquido Previsto: R$ ${liquido.toFixed(2)}`, 20, finalY);
+    // -- BLOCO 3: RESUMO FINANCEIRO --
+    const prev = calcularPrevisao();
+    doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.setTextColor(0, 0, 0);
+    doc.text("Resumo Financeiro do Mês", 20, finalY);
+    
+    doc.setFont("helvetica", "normal"); doc.setFontSize(11); finalY += 10;
+    doc.text(`Salário Base: R$ ${prev.salarioBase.toFixed(2)}`, 20, finalY); finalY += 8;
+    doc.text(`Total Bruto: R$ ${prev.totalBruto.toFixed(2)}`, 20, finalY); finalY += 8;
+    doc.setTextColor(239, 68, 68); doc.text(`INSS: - R$ ${prev.inss.toFixed(2)}`, 20, finalY); finalY += 8;
+    doc.text(`IRRF: - R$ ${prev.irrf.toFixed(2)}`, 20, finalY); finalY += 12;
+    doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.setTextColor(16, 185, 129); doc.text(`Líquido Previsto: R$ ${prev.liquido.toFixed(2)}`, 20, finalY);
 
+    // -- BLOCO 4: OBSERVAÇÕES --
     const obsKey = `${ano}-${mes}`; const obsText = observacoes[obsKey];
     if (obsText && obsText.trim() !== '') {
-        let finalYobs = finalY + 15;
-        if (finalYobs > 260) { doc.addPage(); finalYobs = 20; }
-        doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(0, 0, 0); doc.text("Observações:", 20, finalYobs);
-        doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(80, 80, 80); const splitObs = doc.splitTextToSize(obsText, 170); doc.text(splitObs, 20, finalYobs + 6);
+        let finalYobs = finalY + 20;
+        doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(0, 0, 0); doc.text("Observações:", 20, finalYobs);
+        doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(80, 80, 80); const splitObs = doc.splitTextToSize(obsText, 170); doc.text(splitObs, 20, finalYobs + 8);
     }
-    doc.save(`CheckPonto_v49_${mesesNomes[mes]}_${ano}.pdf`); mostrarToast("📄 PDF Exportado com Gráfico!");
+
+    doc.save(`CheckPonto_v49_${mesesNomes[mes]}_${ano}.pdf`); 
+    mostrarToast("📄 PDF Exportado com Sucesso!");
 }
 
 window.exportarCSV = function() {
@@ -473,10 +515,7 @@ window.exportarCSV = function() {
         let nomeDiaStr = diasNomes[dt.getDay()]; const fer = isFeriado(mes, d, ano);
         if (fer) nomeDiaStr += ` (${fer})`; if (estaDeFerias(k)) nomeDiaStr += ` (FÉRIAS)`;
         const e1 = reg.ent1 || ''; const s1 = reg.sai1 || ''; const e2 = reg.ent2 || ''; const s2 = reg.sai2 || '';
-        csvContent += `${d.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')};`;
-        csvContent += `${nomeDiaStr};`;
-        csvContent += `${e1};${s1};${e2};${s2};`;
-        csvContent += `${minToHora(st.trab)};${minToHora(st.normal)};${minToHora(st.extra50)};${minToHora(st.extra100)};${minToHora(st.noturno)}\n`;
+        csvContent += `${d.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')};${nomeDiaStr};${e1};${s1};${e2};${s2};${minToHora(st.trab)};${minToHora(st.normal)};${minToHora(st.extra50)};${minToHora(st.extra100)};${minToHora(st.noturno)}\n`;
     }
     csvContent += `TOTAIS;;;;;${minToHora(cacheTotais.trab)};${minToHora(cacheTotais.normal)};${minToHora(cacheTotais.extra50)};${minToHora(cacheTotais.extra100)};${minToHora(cacheTotais.noturno)}\n\n`;
     
@@ -491,8 +530,7 @@ window.exportarCSV = function() {
     const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url;
-    a.download = `CheckPonto_${mesesNomes[mes]}_${ano}.csv`;
+    a.href = url; a.download = `CheckPonto_${mesesNomes[mes]}_${ano}.csv`;
     document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
     mostrarToast('📊 Planilha CSV exportada!');
 };
@@ -519,29 +557,11 @@ function initCharts() {
     }
 }
 function salvar(silencioso = false) { 
-    localStorage.setItem(CHAVE_ATUAL, JSON.stringify({ 
-        registros, jornadaDiaria, valorHoraNormal, observacoes, 
-        salarioBaseMensal, ferias, extras
-    })); 
+    localStorage.setItem(CHAVE_ATUAL, JSON.stringify({ registros, jornadaDiaria, valorHoraNormal, observacoes, salarioBaseMensal, ferias, extras })); 
     if(!silencioso) mostrarToast('✅ Dados guardados!'); 
 }
-
-function salvarAuto() {
-    localStorage.setItem(CHAVE_ATUAL, JSON.stringify({ 
-        registros, jornadaDiaria, valorHoraNormal, observacoes, 
-        salarioBaseMensal, ferias, extras
-    }));
-}
-
-function salvarObservacao() {
-    const textarea = document.getElementById('obs-textarea');
-    if (textarea) {
-        const obsKey = `${ano}-${mes}`;
-        observacoes[obsKey] = textarea.value;
-        salvarAuto();
-        mostrarToast('✅ Observação salva!');
-    }
-}
+function salvarAuto() { localStorage.setItem(CHAVE_ATUAL, JSON.stringify({ registros, jornadaDiaria, valorHoraNormal, observacoes, salarioBaseMensal, ferias, extras })); }
+function salvarObservacao() { const textarea = document.getElementById('obs-textarea'); if (textarea) { const obsKey = `${ano}-${mes}`; observacoes[obsKey] = textarea.value; salvarAuto(); mostrarToast('✅ Observação salva!'); } }
 
 window.salvarExtras = function() {
     const chaveMes = `${ano}-${mes}`;
@@ -551,14 +571,14 @@ window.salvarExtras = function() {
     const descontoInputs = document.querySelectorAll('.input-desconto-item');
     
     extras[chaveMes].bonus = Array.from(bonusInputs).map(input => {
-        const desc = input.previousElementSibling.previousElementSibling.value;
-        const val = parseFloat(input.value) || 0;
+        const desc = input.parentElement.parentElement.querySelector('input[type="text"]').value;
+        const val = parseFloat(input.value.replace(/\./g, '').replace(',', '.')) || 0;
         return { desc: desc || 'Bônus', valor: val };
     }).filter(item => item.valor > 0 || item.desc !== 'Bônus');
 
     extras[chaveMes].descontos = Array.from(descontoInputs).map(input => {
-        const desc = input.previousElementSibling.previousElementSibling.value;
-        const val = parseFloat(input.value) || 0;
+        const desc = input.parentElement.parentElement.querySelector('input[type="text"]').value;
+        const val = parseFloat(input.value.replace(/\./g, '').replace(',', '.')) || 0;
         return { desc: desc || 'Desconto', valor: val };
     }).filter(item => item.valor > 0 || item.desc !== 'Desconto');
 
@@ -567,54 +587,16 @@ window.salvarExtras = function() {
     mostrarToast('✅ Valores extras atualizados!');
 };
 
-window.adicionarBonus = function() {
-    const chaveMes = `${ano}-${mes}`;
-    if (!extras[chaveMes]) extras[chaveMes] = { bonus: [], descontos: [] };
-    extras[chaveMes].bonus.push({ desc: '', valor: 0 });
-    renderizar();
-};
+window.adicionarBonus = function() { const chaveMes = `${ano}-${mes}`; if (!extras[chaveMes]) extras[chaveMes] = { bonus: [], descontos: [] }; extras[chaveMes].bonus.push({ desc: '', valor: 0 }); renderizar(); };
+window.removerBonus = function(index) { const chaveMes = `${ano}-${mes}`; if (extras[chaveMes] && extras[chaveMes].bonus) { extras[chaveMes].bonus.splice(index, 1); salvarAuto(); renderizar(); } };
+window.adicionarDesconto = function() { const chaveMes = `${ano}-${mes}`; if (!extras[chaveMes]) extras[chaveMes] = { bonus: [], descontos: [] }; extras[chaveMes].descontos.push({ desc: '', valor: 0 }); renderizar(); };
+window.removerDesconto = function(index) { const chaveMes = `${ano}-${mes}`; if (extras[chaveMes] && extras[chaveMes].descontos) { extras[chaveMes].descontos.splice(index, 1); salvarAuto(); renderizar(); } };
 
-window.removerBonus = function(index) {
-    const chaveMes = `${ano}-${mes}`;
-    if (extras[chaveMes] && extras[chaveMes].bonus) {
-        extras[chaveMes].bonus.splice(index, 1);
-        salvarAuto();
-        renderizar();
-    }
-};
-
-window.adicionarDesconto = function() {
-    const chaveMes = `${ano}-${mes}`;
-    if (!extras[chaveMes]) extras[chaveMes] = { bonus: [], descontos: [] };
-    extras[chaveMes].descontos.push({ desc: '', valor: 0 });
-    renderizar();
-};
-
-window.removerDesconto = function(index) {
-    const chaveMes = `${ano}-${mes}`;
-    if (extras[chaveMes] && extras[chaveMes].descontos) {
-        extras[chaveMes].descontos.splice(index, 1);
-        salvarAuto();
-        renderizar();
-    }
-};
-
-function toggleFeriadoManual(chave) {
-    if (!registros[chave]) registros[chave] = {};
-    registros[chave].feriadoManual = !registros[chave].feriadoManual; 
-    salvarAuto(); 
-    recalcularTotais();
-    renderizar();
-}
-
+function toggleFeriadoManual(chave) { if (!registros[chave]) registros[chave] = {}; registros[chave].feriadoManual = !registros[chave].feriadoManual; salvarAuto(); recalcularTotais(); renderizar(); }
 function toggleFeriadoManualDoDia() {
-    const chave = `${ano}-${mes}-${diaSelecionado}`;
-    const eraManual = registros[chave] && registros[chave].feriadoManual === true;
-    if (!registros[chave]) registros[chave] = {};
-    registros[chave].feriadoManual = !registros[chave].feriadoManual;
-    salvarAuto();
-    recalcularTotais();
-    renderizar();
+    const chave = `${ano}-${mes}-${diaSelecionado}`; const eraManual = registros[chave] && registros[chave].feriadoManual === true;
+    if (!registros[chave]) registros[chave] = {}; registros[chave].feriadoManual = !registros[chave].feriadoManual;
+    salvarAuto(); recalcularTotais(); renderizar();
     if (!eraManual) { mostrarToast('✅ Dia marcado como 100%'); } else { mostrarToast('↩️ Marcação 100% removida'); }
 }
 
@@ -632,27 +614,21 @@ function limparFerias() {
     const chaves = Object.keys(ferias).filter(k => k.startsWith(`${ano}-${mes}-`));
     if (chaves.length === 0) { mostrarToast('⚠️ Nenhuma férias neste mês'); return; }
     if (!confirm(`Limpar todas as férias de ${mesesNomes[mes]}/${ano}?`)) return;
-    chaves.forEach(k => delete ferias[k]);
-    salvarAuto(); recalcularTotais(); renderizar(); mostrarToast('🗑️ Férias do mês removidas');
+    chaves.forEach(k => delete ferias[k]); salvarAuto(); recalcularTotais(); renderizar(); mostrarToast('🗑️ Férias do mês removidas');
 }
 
 function mudarDia(delta) {
     let d = diaSelecionado + delta; let m = mes; let a = ano;
-    if (d < 1) { m--; if (m < 0) { m = 11; a--; } d = diasNoMes(a, m); } 
-    else if (d > diasNoMes(a, m)) { m++; if (m > 11) { m = 0; a++; } d = 1; }
+    if (d < 1) { m--; if (m < 0) { m = 11; a--; } d = diasNoMes(a, m); } else if (d > diasNoMes(a, m)) { m++; if (m > 11) { m = 0; a++; } d = 1; }
     diaSelecionado = d; mes = m; ano = a; recalcularTotais(); renderizar();
 }
-
 function irParaHoje() { const hoje = new Date(); ano = hoje.getFullYear(); mes = hoje.getMonth(); diaSelecionado = hoje.getDate(); recalcularTotais(); renderizar(); mostrarToast('📅 Voltou para hoje'); }
-
 function toggleCalendario(event) {
     if (event) event.stopPropagation();
     const pop = document.getElementById('calendar-popover'); if (!pop) return;
-    calMesAberto = mes; calAnoAberto = ano;
-    const isOpen = pop.classList.contains('open');
+    calMesAberto = mes; calAnoAberto = ano; const isOpen = pop.classList.contains('open');
     if (isOpen) { pop.classList.remove('open'); } else { renderCalendario(); pop.classList.add('open'); }
 }
-
 function fecharCalendario() { const pop = document.getElementById('calendar-popover'); if (pop) pop.classList.remove('open'); }
 function calMudarMes(delta) { calMesAberto += delta; if (calMesAberto < 0) { calMesAberto = 11; calAnoAberto--; } if (calMesAberto > 11) { calMesAberto = 0; calAnoAberto++; } renderCalendario(); }
 
@@ -663,8 +639,7 @@ function renderCalendario() {
     for (let i = primeiroDia - 1; i >= 0; i--) { const d = diasMesAnterior - i; gridHTML += `<div class="calendar-day other-month">${d}</div>`; }
     for (let d = 1; d <= totalDias; d++) {
         const dt = new Date(calAnoAberto, calMesAberto, d); const sem = dt.getDay(); const chave = `${calAnoAberto}-${calMesAberto}-${d}`; const reg = registros[chave]; const fer = isFeriado(calMesAberto, d, calAnoAberto); const fer2 = ferias[chave];
-        let classes = 'calendar-day';
-        if (sem === 0) classes += ' weekend sunday'; else if (sem === 6) classes += ' weekend';
+        let classes = 'calendar-day'; if (sem === 0) classes += ' weekend sunday'; else if (sem === 6) classes += ' weekend';
         if (calAnoAberto === hoje.getFullYear() && calMesAberto === hoje.getMonth() && d === hoje.getDate()) classes += ' today';
         if (calAnoAberto === ano && calMesAberto === mes && d === diaSelecionado) classes += ' selected';
         if (fer) classes += ' feriado'; if (fer2) classes += ' ferias'; if (reg && (reg.ent1 || reg.sai1 || reg.ent2 || reg.sai2) && !fer && !fer2) classes += ' has-record';
@@ -674,7 +649,6 @@ function renderCalendario() {
     if (resto !== 0) { for (let i = 1; i <= (7 - resto); i++) { gridHTML += `<div class="calendar-day other-month">${i}</div>`; } }
     pop.innerHTML = `<div class="calendar-header"><button class="cal-nav" onclick="calMudarMes(-1)"><i class="fa-solid fa-chevron-left"></i></button><span class="cal-month">${mesesNomesCurto[calMesAberto]} ${calAnoAberto}</span><button class="cal-nav" onclick="calMudarMes(1)"><i class="fa-solid fa-chevron-right"></i></button></div><div class="calendar-weekdays"><span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span></div><div class="calendar-grid">${gridHTML}</div>`;
 }
-
 function selecionarDiaCalendario(a, m, d) { ano = a; mes = m; diaSelecionado = d; fecharCalendario(); recalcularTotais(); renderizar(); }
 
 document.addEventListener('click', function(e) {
@@ -683,8 +657,7 @@ document.addEventListener('click', function(e) {
 });
 
 function salvarManualPrimeiraTela() {
-    const chaveSel = `${ano}-${mes}-${diaSelecionado}`;
-    const e1 = document.getElementById('manual-ent1').value.trim(); const s1 = document.getElementById('manual-sai1').value.trim(); const e2 = document.getElementById('manual-ent2').value.trim(); const s2 = document.getElementById('manual-sai2').value.trim();
+    const chaveSel = `${ano}-${mes}-${diaSelecionado}`; const e1 = document.getElementById('manual-ent1').value.trim(); const s1 = document.getElementById('manual-sai1').value.trim(); const e2 = document.getElementById('manual-ent2').value.trim(); const s2 = document.getElementById('manual-sai2').value.trim();
     const validarHora = (h) => { if (!h) return true; const regex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/; return regex.test(h); };
     if (!validarHora(e1) || !validarHora(s1) || !validarHora(e2) || !validarHora(s2)) { mostrarToast('⚠️ Formato inválido! Use HH:MM'); return; }
     if (!registros[chaveSel]) registros[chaveSel] = {};
@@ -694,9 +667,10 @@ function salvarManualPrimeiraTela() {
     if (s2) registros[chaveSel].sai2 = s2; else delete registros[chaveSel].sai2;
     salvarAuto(); recalcularTotais(); renderizar(); mostrarToast(`✅ Horários salvos!`);
 }
-
 function limparManualPrimeiraTela() { document.getElementById('manual-ent1').value = ''; document.getElementById('manual-sai1').value = ''; document.getElementById('manual-ent2').value = ''; document.getElementById('manual-sai2').value = ''; }
 function mascaraHora(input) { let v = input.value.replace(/\D/g, ''); if (v.length > 4) v = v.slice(0, 4); if (v.length >= 3) v = v.slice(0, 2) + ':' + v.slice(2); input.value = v; }
+function mascaraDinheiro(input) { let v = input.value.replace(/\D/g, ''); if (v === '') { input.value = ''; return; } v = (parseInt(v) / 100).toFixed(2) + ''; v = v.replace('.', ','); v = v.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.'); input.value = v; }
+
 function mudarMes(delta) { mes += delta; if (mes<0){mes=11;ano--;} if (mes>11){mes=0;ano++;} const maxDia = diasNoMes(ano, mes); if (diaSelecionado > maxDia) diaSelecionado = maxDia; recalcularTotais(); renderizar(); if (abaAtiva === 'dashboard' || abaAtiva === 'relatorio') setTimeout(initCharts, 50); }
 function mostrarToast(msg) { const t = document.getElementById('toast'); if(t){ t.innerText = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3000); } }
 function mudarAba(nova) { abaAtiva = nova; fecharCalendario(); renderizar(); if (nova === 'dashboard' || nova === 'relatorio') setTimeout(initCharts, 100); }
@@ -720,8 +694,7 @@ function registrarPontoAutomatico() {
     if (!r.ent1) { r.ent1 = horaAtual; msg = "Entrada 1 registrada"; } else if (!r.sai1) { r.sai1 = horaAtual; msg = "Início de Pausa registrado"; } else if (!r.ent2) { r.ent2 = horaAtual; msg = "Retorno de Pausa registrado"; } else if (!r.sai2) { r.sai2 = horaAtual; msg = "Saída Final registrada"; }
     const btn = document.getElementById('fingerprint-btn'); if (btn) { btn.classList.add('animate-check'); setTimeout(() => btn.classList.remove('animate-check'), 1000); }
     mostrarToast(`✅ ${msg} às ${horaAtual}`);
-    ano = a; mes = m; diaSelecionado = d;
-    salvarAuto(); recalcularTotais(); setTimeout(renderizar, 1000);
+    ano = a; mes = m; diaSelecionado = d; salvarAuto(); recalcularTotais(); setTimeout(renderizar, 1000);
 }
 
 setInterval(() => {
@@ -758,33 +731,41 @@ setInterval(() => {
                         <div class="previsao-linha"><span class="prev-label">DSR sobre HE</span><span class="prev-value">R$ ${fmtMoeda(prev.dsr)}</span></div>
                         <div class="previsao-linha"><span class="prev-label" style="color:#8b5cf6;"><i class="fa-solid fa-moon"></i> Adicional Noturno (${adicionalNoturnoPct}%)</span><span class="prev-value" style="color:#8b5cf6;">R$ ${fmtMoeda(prev.valorNoturno)}</span></div>
                         
-                        <div class="previsao-linha" style="flex-direction: column; align-items: flex-start; gap: 8px; border-bottom: none;">
-                            <span class="prev-label" style="color:#10b981;"><i class="fa-solid fa-plus-circle"></i> Bonificações</span>
-                            <div id="lista-bonus" style="width: 100%; display: flex; flex-direction: column; gap: 6px;">
+                        <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 12px; margin-top: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid rgba(16, 185, 129, 0.15); padding-bottom: 8px;">
+                                <span class="prev-label" style="color:#10b981; font-weight: 800;"><i class="fa-solid fa-plus-circle"></i> Bonificações</span>
+                            </div>
+                            <div id="lista-bonus" style="display: flex; flex-direction: column; gap: 8px;">
                                 ${(extras[`${ano}-${mes}`]?.bonus || []).map((b, i) => `
-                                    <div style="display: flex; gap: 6px; align-items: center;">
-                                        <input type="text" placeholder="Descrição (ex: Trainee)" value="${b.desc}" style="flex: 1; background: rgba(255,255,255,0.08); border: 1px solid rgba(16,185,129,0.3); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.75rem;" onchange="salvarExtras()">
-                                        <span style="color:#10b981; font-weight: bold;">R$</span>
-                                        <input type="number" step="0.01" class="input-bonus-item" placeholder="0,00" value="${b.valor > 0 ? b.valor.toFixed(2) : ''}" style="width: 80px; background: rgba(255,255,255,0.08); border: 1px solid rgba(16,185,129,0.3); color: #10b981; padding: 6px; border-radius: 6px; text-align: right; font-weight: bold;" onchange="salvarExtras()">
-                                        <button onclick="removerBonus(${i})" style="background: rgba(239,68,68,0.2); border: none; color: #ef4444; padding: 6px 10px; border-radius: 6px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+                                    <div style="display: flex; gap: 6px; align-items: center; background: rgba(0,0,0,0.2); padding: 6px; border-radius: 8px;">
+                                        <input type="text" placeholder="Descrição (ex: Trainee)" value="${b.desc}" style="flex: 1; background: transparent; border: none; color: #fff; font-size: 0.75rem; outline: none;" onchange="salvarExtras()">
+                                        <div style="display: flex; align-items: center; background: rgba(255,255,255,0.08); border-radius: 6px; padding: 0 8px; border: 1px solid rgba(16,185,129,0.3);">
+                                            <span style="color:#10b981; font-weight: bold; font-size: 0.7rem;">R$</span>
+                                            <input type="text" inputmode="numeric" class="input-bonus-item" placeholder="0,00" value="${b.valor > 0 ? b.valor.toFixed(2).replace('.', ',') : ''}" style="width: 60px; background: transparent; border: none; color: #10b981; padding: 6px 4px; text-align: right; font-weight: bold; font-size: 0.8rem; outline: none;" oninput="mascaraDinheiro(this)" onchange="salvarExtras()">
+                                        </div>
+                                        <button onclick="removerBonus(${i})" style="background: rgba(239,68,68,0.2); border: none; color: #ef4444; padding: 6px 8px; border-radius: 6px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
                                     </div>
                                 `).join('')}
-                                <button onclick="adicionarBonus()" style="background: rgba(16,185,129,0.15); border: 1px dashed #10b981; color: #10b981; padding: 6px; border-radius: 8px; cursor: pointer; font-size: 0.7rem; margin-top: 4px;"><i class="fa-solid fa-plus"></i> Adicionar Bonificação</button>
+                                <button onclick="adicionarBonus()" style="background: transparent; border: 1px dashed #10b981; color: #10b981; padding: 8px; border-radius: 8px; cursor: pointer; font-size: 0.7rem; font-weight: bold;"><i class="fa-solid fa-plus"></i> Adicionar Bonificação</button>
                             </div>
                         </div>
 
-                        <div class="previsao-linha" style="flex-direction: column; align-items: flex-start; gap: 8px; border-bottom: none; margin-top: 10px;">
-                            <span class="prev-label" style="color:#ef4444;"><i class="fa-solid fa-minus-circle"></i> Descontos Extras</span>
-                            <div id="lista-desconto" style="width: 100%; display: flex; flex-direction: column; gap: 6px;">
+                        <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px; padding: 12px; margin-top: 10px; margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid rgba(239, 68, 68, 0.15); padding-bottom: 8px;">
+                                <span class="prev-label" style="color:#ef4444; font-weight: 800;"><i class="fa-solid fa-minus-circle"></i> Descontos Extras</span>
+                            </div>
+                            <div id="lista-desconto" style="display: flex; flex-direction: column; gap: 8px;">
                                 ${(extras[`${ano}-${mes}`]?.descontos || []).map((d, i) => `
-                                    <div style="display: flex; gap: 6px; align-items: center;">
-                                        <input type="text" placeholder="Descrição (ex: Dentista)" value="${d.desc}" style="flex: 1; background: rgba(255,255,255,0.08); border: 1px solid rgba(239,68,68,0.3); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.75rem;" onchange="salvarExtras()">
-                                        <span style="color:#ef4444; font-weight: bold;">R$</span>
-                                        <input type="number" step="0.01" class="input-desconto-item" placeholder="0,00" value="${d.valor > 0 ? d.valor.toFixed(2) : ''}" style="width: 80px; background: rgba(255,255,255,0.08); border: 1px solid rgba(239,68,68,0.3); color: #ef4444; padding: 6px; border-radius: 6px; text-align: right; font-weight: bold;" onchange="salvarExtras()">
-                                        <button onclick="removerDesconto(${i})" style="background: rgba(239,68,68,0.2); border: none; color: #ef4444; padding: 6px 10px; border-radius: 6px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+                                    <div style="display: flex; gap: 6px; align-items: center; background: rgba(0,0,0,0.2); padding: 6px; border-radius: 8px;">
+                                        <input type="text" placeholder="Descrição (ex: Dentista)" value="${d.desc}" style="flex: 1; background: transparent; border: none; color: #fff; font-size: 0.75rem; outline: none;" onchange="salvarExtras()">
+                                        <div style="display: flex; align-items: center; background: rgba(255,255,255,0.08); border-radius: 6px; padding: 0 8px; border: 1px solid rgba(239,68,68,0.3);">
+                                            <span style="color:#ef4444; font-weight: bold; font-size: 0.7rem;">R$</span>
+                                            <input type="text" inputmode="numeric" class="input-desconto-item" placeholder="0,00" value="${d.valor > 0 ? d.valor.toFixed(2).replace('.', ',') : ''}" style="width: 60px; background: transparent; border: none; color: #ef4444; padding: 6px 4px; text-align: right; font-weight: bold; font-size: 0.8rem; outline: none;" oninput="mascaraDinheiro(this)" onchange="salvarExtras()">
+                                        </div>
+                                        <button onclick="removerDesconto(${i})" style="background: rgba(239,68,68,0.2); border: none; color: #ef4444; padding: 6px 8px; border-radius: 6px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
                                     </div>
                                 `).join('')}
-                                <button onclick="adicionarDesconto()" style="background: rgba(239,68,68,0.15); border: 1px dashed #ef4444; color: #ef4444; padding: 6px; border-radius: 8px; cursor: pointer; font-size: 0.7rem; margin-top: 4px;"><i class="fa-solid fa-plus"></i> Adicionar Desconto</button>
+                                <button onclick="adicionarDesconto()" style="background: transparent; border: 1px dashed #ef4444; color: #ef4444; padding: 8px; border-radius: 8px; cursor: pointer; font-size: 0.7rem; font-weight: bold;"><i class="fa-solid fa-plus"></i> Adicionar Desconto</button>
                             </div>
                         </div>
 
@@ -948,9 +929,9 @@ setInterval(() => {
 
         window.exportarBackup = function() {
             const dados = { _meta: { app: 'CheckPonto', versao: 'v4.9', exportadoEm: new Date().toISOString(), chave: CHAVE_ATUAL }, registros: registros, jornadaDiaria: jornadaDiaria, valorHoraNormal: valorHoraNormal, salarioBaseMensal: salarioBaseMensal, observacoes: observacoes, ferias: ferias, extras: extras };
-            const json = JSON.stringify(dados, null, 2); const blob = new Blob([json], { type: 'application/json' }); const url = URL.createObjectURL(blob);
-            const data = new Date(); const dia = data.getDate().toString().padStart(2,'0'); const mes = (data.getMonth() + 1).toString().padStart(2,'0'); const ano = data.getFullYear(); const hora = data.getHours().toString().padStart(2,'0'); const min = data.getMinutes().toString().padStart(2,'0');
-            const a = document.createElement('a'); a.href = url; a.download = `CheckPonto_Backup_${ano}-${mes}-${dia}_${hora}${min}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); mostrarToast('📥 Backup exportado!');
+            const json = JSON.stringify(dados, null, 2); const blob = new Blob([json], { type: 'text/plain;charset=utf-8' }); const url = URL.createObjectURL(blob);
+            const data = new Date(); const dia = data.getDate().toString().padStart(2,'0'); const mesStr = (data.getMonth() + 1).toString().padStart(2,'0'); const anoStr = data.getFullYear(); const hora = data.getHours().toString().padStart(2,'0'); const min = data.getMinutes().toString().padStart(2,'0');
+            const a = document.createElement('a'); a.href = url; a.download = `CheckPonto_Backup_${anoStr}-${mesStr}-${dia}_${hora}${min}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); mostrarToast('📥 Backup .json exportado!');
         };
 
         window.importarBackup = function(event) {
@@ -972,7 +953,7 @@ setInterval(() => {
             reader.readAsText(file);
         };
 
-        window.mudarMes = mudarMes; window.salvar = salvar; window.mudarAba = mudarAba; window.exportarPDF = exportarPDF; window.requestBiometrics = requestBiometrics; window.salvarObservacao = salvarObservacao; window.toggleFeriadoManual = toggleFeriadoManual; window.toggleFeriadoManualDoDia = toggleFeriadoManualDoDia; window.abrirModalFerias = abrirModalFerias; window.limparFerias = limparFerias; window.salvarManualPrimeiraTela = salvarManualPrimeiraTela; window.limparManualPrimeiraTela = limparManualPrimeiraTela; window.mascaraHora = mascaraHora; window.mudarDia = mudarDia; window.irParaHoje = irParaHoje; window.toggleCalendario = toggleCalendario; window.calMudarMes = calMudarMes; window.selecionarDiaCalendario = selecionarDiaCalendario; window.salvarConfiguracoes = salvarConfiguracoes; window.salvarAuto = salvarAuto; window.exportarBackup = exportarBackup; window.importarBackup = importarBackup; window.mudarMesRelatorio = mudarMesRelatorio; window.exportarCSV = exportarCSV;
+        window.mudarMes = mudarMes; window.salvar = salvar; window.mudarAba = mudarAba; window.exportarPDF = exportarPDF; window.requestBiometrics = requestBiometrics; window.salvarObservacao = salvarObservacao; window.toggleFeriadoManual = toggleFeriadoManual; window.toggleFeriadoManualDoDia = toggleFeriadoManualDoDia; window.abrirModalFerias = abrirModalFerias; window.limparFerias = limparFerias; window.salvarManualPrimeiraTela = salvarManualPrimeiraTela; window.limparManualPrimeiraTela = limparManualPrimeiraTela; window.mascaraHora = mascaraHora; window.mascaraDinheiro = mascaraDinheiro; window.mudarDia = mudarDia; window.irParaHoje = irParaHoje; window.toggleCalendario = toggleCalendario; window.calMudarMes = calMudarMes; window.selecionarDiaCalendario = selecionarDiaCalendario; window.salvarConfiguracoes = salvarConfiguracoes; window.salvarAuto = salvarAuto; window.exportarBackup = exportarBackup; window.importarBackup = importarBackup; window.mudarMesRelatorio = mudarMesRelatorio; window.exportarCSV = exportarCSV;
 
         recalcularTotais(); renderizar(); 
     })();
