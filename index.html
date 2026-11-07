@@ -387,17 +387,31 @@
 
         function calcularPrevisao(mesParam = mes, anoParam = ano) {
             recalcularTotais();
-            const salarioBase = getSalarioBase(); const pagamento = getTrimestrePagamento(mesParam); const temHE50 = pagamento !== null;
+            const salarioBase = getSalarioBase(); 
+            const pagamento = getTrimestrePagamento(mesParam); 
+            const temHE50 = pagamento !== null;
+            
+            const valorNormal = cacheTotais.normal / 60 * valorHoraNormal;
             const valorHe50 = temHE50 ? (cacheTotais.extra50 / 60 * valorHoraNormal * 1.5) : 0;
-            const valorHe100 = cacheTotais.extra100 / 60 * valorHoraNormal * 2.0; const dsr = (valorHe50 + valorHe100) / 5;
+            const valorHe100 = cacheTotais.extra100 / 60 * valorHoraNormal * 2.0; 
+            const dsr = (valorHe50 + valorHe100) / 5;
+            
             const chaveMes = `${anoParam}-${mesParam}`;
             const bonusList = extras[chaveMes]?.bonus || []; const descontosList = extras[chaveMes]?.descontos || [];
             const totalBonus = bonusList.reduce((acc, curr) => acc + curr.valor, 0);
             const totalDesconto = descontosList.reduce((acc, curr) => acc + curr.valor, 0);
+            
             const valorNoturno = (cacheTotais.noturno / 60) * (valorHoraNormal * (adicionalNoturnoPct / 100));
+            
             const totalBruto = salarioBase + valorHe50 + valorHe100 + dsr + totalBonus - totalDesconto + valorNoturno;
-            const inss = calcularINSS(totalBruto); const baseIRRF = totalBruto - inss; const irrf = calcularIRRF(baseIRRF); const liquido = totalBruto - inss - irrf;
-            return { salarioBase, valorHe50, valorHe100, dsr, totalBruto, inss, irrf, liquido, temHE50, pagamento, totalBonus, totalDesconto, valorNoturno };
+            const inss = calcularINSS(totalBruto); 
+            const baseIRRF = totalBruto - inss; 
+            const irrf = calcularIRRF(baseIRRF); 
+            const liquido = totalBruto - inss - irrf;
+            
+            return { 
+                salarioBase, valorNormal, valorHe50, valorHe100, dsr, totalBruto, inss, irrf, liquido, temHE50, pagamento, totalBonus, totalDesconto, valorNoturno 
+            };
         }
 async function exportarPDF() {
     recalcularTotais();
@@ -478,7 +492,6 @@ async function exportarPDF() {
         doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.setTextColor(0, 0, 0);
         doc.text("Distribuição de Horas", 20, finalY);
         const imgData = canvasGrafico.toDataURL('image/png', 1.0);
-        // Ajustei para o gráfico ficar mais compacto e não empurrar o resumo para fora da página
         doc.addImage(imgData, 'PNG', 15, finalY + 5, 150, 60); 
         finalY += 75;
     }
@@ -701,35 +714,45 @@ setInterval(() => {
     const clockElem = document.getElementById('bio-clock'); const dateElem = document.getElementById('bio-date');
     if (clockElem && dateElem) { const now = new Date(); clockElem.innerText = now.toLocaleTimeString('pt-BR', { hour12: false }); const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }; let ds = now.toLocaleDateString('pt-BR', options); dateElem.innerText = ds.charAt(0).toUpperCase() + ds.slice(1); }
 }, 1000);
-        function renderizar() {
+     function renderizar() {
             let corpo = ''; const td = diasNoMes(ano, mes); recalcularTotais();
 
             if (abaAtiva === 'dashboard') {
-                const prev = calcularPrevisao(); const mesAtual = calcularMes(mes, ano);
+                const prev = calcularPrevisao(); 
+                const mesAtual = calcularMes(mes, ano);
                 let mAnt = mes - 1, aAnt = ano; if (mAnt < 0) { mAnt = 11; aAnt--; }
                 const mesAnterior = calcularMes(mAnt, aAnt);
                 const diffNormal = (mesAtual.normal - mesAnterior.normal) / 60; const diffHE50 = (mesAtual.extra50 - mesAnterior.extra50) / 60; const diffHE100 = (mesAtual.extra100 - mesAnterior.extra100) / 60;
                 function fmtDiff(v) { const sinal = v > 0 ? '+' : ''; const txt = sinal + v.toFixed(1) + 'h'; let arrow, cls; if (v > 0.5) { arrow = '▲'; cls = 'up'; } else if (v < -0.5) { arrow = '▼'; cls = 'down'; } else { arrow = '—'; cls = 'same'; } return `<span class="cmp-diff ${cls}">${arrow} ${txt}</span>`; }
                 const nomeMesAnt = mesesNomes[mAnt].substring(0,3);
-                let prevHE50Line = '';
-                if (prev.temHE50) { prevHE50Line = `<div class="previsao-linha"><span class="prev-label">Horas Extras 50% (${prev.pagamento.label})</span><span class="prev-value">R$ ${fmtMoeda(prev.valorHe50)}</span></div>`; }
 
                 corpo = `
                 <div class="aba-card">
                     <div class="aba-title"><i class="fa-solid fa-chart-pie"></i> Dashboard do Mês</div>
+                    
+                    <!-- CARDS DE HORAS -->
                     <div class="stats-grid">
-                        <div class="stat-box blue"><span class="stat-label">Normal</span><div class="stat-val">${minToHora(cacheTotais.normal)}</div></div>
-                        <div class="stat-box pink"><span class="stat-label">Extra 50%</span><div class="stat-val">${minToHora(cacheTotais.extra50)}</div><div class="stat-money">R$ ${(cacheTotais.extra50/60 * valorHoraNormal * 1.5).toFixed(2)}</div></div>
-                        <div class="stat-box purple"><span class="stat-label">Extra 100%</span><div class="stat-val">${minToHora(cacheTotais.extra100)}</div><div class="stat-money">R$ ${(cacheTotais.extra100/60 * valorHoraNormal * 2.0).toFixed(2)}</div></div>
+                        <div class="stat-box blue"><span class="stat-label">Normal</span><div class="stat-val">${minToHora(cacheTotais.normal)}</div><div class="stat-money">R$ ${fmtMoeda(prev.valorNormal)}</div></div>
+                        <div class="stat-box pink"><span class="stat-label">Extra 50%</span><div class="stat-val">${minToHora(cacheTotais.extra50)}</div><div class="stat-money">R$ ${fmtMoeda(prev.valorHe50)}</div></div>
+                        <div class="stat-box purple"><span class="stat-label">Extra 100%</span><div class="stat-val">${minToHora(cacheTotais.extra100)}</div><div class="stat-money">R$ ${fmtMoeda(prev.valorHe100)}</div></div>
                         <div class="stat-box orange"><span class="stat-label">Total Geral</span><div class="stat-val">${minToHora(cacheTotais.trab)}</div></div>
                     </div>
-                    <div class="previsao-box">
-                        <div class="prev-title"><i class="fa-solid fa-money-bill-wave"></i> Previsão de Recebimento</div>
-                        <div class="previsao-linha"><span class="prev-label">Salário Base</span><span class="prev-value">R$ ${fmtMoeda(prev.salarioBase)}</span></div>
-                        ${prevHE50Line}
-                        <div class="previsao-linha"><span class="prev-label">Horas Extras 100%</span><span class="prev-value">R$ ${fmtMoeda(prev.valorHe100)}</span></div>
-                        <div class="previsao-linha"><span class="prev-label">DSR sobre HE</span><span class="prev-value">R$ ${fmtMoeda(prev.dsr)}</span></div>
-                        <div class="previsao-linha"><span class="prev-label" style="color:#8b5cf6;"><i class="fa-solid fa-moon"></i> Adicional Noturno (${adicionalNoturnoPct}%)</span><span class="prev-value" style="color:#8b5cf6;">R$ ${fmtMoeda(prev.valorNoturno)}</span></div>
+
+                    <div class="previsao-box" style="margin-top: 10px;">
+                        <div class="prev-title"><i class="fa-solid fa-money-bill-wave"></i> Salário e Adicionais</div>
+                        
+                        <div class="previsao-linha">
+                            <span class="prev-label">Salário Base</span>
+                            <span class="prev-value">R$ ${fmtMoeda(prev.salarioBase)}</span>
+                        </div>
+                        <div class="previsao-linha">
+                            <span class="prev-label">Total Horas Extras (50% + 100%)</span>
+                            <span class="prev-value" style="color:#ec4899;">R$ ${fmtMoeda(prev.valorHe50 + prev.valorHe100)}</span>
+                        </div>
+                        <div class="previsao-linha">
+                            <span class="prev-label" style="color:#8b5cf6;"><i class="fa-solid fa-moon"></i> Adicional Noturno (${adicionalNoturnoPct}%)</span>
+                            <span class="prev-value" style="color:#8b5cf6;">R$ ${fmtMoeda(prev.valorNoturno)}</span>
+                        </div>
                         
                         <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 12px; margin-top: 15px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid rgba(16, 185, 129, 0.15); padding-bottom: 8px;">
@@ -770,13 +793,18 @@ setInterval(() => {
                         </div>
 
                         <div class="previsao-linha" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; margin-top: 8px;">
-                            <span class="prev-label" style="color:#10b981; font-weight:800;">Total Bruto</span>
+                            <span class="prev-label" style="color:#10b981; font-weight:800;">Total Bruto (Salário + Adicionais)</span>
                             <span class="prev-value" style="color:#10b981;">R$ ${fmtMoeda(prev.totalBruto)}</span>
                         </div>
                         <div class="previsao-linha desconto"><span class="prev-label">INSS</span><span class="prev-value">- R$ ${fmtMoeda(prev.inss)}</span></div>
                         <div class="previsao-linha desconto"><span class="prev-label">IRRF</span><span class="prev-value">- R$ ${fmtMoeda(prev.irrf)}</span></div>
-                        <div class="previsao-total"><span class="prev-label">💰 Líquido Previsto</span><span class="prev-value">R$ ${fmtMoeda(prev.liquido)}</span></div>
+                        
+                        <div class="previsao-total">
+                            <span class="prev-label">💰 Líquido Previsto</span>
+                            <span class="prev-value">R$ ${fmtMoeda(prev.liquido)}</span>
+                        </div>
                     </div>
+                    
                     <div class="chart-card" style="height: 250px; margin-top: 20px; margin-bottom: 20px;"><canvas id="chartDist"></canvas></div>
                     <div class="aba-title" style="margin-top: 25px;"><i class="fa-solid fa-chart-line"></i> Evolução Mensal (6 meses)</div>
                     <div class="chart-card" style="height: 280px; margin-bottom: 20px;"><canvas id="chartDistLinha"></canvas></div>
