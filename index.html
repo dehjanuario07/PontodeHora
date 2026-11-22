@@ -216,8 +216,10 @@
         .config-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
         .config-field { display: flex; flex-direction: column; gap: 6px; }
         .config-field label { font-size: 0.65rem; color: #94a3b8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
-        .config-field input { width: 100%; padding: 12px 14px; font-size: 0.95rem; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 12px; color: #fff; font-weight: 700; text-align: center; letter-spacing: 0.5px; height: 48px; }
-        .config-field input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 15px rgba(57, 198, 255, 0.25); }
+        .config-field input, .config-field select { width: 100%; padding: 12px 14px; font-size: 0.95rem; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 12px; color: #fff; font-weight: 700; text-align: center; letter-spacing: 0.5px; height: 48px; font-family: inherit; cursor: pointer; }
+        .config-field select { appearance: none; -webkit-appearance: none; padding-right: 36px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2339C6FF' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; }
+        .config-field input:focus, .config-field select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 15px rgba(57, 198, 255, 0.25); }
+        .config-field select option { background: #0B1026; color: #fff; }
         .config-hint { margin-top: 10px; font-size: 0.7rem; color: #64748b; display: flex; align-items: flex-start; gap: 6px; line-height: 1.4; }
         .config-hint i { color: var(--primary); margin-top: 2px; flex-shrink: 0; }
         .config-save-area { display: flex; justify-content: center; margin-top: 18px; }
@@ -234,10 +236,36 @@
         .btn-backup.csv:hover { background: linear-gradient(135deg, rgba(16,185,129,0.3), rgba(57,198,255,0.3)); box-shadow: 0 0 20px rgba(16,185,129,0.3); }
         .backup-hint { margin-top: 14px; font-size: 0.7rem; color: #64748b; display: flex; align-items: flex-start; gap: 6px; line-height: 1.4; }
         .backup-hint i { color: var(--primary); margin-top: 2px; flex-shrink: 0; }
-        
+
+        /* ===== NOVO: Resumo do Mês ===== */
+        .resumo-mes { background: linear-gradient(135deg, rgba(57,198,255,0.08), rgba(123,46,255,0.08)); border: 1px solid rgba(57,198,255,0.25); border-radius: 16px; padding: 18px 20px; margin-top: 20px; margin-bottom: 20px; }
+        .resumo-mes .rm-title { font-size: 0.75rem; text-transform: uppercase; color: var(--primary); font-weight: 800; letter-spacing: 1px; margin: 0 0 14px 0; display: flex; align-items: center; gap: 8px; }
+        .resumo-mes .rm-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 14px; }
+        .rm-item { background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 10px 8px; text-align: center; }
+        .rm-item .rm-label { font-size: 0.6rem; color: #94a3b8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .rm-item .rm-value { font-size: 1.2rem; font-weight: 900; font-variant-numeric: tabular-nums; color: #fff; }
+        .rm-item.warn { border-color: rgba(245,158,11,0.35); background: rgba(245,158,11,0.08); }
+        .rm-item.warn .rm-value { color: #f59e0b; }
+        .rm-item.ok { border-color: rgba(16,185,129,0.35); background: rgba(16,185,129,0.08); }
+        .rm-item.ok .rm-value { color: #10b981; }
+        .rm-saldo { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-radius: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); }
+        .rm-saldo .rm-saldo-label { font-size: 0.75rem; color: #94a3b8; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        .rm-saldo .rm-saldo-value { font-size: 1.8rem; font-weight: 900; font-variant-numeric: tabular-nums; }
+        .rm-saldo.positive { border-color: rgba(16,185,129,0.4); background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(57,198,255,0.1)); }
+        .rm-saldo.positive .rm-saldo-value { color: #10b981; text-shadow: 0 0 15px rgba(16,185,129,0.4); }
+        .rm-saldo.negative { border-color: rgba(239,68,68,0.4); background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(123,46,255,0.1)); }
+        .rm-saldo.negative .rm-saldo-value { color: #ef4444; text-shadow: 0 0 15px rgba(239,68,68,0.4); }
+        .rm-saldo.neutral .rm-saldo-value { color: #94a3b8; }
+        .rm-alertas { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+        .rm-alerta { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; padding: 8px 12px; border-radius: 10px; font-weight: 700; }
+        .rm-alerta.warn { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); color: #f59e0b; }
+        .rm-alerta.danger { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #ef4444; }
+        .rm-alerta.ok { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: #10b981; }
+        .rm-alerta i { font-size: 0.85rem; }
+
         @media (max-width: 992px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } .relatorio-grid { grid-template-columns: repeat(2, 1fr); } .chart-grid-3 { grid-template-columns: 1fr; } .chart-grid-3 .chart-card-full { grid-column: 1; } .chart-card { padding: 14px; } .manual-fields { grid-template-columns: repeat(2, 1fr); } .compare-grid { grid-template-columns: repeat(3, 1fr); } }
-        @media (max-width: 768px) { body { padding: 8px; } .header-card { padding: 15px; gap: 12px; } .brand-title { font-size: 1.2rem; } .futuristic-logo { width: 42px; height: 42px; } .date-display-big { font-size: 1.4rem; letter-spacing: 1.5px; } .date-stepper-big { padding: 10px 12px; gap: 8px; } .date-stepper-big .btn-nav { font-size: 0.9rem; padding: 6px 12px; } .header-row-4 button { font-size: 0.7rem; padding: 8px 14px; } .header-summary-item .hs-value { font-size: 0.85rem; } .header-summary-item .hs-label { font-size: 0.5rem; } .tab-btn { font-size: 0.55rem; padding: 8px 4px; min-width: 35px; flex: 1 1 0; } .aba-card { padding: 14px; } .aba-card .aba-title { font-size: 0.65rem; } .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; } .stat-box { padding: 10px 12px; } .stat-val { font-size: 1.2rem; } .stat-label { font-size: 0.55rem; } .stat-money { font-size: 0.7rem; } .compare-grid { grid-template-columns: 1fr; gap: 8px; } .compare-card .cmp-value { font-size: 1.2rem; } .relatorio-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; } .relatorio-card { padding: 12px 8px; } .relatorio-card .q-total { font-size: 1.3rem; } .relatorio-card .q-label { font-size: 0.6rem; } .relatorio-card .q-money { font-size: 0.7rem; } .chart-card { padding: 12px; } .bio-container { max-width: 100%; } .fingerprint-btn { width: 100px; height: 100px; font-size: 3rem; } .punch-row { padding: 8px 12px; } .punch-row span { font-size: 0.75rem; } .punch-row strong { font-size: 0.9rem; } .saldo-dia { padding: 14px 16px; margin-top: 20px; } .saldo-dia .valor { font-size: 1.4rem; } .saldo-dia .label { font-size: 0.7rem; } .day-picker { gap: 6px; } .day-picker .day-nav-btn { width: 44px; font-size: 0.9rem; } .day-picker .day-center { padding: 10px 12px; gap: 8px; } .day-picker .day-center .day-number { font-size: 1.2rem; } .day-picker .day-center .day-number small { font-size: 0.75rem; } .day-picker .day-center .day-weekday { font-size: 0.6rem; } .day-picker .btn-hoje-quick { padding: 0 10px; font-size: 0.55rem; } .action-row { grid-template-columns: 1fr; } .btn-100-neon { padding: 10px 16px; font-size: 0.65rem; } .btn-ferias { padding: 10px 16px; font-size: 0.65rem; } .calendar-popover { width: 290px; } .manual-entry { padding: 14px 16px; } .manual-fields { grid-template-columns: repeat(2, 1fr); gap: 8px; } .manual-field input { padding: 8px 6px; font-size: 0.8rem; } .manual-actions { flex-direction: column; } .manual-actions button { width: 100%; justify-content: center; } .obs-container { padding: 12px 16px; } .obs-textarea { min-height: 80px; font-size: 0.8rem; } .footer-content { padding: 10px 20px; } .footer-text { font-size: 0.75rem; } table { min-width: 600px; } th { font-size: 0.6rem; padding: 8px 5px; } td { font-size: 0.7rem; padding: 6px 4px; } .config-section { padding: 16px; } .config-section-title { font-size: 0.7rem; } .config-grid { grid-template-columns: 1fr; gap: 12px; } .btn-save-config { padding: 12px 28px; font-size: 0.75rem; } .backup-actions { grid-template-columns: 1fr; } .previsao-total .prev-value { font-size: 1.3rem; } .mes-selector { flex-direction: column; align-items: stretch; gap: 8px; } .mes-selector label { text-align: center; } }
-        @media (max-width: 480px) { body { padding: 6px; } .header-card { padding: 12px; gap: 10px; } .brand-title { font-size: 1rem; } .futuristic-logo { width: 36px; height: 36px; } .version-tag { font-size: 0.5rem; padding: 1px 6px; } .date-display-big { font-size: 1.1rem; letter-spacing: 1px; } .date-stepper-big { padding: 8px 10px; gap: 6px; } .date-stepper-big .btn-nav { font-size: 0.8rem; padding: 5px 10px; } .header-row-4 button { font-size: 0.6rem; padding: 6px 10px; } .header-summary-item { padding: 8px 6px; } .header-summary-item .hs-value { font-size: 0.75rem; } .tab-btn { font-size: 0.48rem; padding: 6px 2px; min-width: 30px; } .aba-card { padding: 10px; } .aba-card .aba-title { font-size: 0.55rem; margin-bottom: 10px; padding-bottom: 6px; } .stats-grid { grid-template-columns: 1fr 1fr; gap: 6px; } .stat-box { padding: 8px 10px; } .stat-val { font-size: 1rem; } .stat-label { font-size: 0.5rem; } .stat-money { font-size: 0.6rem; } .compare-card { padding: 10px; } .compare-card .cmp-value { font-size: 1rem; } .compare-card .cmp-diff { font-size: 0.65rem; padding: 2px 8px; } .relatorio-grid { grid-template-columns: 1fr 1fr; gap: 6px; } .relatorio-card { padding: 10px 6px; } .relatorio-card .q-total { font-size: 1.1rem; } .relatorio-card .q-label { font-size: 0.5rem; } .relatorio-card .q-money { font-size: 0.6rem; } .chart-card { padding: 10px; } .fingerprint-btn { width: 80px; height: 80px; font-size: 2.5rem; margin: 15px auto; } .punch-row { padding: 6px 10px; } .punch-row span { font-size: 0.65rem; } .punch-row strong { font-size: 0.8rem; } .saldo-dia { padding: 12px 14px; margin-top: 18px; } .saldo-dia .valor { font-size: 1.2rem; } .saldo-dia .label { font-size: 0.6rem; } .day-picker { gap: 5px; } .day-picker .day-nav-btn { width: 38px; font-size: 0.8rem; border-radius: 12px; } .day-picker .day-center { padding: 8px 10px; gap: 6px; border-radius: 12px; } .day-picker .day-center .day-number { font-size: 1rem; } .day-picker .day-center .day-number small { font-size: 0.65rem; } .day-picker .day-center .day-weekday { font-size: 0.55rem; letter-spacing: 0.5px; } .day-picker .day-center .day-badges { gap: 3px; } .badge-hoje, .badge-feriado, .badge-ferias { font-size: 0.5rem; padding: 1px 5px; } .day-picker .btn-hoje-quick { padding: 0 8px; font-size: 0.5rem; border-radius: 12px; } .btn-100-neon { padding: 8px 12px; font-size: 0.6rem; } .btn-100-neon .badge-off { font-size: 0.5rem; padding: 1px 6px; } .btn-ferias { padding: 8px 12px; font-size: 0.6rem; } .btn-ferias .badge-fer { font-size: 0.5rem; padding: 1px 6px; } .calendar-popover { width: 270px; padding: 12px; } .calendar-day { font-size: 0.7rem; border-radius: 8px; } .calendar-header .cal-month { font-size: 0.75rem; } .calendar-header .cal-nav { width: 26px; height: 26px; font-size: 0.6rem; } .calendar-weekdays span { font-size: 0.55rem; } .manual-entry { padding: 10px 12px; margin-top: 18px; } .manual-entry .manual-title { font-size: 0.65rem; margin-bottom: 10px; } .manual-fields { grid-template-columns: 1fr 1fr; gap: 6px; } .manual-field label { font-size: 0.55rem; } .manual-field input { padding: 6px 4px; font-size: 0.7rem; letter-spacing: 0.5px; } .manual-actions button { font-size: 0.65rem; padding: 8px 14px; } .footer-content { padding: 8px 16px; } .footer-text { font-size: 0.65rem; } .footer-brand { font-size: 0.6rem; } .toast { font-size: 0.7rem; padding: 8px 16px; bottom: 15px; } .obs-container { padding: 10px 12px; } .obs-textarea { min-height: 60px; font-size: 0.7rem; padding: 8px; } .btn-save-obs { font-size: 0.6rem; padding: 4px 12px; } table { min-width: 500px; } th { font-size: 0.5rem; padding: 6px 4px; } td { font-size: 0.6rem; padding: 4px 3px; } .readonly-badge { font-size: 0.55rem; padding: 3px 6px; } .config-section { padding: 12px; } .config-section-title { font-size: 0.65rem; } .config-field input { padding: 10px 12px; font-size: 0.85rem; height: 44px; } .btn-save-config { padding: 10px 22px; font-size: 0.7rem; } .backup-actions { grid-template-columns: 1fr; } .previsao-box { padding: 14px; } .previsao-linha { font-size: 0.75rem; padding: 6px 0; } .previsao-total .prev-value { font-size: 1.2rem; } .previsao-total .prev-label { font-size: 0.7rem; } }
+        @media (max-width: 768px) { body { padding: 8px; } .header-card { padding: 15px; gap: 12px; } .brand-title { font-size: 1.2rem; } .futuristic-logo { width: 42px; height: 42px; } .date-display-big { font-size: 1.4rem; letter-spacing: 1.5px; } .date-stepper-big { padding: 10px 12px; gap: 8px; } .date-stepper-big .btn-nav { font-size: 0.9rem; padding: 6px 12px; } .header-row-4 button { font-size: 0.7rem; padding: 8px 14px; } .header-summary-item .hs-value { font-size: 0.85rem; } .header-summary-item .hs-label { font-size: 0.5rem; } .tab-btn { font-size: 0.55rem; padding: 8px 4px; min-width: 35px; flex: 1 1 0; } .aba-card { padding: 14px; } .aba-card .aba-title { font-size: 0.65rem; } .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; } .stat-box { padding: 10px 12px; } .stat-val { font-size: 1.2rem; } .stat-label { font-size: 0.55rem; } .stat-money { font-size: 0.7rem; } .compare-grid { grid-template-columns: 1fr; gap: 8px; } .compare-card .cmp-value { font-size: 1.2rem; } .relatorio-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; } .relatorio-card { padding: 12px 8px; } .relatorio-card .q-total { font-size: 1.3rem; } .relatorio-card .q-label { font-size: 0.6rem; } .relatorio-card .q-money { font-size: 0.7rem; } .chart-card { padding: 12px; } .bio-container { max-width: 100%; } .fingerprint-btn { width: 100px; height: 100px; font-size: 3rem; } .punch-row { padding: 8px 12px; } .punch-row span { font-size: 0.75rem; } .punch-row strong { font-size: 0.9rem; } .saldo-dia { padding: 14px 16px; margin-top: 20px; } .saldo-dia .valor { font-size: 1.4rem; } .saldo-dia .label { font-size: 0.7rem; } .day-picker { gap: 6px; } .day-picker .day-nav-btn { width: 44px; font-size: 0.9rem; } .day-picker .day-center { padding: 10px 12px; gap: 8px; } .day-picker .day-center .day-number { font-size: 1.2rem; } .day-picker .day-center .day-number small { font-size: 0.75rem; } .day-picker .day-center .day-weekday { font-size: 0.6rem; } .day-picker .btn-hoje-quick { padding: 0 10px; font-size: 0.55rem; } .action-row { grid-template-columns: 1fr; } .btn-100-neon { padding: 10px 16px; font-size: 0.65rem; } .btn-ferias { padding: 10px 16px; font-size: 0.65rem; } .calendar-popover { width: 290px; } .manual-entry { padding: 14px 16px; } .manual-fields { grid-template-columns: repeat(2, 1fr); gap: 8px; } .manual-field input { padding: 8px 6px; font-size: 0.8rem; } .manual-actions { flex-direction: column; } .manual-actions button { width: 100%; justify-content: center; } .obs-container { padding: 12px 16px; } .obs-textarea { min-height: 80px; font-size: 0.8rem; } .footer-content { padding: 10px 20px; } .footer-text { font-size: 0.75rem; } table { min-width: 600px; } th { font-size: 0.6rem; padding: 8px 5px; } td { font-size: 0.7rem; padding: 6px 4px; } .config-section { padding: 16px; } .config-section-title { font-size: 0.7rem; } .config-grid { grid-template-columns: 1fr; gap: 12px; } .btn-save-config { padding: 12px 28px; font-size: 0.75rem; } .backup-actions { grid-template-columns: 1fr; } .previsao-total .prev-value { font-size: 1.3rem; } .mes-selector { flex-direction: column; align-items: stretch; gap: 8px; } .mes-selector label { text-align: center; } .resumo-mes .rm-grid { gap: 8px; } .rm-item .rm-value { font-size: 1rem; } .rm-saldo .rm-saldo-value { font-size: 1.4rem; } }
+        @media (max-width: 480px) { body { padding: 6px; } .header-card { padding: 12px; gap: 10px; } .brand-title { font-size: 1rem; } .futuristic-logo { width: 36px; height: 36px; } .version-tag { font-size: 0.5rem; padding: 1px 6px; } .date-display-big { font-size: 1.1rem; letter-spacing: 1px; } .date-stepper-big { padding: 8px 10px; gap: 6px; } .date-stepper-big .btn-nav { font-size: 0.8rem; padding: 5px 10px; } .header-row-4 button { font-size: 0.6rem; padding: 6px 10px; } .header-summary-item { padding: 8px 6px; } .header-summary-item .hs-value { font-size: 0.75rem; } .tab-btn { font-size: 0.48rem; padding: 6px 2px; min-width: 30px; } .aba-card { padding: 10px; } .aba-card .aba-title { font-size: 0.55rem; margin-bottom: 10px; padding-bottom: 6px; } .stats-grid { grid-template-columns: 1fr 1fr; gap: 6px; } .stat-box { padding: 8px 10px; } .stat-val { font-size: 1rem; } .stat-label { font-size: 0.5rem; } .stat-money { font-size: 0.6rem; } .compare-card { padding: 10px; } .compare-card .cmp-value { font-size: 1rem; } .compare-card .cmp-diff { font-size: 0.65rem; padding: 2px 8px; } .relatorio-grid { grid-template-columns: 1fr 1fr; gap: 6px; } .relatorio-card { padding: 10px 6px; } .relatorio-card .q-total { font-size: 1.1rem; } .relatorio-card .q-label { font-size: 0.5rem; } .relatorio-card .q-money { font-size: 0.6rem; } .chart-card { padding: 10px; } .fingerprint-btn { width: 80px; height: 80px; font-size: 2.5rem; margin: 15px auto; } .punch-row { padding: 6px 10px; } .punch-row span { font-size: 0.65rem; } .punch-row strong { font-size: 0.8rem; } .saldo-dia { padding: 12px 14px; margin-top: 18px; } .saldo-dia .valor { font-size: 1.2rem; } .saldo-dia .label { font-size: 0.6rem; } .day-picker { gap: 5px; } .day-picker .day-nav-btn { width: 38px; font-size: 0.8rem; border-radius: 12px; } .day-picker .day-center { padding: 8px 10px; gap: 6px; border-radius: 12px; } .day-picker .day-center .day-number { font-size: 1rem; } .day-picker .day-center .day-number small { font-size: 0.65rem; } .day-picker .day-center .day-weekday { font-size: 0.55rem; letter-spacing: 0.5px; } .day-picker .day-center .day-badges { gap: 3px; } .badge-hoje, .badge-feriado, .badge-ferias { font-size: 0.5rem; padding: 1px 5px; } .day-picker .btn-hoje-quick { padding: 0 8px; font-size: 0.5rem; border-radius: 12px; } .btn-100-neon { padding: 8px 12px; font-size: 0.6rem; } .btn-100-neon .badge-off { font-size: 0.5rem; padding: 1px 6px; } .btn-ferias { padding: 8px 12px; font-size: 0.6rem; } .btn-ferias .badge-fer { font-size: 0.5rem; padding: 1px 6px; } .calendar-popover { width: 270px; padding: 12px; } .calendar-day { font-size: 0.7rem; border-radius: 8px; } .calendar-header .cal-month { font-size: 0.75rem; } .calendar-header .cal-nav { width: 26px; height: 26px; font-size: 0.6rem; } .calendar-weekdays span { font-size: 0.55rem; } .manual-entry { padding: 10px 12px; margin-top: 18px; } .manual-entry .manual-title { font-size: 0.65rem; margin-bottom: 10px; } .manual-fields { grid-template-columns: 1fr 1fr; gap: 6px; } .manual-field label { font-size: 0.55rem; } .manual-field input { padding: 6px 4px; font-size: 0.7rem; letter-spacing: 0.5px; } .manual-actions button { font-size: 0.65rem; padding: 8px 14px; } .footer-content { padding: 8px 16px; } .footer-text { font-size: 0.65rem; } .footer-brand { font-size: 0.6rem; } .toast { font-size: 0.7rem; padding: 8px 16px; bottom: 15px; } .obs-container { padding: 10px 12px; } .obs-textarea { min-height: 60px; font-size: 0.7rem; padding: 8px; } .btn-save-obs { font-size: 0.6rem; padding: 4px 12px; } table { min-width: 500px; } th { font-size: 0.5rem; padding: 6px 4px; } td { font-size: 0.6rem; padding: 4px 3px; } .readonly-badge { font-size: 0.55rem; padding: 3px 6px; } .config-section { padding: 12px; } .config-section-title { font-size: 0.65rem; } .config-field input, .config-field select { padding: 10px 12px; font-size: 0.85rem; height: 44px; } .btn-save-config { padding: 10px 22px; font-size: 0.7rem; } .backup-actions { grid-template-columns: 1fr; } .previsao-box { padding: 14px; } .previsao-linha { font-size: 0.75rem; padding: 6px 0; } .previsao-total .prev-value { font-size: 1.2rem; } .previsao-total .prev-label { font-size: 0.7rem; } .resumo-mes { padding: 14px; } .resumo-mes .rm-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; } .rm-item { padding: 8px 4px; } .rm-item .rm-value { font-size: 0.9rem; } .rm-item .rm-label { font-size: 0.5rem; } .rm-saldo { padding: 10px 12px; } .rm-saldo .rm-saldo-value { font-size: 1.2rem; } .rm-saldo .rm-saldo-label { font-size: 0.6rem; } }
     </style>
 </head>
 <body>
@@ -260,7 +288,8 @@
         let valorHoraNormal = 10.32; 
         let salarioBaseMensal = null;
         let adicionalNoturnoPct = 20; 
-        let horaNoturnaReduzida = true; 
+        let horaNoturnaReduzida = true;
+        let cargaHorariaSemanal = 44; // NOVO: 44h, 42h ou 40h
         
         const feriadosFixos = { '0-1': 'Ano Novo', '3-21': 'Tiradentes', '4-1': 'Dia do Trabalho', '5-13': 'Santo Antônio', '8-7': 'Independência', '9-12': 'N. Sra Aparecida', '10-2': 'Finados', '10-15': 'Proclamação', '10-20': 'Consc. Negra', '11-25': 'Natal' };
         
@@ -317,7 +346,7 @@
                 try {
                     const p = JSON.parse(conteudo);
                     if (p && (p.registros || p.jornadaDiaria)) {
-                        registros = p.registros || {}; jornadaDiaria = p.jornadaDiaria || 480; valorHoraNormal = p.valorHoraNormal || 10.32; salarioBaseMensal = p.salarioBaseMensal || null; observacoes = p.observacoes || {}; ferias = p.ferias || {}; extras = p.extras || {};
+                        registros = p.registros || {}; jornadaDiaria = p.jornadaDiaria || 480; valorHoraNormal = p.valorHoraNormal || 10.32; salarioBaseMensal = p.salarioBaseMensal || null; observacoes = p.observacoes || {}; ferias = p.ferias || {}; extras = p.extras || {}; cargaHorariaSemanal = p.cargaHorariaSemanal || 44;
                         dadosRecuperados = true; chaveOrigem = chave;
                         if (chave !== CHAVE_ATUAL) { localStorage.setItem(CHAVE_ATUAL, conteudo); }
                         break;
@@ -392,7 +421,7 @@
             const temHE50 = pagamento !== null;
             
             const valorNormal = cacheTotais.normal / 60 * valorHoraNormal;
-            const valorHe50 = temHE50 ? (cacheTotais.extra50 / 60 * valorHoraNormal * 1.5) : 0;
+            const valorHe50 = cacheTotais.extra50 / 60 * valorHoraNormal * 1.5;
             const valorHe100 = cacheTotais.extra100 / 60 * valorHoraNormal * 2.0; 
             const dsr = (valorHe50 + valorHe100) / 5;
             
@@ -413,6 +442,59 @@
                 salarioBase, valorNormal, valorHe50, valorHe100, dsr, totalBruto, inss, irrf, liquido, temHE50, pagamento, totalBonus, totalDesconto, valorNoturno 
             };
         }
+
+        // ===== NOVO: Cálculos do Resumo do Mês (com carga horária configurável) =====
+        function calcularResumoMes() {
+            const totalDias = diasNoMes(ano, mes);
+            let diasUteis = 0;
+            let diasTrabalhados = 0;
+            let diasIncompletos = 0;
+            let faltas = 0;
+
+            for (let d = 1; d <= totalDias; d++) {
+                const dt = new Date(ano, mes, d);
+                const sem = dt.getDay();
+                const k = `${ano}-${mes}-${d}`;
+                const reg = registros[k] || {};
+                const fer = isFeriado(mes, d, ano);
+                const isFer = estaDeFerias(k);
+                const manual100 = reg.feriadoManual === true;
+
+                // Conta dias úteis (Seg-Sáb, exceto feriados e férias)
+                const ehUtil = sem !== 0 && !fer && !isFer;
+                if (ehUtil) diasUteis++;
+
+                // Verifica registros
+                const batidas = (reg.ent1?1:0) + (reg.sai1?1:0) + (reg.ent2?1:0) + (reg.sai2?1:0);
+                const temRegistro = batidas > 0;
+
+                if (temRegistro) {
+                    diasTrabalhados++;
+                    if (batidas < 4 && !manual100 && sem !== 0 && !fer && !isFer) {
+                        diasIncompletos++;
+                    }
+                } else if (ehUtil) {
+                    faltas++;
+                }
+            }
+
+            // Horas previstas = (carga semanal / 6 dias úteis) × dias úteis do mês
+            const horasPrevistas = (cargaHorariaSemanal / 6) * 60 * diasUteis;
+
+            // Saldo = trabalhado - previsto (em minutos)
+            const saldo = cacheTotais.trab - horasPrevistas;
+
+            return {
+                totalDias,
+                diasUteis,
+                diasTrabalhados,
+                diasIncompletos,
+                faltas,
+                horasPrevistas,
+                saldo
+            };
+        }
+
 async function exportarPDF() {
     recalcularTotais();
     const { jsPDF } = window.jspdf;
@@ -444,7 +526,6 @@ async function exportarPDF() {
     doc.addPage();
     let finalY = 20;
 
-    // Calculando os valores para exibir
     const val50 = (cacheTotais.extra50 / 60 * valorHoraNormal * 1.5).toFixed(2); 
     const val100 = (cacheTotais.extra100 / 60 * valorHoraNormal * 2.0).toFixed(2);
     const valNoturno = (cacheTotais.noturno / 60) * (valorHoraNormal * (adicionalNoturnoPct / 100));
@@ -453,14 +534,12 @@ async function exportarPDF() {
     const totalBonusPDF = bonusListPDF.reduce((acc, curr) => acc + curr.valor, 0); 
     const totalDescontoPDF = descontosListPDF.reduce((acc, curr) => acc + curr.valor, 0);
 
-    // -- BLOCO 1: RESUMO DE HORAS E VALORES --
     doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.setTextColor(0, 0, 0);
     doc.text("Resumo de Horas e Valores", 20, finalY);
     finalY += 10;
     
     doc.setFontSize(11); doc.setFont("helvetica", "normal");
     
-    // Coluna 1 (Esquerda)
     doc.text(`Total Trabalhado:`, 20, finalY);
     doc.text(`${minToHora(cacheTotais.trab)}`, 80, finalY);
     doc.text(`Saldo Normal:`, 20, finalY + 8);
@@ -468,7 +547,6 @@ async function exportarPDF() {
     doc.text(`Bonificações:`, 20, finalY + 16);
     doc.text(`R$ ${totalBonusPDF.toFixed(2)}`, 80, finalY + 16);
 
-    // Coluna 2 (Direita)
     doc.text(`Extra 50%:`, 110, finalY);
     doc.text(`${minToHora(cacheTotais.extra50)}`, 170, finalY);
     doc.text(`Saldo 50%:`, 110, finalY + 8);
@@ -476,7 +554,6 @@ async function exportarPDF() {
     doc.text(`Descontos:`, 110, finalY + 16);
     doc.text(`R$ ${totalDescontoPDF.toFixed(2)}`, 170, finalY + 16);
     
-    // Coluna 3 (Mais à direita, mas agora cabe)
     doc.text(`Extra 100%:`, 20, finalY + 24);
     doc.text(`${minToHora(cacheTotais.extra100)}`, 80, finalY + 24);
     doc.text(`Saldo 100%:`, 20, finalY + 32);
@@ -486,7 +563,6 @@ async function exportarPDF() {
 
     finalY += 45;
 
-    // -- BLOCO 2: GRÁFICO --
     const canvasGrafico = document.getElementById('chartDist');
     if (canvasGrafico) {
         doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.setTextColor(0, 0, 0);
@@ -496,7 +572,6 @@ async function exportarPDF() {
         finalY += 75;
     }
 
-    // -- BLOCO 3: RESUMO FINANCEIRO --
     const prev = calcularPrevisao();
     doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.setTextColor(0, 0, 0);
     doc.text("Resumo Financeiro do Mês", 20, finalY);
@@ -508,7 +583,6 @@ async function exportarPDF() {
     doc.text(`IRRF: - R$ ${prev.irrf.toFixed(2)}`, 20, finalY); finalY += 12;
     doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.setTextColor(16, 185, 129); doc.text(`Líquido Previsto: R$ ${prev.liquido.toFixed(2)}`, 20, finalY);
 
-    // -- BLOCO 4: OBSERVAÇÕES --
     const obsKey = `${ano}-${mes}`; const obsText = observacoes[obsKey];
     if (obsText && obsText.trim() !== '') {
         let finalYobs = finalY + 20;
@@ -570,10 +644,10 @@ function initCharts() {
     }
 }
 function salvar(silencioso = false) { 
-    localStorage.setItem(CHAVE_ATUAL, JSON.stringify({ registros, jornadaDiaria, valorHoraNormal, observacoes, salarioBaseMensal, ferias, extras })); 
+    localStorage.setItem(CHAVE_ATUAL, JSON.stringify({ registros, jornadaDiaria, valorHoraNormal, observacoes, salarioBaseMensal, ferias, extras, cargaHorariaSemanal })); 
     if(!silencioso) mostrarToast('✅ Dados guardados!'); 
 }
-function salvarAuto() { localStorage.setItem(CHAVE_ATUAL, JSON.stringify({ registros, jornadaDiaria, valorHoraNormal, observacoes, salarioBaseMensal, ferias, extras })); }
+function salvarAuto() { localStorage.setItem(CHAVE_ATUAL, JSON.stringify({ registros, jornadaDiaria, valorHoraNormal, observacoes, salarioBaseMensal, ferias, extras, cargaHorariaSemanal })); }
 function salvarObservacao() { const textarea = document.getElementById('obs-textarea'); if (textarea) { const obsKey = `${ano}-${mes}`; observacoes[obsKey] = textarea.value; salvarAuto(); mostrarToast('✅ Observação salva!'); } }
 
 window.salvarExtras = function() {
@@ -714,7 +788,7 @@ setInterval(() => {
     const clockElem = document.getElementById('bio-clock'); const dateElem = document.getElementById('bio-date');
     if (clockElem && dateElem) { const now = new Date(); clockElem.innerText = now.toLocaleTimeString('pt-BR', { hour12: false }); const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }; let ds = now.toLocaleDateString('pt-BR', options); dateElem.innerText = ds.charAt(0).toUpperCase() + ds.slice(1); }
 }, 1000);
-     function renderizar() {
+        function renderizar() {
             let corpo = ''; const td = diasNoMes(ano, mes); recalcularTotais();
 
             if (abaAtiva === 'dashboard') {
@@ -726,11 +800,32 @@ setInterval(() => {
                 function fmtDiff(v) { const sinal = v > 0 ? '+' : ''; const txt = sinal + v.toFixed(1) + 'h'; let arrow, cls; if (v > 0.5) { arrow = '▲'; cls = 'up'; } else if (v < -0.5) { arrow = '▼'; cls = 'down'; } else { arrow = '—'; cls = 'same'; } return `<span class="cmp-diff ${cls}">${arrow} ${txt}</span>`; }
                 const nomeMesAnt = mesesNomes[mAnt].substring(0,3);
 
+                // ===== NOVO: Resumo do Mês =====
+                const resumo = calcularResumoMes();
+                const saldoPositivo = resumo.saldo > 0;
+                const saldoNegativo = resumo.saldo < 0;
+                const saldoClass = saldoPositivo ? 'positive' : (saldoNegativo ? 'negative' : 'neutral');
+                const saldoPrefixo = saldoPositivo ? '+' : (saldoNegativo ? '-' : '');
+                const saldoLabel = saldoPositivo ? 'A MAIS' : (saldoNegativo ? 'A MENOS' : 'EM DIA');
+
+                let alertasHTML = '';
+                if (resumo.diasIncompletos > 0) {
+                    alertasHTML += `<div class="rm-alerta warn"><i class="fa-solid fa-triangle-exclamation"></i> ${resumo.diasIncompletos} ${resumo.diasIncompletos === 1 ? 'dia com registo incompleto' : 'dias com registos incompletos'}</div>`;
+                }
+                if (resumo.faltas > 0) {
+                    alertasHTML += `<div class="rm-alerta danger"><i class="fa-solid fa-circle-xmark"></i> ${resumo.faltas} ${resumo.faltas === 1 ? 'falta' : 'faltas'} sem registo</div>`;
+                }
+                if (resumo.diasIncompletos === 0 && resumo.faltas === 0 && resumo.diasTrabalhados > 0) {
+                    alertasHTML += `<div class="rm-alerta ok"><i class="fa-solid fa-circle-check"></i> Tudo em ordem! Sem faltas ou registos incompletos.</div>`;
+                }
+                if (resumo.diasTrabalhados === 0) {
+                    alertasHTML += `<div class="rm-alerta warn"><i class="fa-solid fa-circle-info"></i> Nenhum registo neste mês ainda.</div>`;
+                }
+
                 corpo = `
                 <div class="aba-card">
                     <div class="aba-title"><i class="fa-solid fa-chart-pie"></i> Dashboard do Mês</div>
                     
-                    <!-- CARDS DE HORAS -->
                     <div class="stats-grid">
                         <div class="stat-box blue"><span class="stat-label">Normal</span><div class="stat-val">${minToHora(cacheTotais.normal)}</div><div class="stat-money">R$ ${fmtMoeda(prev.valorNormal)}</div></div>
                         <div class="stat-box pink"><span class="stat-label">Extra 50%</span><div class="stat-val">${minToHora(cacheTotais.extra50)}</div><div class="stat-money">R$ ${fmtMoeda(prev.valorHe50)}</div></div>
@@ -738,71 +833,35 @@ setInterval(() => {
                         <div class="stat-box orange"><span class="stat-label">Total Geral</span><div class="stat-val">${minToHora(cacheTotais.trab)}</div></div>
                     </div>
 
-                    <div class="previsao-box" style="margin-top: 10px;">
-                        <div class="prev-title"><i class="fa-solid fa-money-bill-wave"></i> Salário e Adicionais</div>
+                    <div class="resumo-mes">
+                        <div class="rm-title"><i class="fa-solid fa-clipboard-list"></i> Resumo do Mês <span style="margin-left:auto; font-size:0.6rem; color:#64748b; text-transform:none; letter-spacing:0;">${cargaHorariaSemanal}h/semana</span></div>
                         
-                        <div class="previsao-linha">
-                            <span class="prev-label">Salário Base</span>
-                            <span class="prev-value">R$ ${fmtMoeda(prev.salarioBase)}</span>
-                        </div>
-                        <div class="previsao-linha">
-                            <span class="prev-label">Total Horas Extras (50% + 100%)</span>
-                            <span class="prev-value" style="color:#ec4899;">R$ ${fmtMoeda(prev.valorHe50 + prev.valorHe100)}</span>
-                        </div>
-                        <div class="previsao-linha">
-                            <span class="prev-label" style="color:#8b5cf6;"><i class="fa-solid fa-moon"></i> Adicional Noturno (${adicionalNoturnoPct}%)</span>
-                            <span class="prev-value" style="color:#8b5cf6;">R$ ${fmtMoeda(prev.valorNoturno)}</span>
-                        </div>
-                        
-                        <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 12px; margin-top: 15px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid rgba(16, 185, 129, 0.15); padding-bottom: 8px;">
-                                <span class="prev-label" style="color:#10b981; font-weight: 800;"><i class="fa-solid fa-plus-circle"></i> Bonificações</span>
+                        <div class="rm-grid">
+                            <div class="rm-item">
+                                <div class="rm-label">Dias Úteis</div>
+                                <div class="rm-value">${resumo.diasUteis}</div>
                             </div>
-                            <div id="lista-bonus" style="display: flex; flex-direction: column; gap: 8px;">
-                                ${(extras[`${ano}-${mes}`]?.bonus || []).map((b, i) => `
-                                    <div style="display: flex; gap: 6px; align-items: center; background: rgba(0,0,0,0.2); padding: 6px; border-radius: 8px;">
-                                        <input type="text" placeholder="Descrição (ex: Trainee)" value="${b.desc}" style="flex: 1; background: transparent; border: none; color: #fff; font-size: 0.75rem; outline: none;" onchange="salvarExtras()">
-                                        <div style="display: flex; align-items: center; background: rgba(255,255,255,0.08); border-radius: 6px; padding: 0 8px; border: 1px solid rgba(16,185,129,0.3);">
-                                            <span style="color:#10b981; font-weight: bold; font-size: 0.7rem;">R$</span>
-                                            <input type="text" inputmode="numeric" class="input-bonus-item" placeholder="0,00" value="${b.valor > 0 ? b.valor.toFixed(2).replace('.', ',') : ''}" style="width: 60px; background: transparent; border: none; color: #10b981; padding: 6px 4px; text-align: right; font-weight: bold; font-size: 0.8rem; outline: none;" oninput="mascaraDinheiro(this)" onchange="salvarExtras()">
-                                        </div>
-                                        <button onclick="removerBonus(${i})" style="background: rgba(239,68,68,0.2); border: none; color: #ef4444; padding: 6px 8px; border-radius: 6px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
-                                    </div>
-                                `).join('')}
-                                <button onclick="adicionarBonus()" style="background: transparent; border: 1px dashed #10b981; color: #10b981; padding: 8px; border-radius: 8px; cursor: pointer; font-size: 0.7rem; font-weight: bold;"><i class="fa-solid fa-plus"></i> Adicionar Bonificação</button>
+                            <div class="rm-item ok">
+                                <div class="rm-label">Trabalhados</div>
+                                <div class="rm-value">${resumo.diasTrabalhados}</div>
+                            </div>
+                            <div class="rm-item ${resumo.faltas > 0 ? 'warn' : ''}">
+                                <div class="rm-label">Faltas</div>
+                                <div class="rm-value">${resumo.faltas}</div>
                             </div>
                         </div>
 
-                        <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px; padding: 12px; margin-top: 10px; margin-bottom: 15px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid rgba(239, 68, 68, 0.15); padding-bottom: 8px;">
-                                <span class="prev-label" style="color:#ef4444; font-weight: 800;"><i class="fa-solid fa-minus-circle"></i> Descontos Extras</span>
-                            </div>
-                            <div id="lista-desconto" style="display: flex; flex-direction: column; gap: 8px;">
-                                ${(extras[`${ano}-${mes}`]?.descontos || []).map((d, i) => `
-                                    <div style="display: flex; gap: 6px; align-items: center; background: rgba(0,0,0,0.2); padding: 6px; border-radius: 8px;">
-                                        <input type="text" placeholder="Descrição (ex: Dentista)" value="${d.desc}" style="flex: 1; background: transparent; border: none; color: #fff; font-size: 0.75rem; outline: none;" onchange="salvarExtras()">
-                                        <div style="display: flex; align-items: center; background: rgba(255,255,255,0.08); border-radius: 6px; padding: 0 8px; border: 1px solid rgba(239,68,68,0.3);">
-                                            <span style="color:#ef4444; font-weight: bold; font-size: 0.7rem;">R$</span>
-                                            <input type="text" inputmode="numeric" class="input-desconto-item" placeholder="0,00" value="${d.valor > 0 ? d.valor.toFixed(2).replace('.', ',') : ''}" style="width: 60px; background: transparent; border: none; color: #ef4444; padding: 6px 4px; text-align: right; font-weight: bold; font-size: 0.8rem; outline: none;" oninput="mascaraDinheiro(this)" onchange="salvarExtras()">
-                                        </div>
-                                        <button onclick="removerDesconto(${i})" style="background: rgba(239,68,68,0.2); border: none; color: #ef4444; padding: 6px 8px; border-radius: 6px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
-                                    </div>
-                                `).join('')}
-                                <button onclick="adicionarDesconto()" style="background: transparent; border: 1px dashed #ef4444; color: #ef4444; padding: 8px; border-radius: 8px; cursor: pointer; font-size: 0.7rem; font-weight: bold;"><i class="fa-solid fa-plus"></i> Adicionar Desconto</button>
-                            </div>
+                        <div class="rm-saldo ${saldoClass}">
+                            <span class="rm-saldo-label">Saldo (${saldoLabel})</span>
+                            <span class="rm-saldo-value">${saldoPrefixo}${minToHora(resumo.saldo)}</span>
                         </div>
 
-                        <div class="previsao-linha" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; margin-top: 8px;">
-                            <span class="prev-label" style="color:#10b981; font-weight:800;">Total Bruto (Salário + Adicionais)</span>
-                            <span class="prev-value" style="color:#10b981;">R$ ${fmtMoeda(prev.totalBruto)}</span>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #94a3b8; margin-top: 10px; padding: 0 4px;">
+                            <span>Previsto: <b style="color:#fff;">${minToHora(resumo.horasPrevistas)}</b></span>
+                            <span>Trabalhado: <b style="color:#fff;">${minToHora(cacheTotais.trab)}</b></span>
                         </div>
-                        <div class="previsao-linha desconto"><span class="prev-label">INSS</span><span class="prev-value">- R$ ${fmtMoeda(prev.inss)}</span></div>
-                        <div class="previsao-linha desconto"><span class="prev-label">IRRF</span><span class="prev-value">- R$ ${fmtMoeda(prev.irrf)}</span></div>
-                        
-                        <div class="previsao-total">
-                            <span class="prev-label">💰 Líquido Previsto</span>
-                            <span class="prev-value">R$ ${fmtMoeda(prev.liquido)}</span>
-                        </div>
+
+                        ${alertasHTML ? `<div class="rm-alertas">${alertasHTML}</div>` : ''}
                     </div>
                     
                     <div class="chart-card" style="height: 250px; margin-top: 20px; margin-bottom: 20px;"><canvas id="chartDist"></canvas></div>
@@ -859,11 +918,18 @@ setInterval(() => {
                     <div class="config-section">
                         <div class="config-section-title"><i class="fa-solid fa-money-bill-wave"></i> Jornada e Salário</div>
                         <div class="config-grid">
+                            <div class="config-field"><label>Carga Horária Semanal</label>
+                                <select id="cfg-carga-semanal">
+                                    <option value="44" ${cargaHorariaSemanal === 44 ? 'selected' : ''}>44 horas/semana</option>
+                                    <option value="42" ${cargaHorariaSemanal === 42 ? 'selected' : ''}>42 horas/semana</option>
+                                    <option value="40" ${cargaHorariaSemanal === 40 ? 'selected' : ''}>40 horas/semana</option>
+                                </select>
+                            </div>
                             <div class="config-field"><label>Jornada Diária (horas)</label><input type="text" id="cfg-jornada" value="${(jornadaDiaria/60).toFixed(2).replace('.', ',')}"></div>
                             <div class="config-field"><label>Valor da Hora (R$)</label><input type="text" id="cfg-valor-hora" value="${valorHoraNormal.toFixed(2).replace('.', ',')}"></div>
                             <div class="config-field"><label>Salário Base (R$)</label><input type="text" id="cfg-salario-base" value="${salarioBaseAtual.toFixed(2).replace('.', ',')}"></div>
                         </div>
-                        <div class="config-hint"><i class="fa-solid fa-circle-info"></i><span>Ao alterar o <b>Salário Base</b>, o Valor da Hora é recalculado (Salário ÷ 220). Se deixar 0, calcula automático (Jornada × Valor Hora × 30).</span></div>
+                        <div class="config-hint"><i class="fa-solid fa-circle-info"></i><span>A <b>Carga Horária Semanal</b> define o cálculo do "Previsto" no Resumo do Mês. A <b>Jornada Diária</b> continua a ser usada para calcular as Horas Extras diárias.</span></div>
                         <div class="config-save-area"><button class="btn-save-config" onclick="salvarConfiguracoes()"><i class="fa-solid fa-floppy-disk"></i> Salvar Configurações</button></div>
                     </div>
                     <div class="config-section">
@@ -947,7 +1013,8 @@ setInterval(() => {
         }
 
         window.salvarConfiguracoes = function() {
-            const jEl = document.getElementById('cfg-jornada'); const vhEl = document.getElementById('cfg-valor-hora'); const sbEl = document.getElementById('cfg-salario-base');
+            const cEl = document.getElementById('cfg-carga-semanal'); const jEl = document.getElementById('cfg-jornada'); const vhEl = document.getElementById('cfg-valor-hora'); const sbEl = document.getElementById('cfg-salario-base');
+            if (cEl) { const v = parseInt(cEl.value); if ([44, 42, 40].includes(v)) cargaHorariaSemanal = v; }
             if (jEl) { const v = parseFloat(jEl.value.replace(',', '.')); if (!isNaN(v) && v > 0) jornadaDiaria = Math.round(v * 60); }
             if (sbEl) { const v = parseFloat(sbEl.value.replace(',', '.')); salarioBaseMensal = (isNaN(v) || v <= 0) ? null : v; }
             if (vhEl) { const v = parseFloat(vhEl.value.replace(',', '.')); if (!isNaN(v) && v > 0) valorHoraNormal = v; }
@@ -956,7 +1023,7 @@ setInterval(() => {
         };
 
         window.exportarBackup = function() {
-            const dados = { _meta: { app: 'CheckPonto', versao: 'v4.9', exportadoEm: new Date().toISOString(), chave: CHAVE_ATUAL }, registros: registros, jornadaDiaria: jornadaDiaria, valorHoraNormal: valorHoraNormal, salarioBaseMensal: salarioBaseMensal, observacoes: observacoes, ferias: ferias, extras: extras };
+            const dados = { _meta: { app: 'CheckPonto', versao: 'v4.9', exportadoEm: new Date().toISOString(), chave: CHAVE_ATUAL }, registros: registros, jornadaDiaria: jornadaDiaria, valorHoraNormal: valorHoraNormal, salarioBaseMensal: salarioBaseMensal, observacoes: observacoes, ferias: ferias, extras: extras, cargaHorariaSemanal: cargaHorariaSemanal };
             const json = JSON.stringify(dados, null, 2); const blob = new Blob([json], { type: 'text/plain;charset=utf-8' }); const url = URL.createObjectURL(blob);
             const data = new Date(); const dia = data.getDate().toString().padStart(2,'0'); const mesStr = (data.getMonth() + 1).toString().padStart(2,'0'); const anoStr = data.getFullYear(); const hora = data.getHours().toString().padStart(2,'0'); const min = data.getMinutes().toString().padStart(2,'0');
             const a = document.createElement('a'); a.href = url; a.download = `CheckPonto_Backup_${anoStr}-${mesStr}-${dia}_${hora}${min}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); mostrarToast('📥 Backup .json exportado!');
@@ -972,7 +1039,7 @@ setInterval(() => {
                     const qtdRegistros = dados.registros ? Object.keys(dados.registros).length : 0;
                     const msg = `⚠️ ATENÇÃO!\n\nIsso vai SUBSTITUIR todos os seus dados atuais pelos dados do arquivo:\n\n📅 Registros de ponto: ${qtdRegistros}\n🏖️ Férias marcadas: ${Object.keys(dados.ferias || {}).length}\n\nDeseja continuar?`;
                     if (!confirm(msg)) { event.target.value = ''; return; }
-                    registros = dados.registros || {}; jornadaDiaria = dados.jornadaDiaria || 480; valorHoraNormal = dados.valorHoraNormal || 10.32; salarioBaseMensal = dados.salarioBaseMensal || null; observacoes = dados.observacoes || {}; ferias = dados.ferias || {}; extras = dados.extras || {};
+                    registros = dados.registros || {}; jornadaDiaria = dados.jornadaDiaria || 480; valorHoraNormal = dados.valorHoraNormal || 10.32; salarioBaseMensal = dados.salarioBaseMensal || null; observacoes = dados.observacoes || {}; ferias = dados.ferias || {}; extras = dados.extras || {}; cargaHorariaSemanal = dados.cargaHorariaSemanal || 44;
                     salvarAuto(); recalcularTotais(); renderizar(); mostrarToast(`✅ Backup restaurado! ${qtdRegistros} registros.`);
                 } catch (err) { console.error(err); mostrarToast('❌ Erro ao ler arquivo!'); }
                 event.target.value = '';
