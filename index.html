@@ -717,7 +717,7 @@ function toggleCalendario(event) {
     if (isOpen) { pop.classList.remove('open'); } else { renderCalendario(); pop.classList.add('open'); }
 }
 function fecharCalendario() { const pop = document.getElementById('calendar-popover'); if (pop) pop.classList.remove('open'); }
-function calMudarMes(delta) { calMesAberto += delta; if (calMesAberto < 0) { calMesAberto = 11; calAnoAberto--; } if (calMesAberto > 11) { calMesAberto = 0; calAnoAberto++; } renderCalendario(); }
+function calMudarMes(delta, event) { if (event) event.stopPropagation(); calMesAberto += delta; if (calMesAberto < 0) { calMesAberto = 11; calAnoAberto--; } if (calMesAberto > 11) { calMesAberto = 0; calAnoAberto++; } renderCalendario(); }
 
 function renderCalendario() {
     const pop = document.getElementById('calendar-popover'); if (!pop) return;
@@ -734,7 +734,7 @@ function renderCalendario() {
     }
     const totalCells = primeiroDia + totalDias; const resto = totalCells % 7;
     if (resto !== 0) { for (let i = 1; i <= (7 - resto); i++) { gridHTML += `<div class="calendar-day other-month">${i}</div>`; } }
-    pop.innerHTML = `<div class="calendar-header"><button class="cal-nav" onclick="calMudarMes(-1)"><i class="fa-solid fa-chevron-left"></i></button><span class="cal-month">${mesesNomesCurto[calMesAberto]} ${calAnoAberto}</span><button class="cal-nav" onclick="calMudarMes(1)"><i class="fa-solid fa-chevron-right"></i></button></div><div class="calendar-weekdays"><span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span></div><div class="calendar-grid">${gridHTML}</div>`;
+    pop.innerHTML = `<div class="calendar-header"><button class="cal-nav" onclick="calMudarMes(-1, event)"><i class="fa-solid fa-chevron-left"></i></button><span class="cal-month">${mesesNomesCurto[calMesAberto]} ${calAnoAberto}</span><button class="cal-nav" onclick="calMudarMes(1, event)"><i class="fa-solid fa-chevron-right"></i></button></div><div class="calendar-weekdays"><span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span></div><div class="calendar-grid">${gridHTML}</div>`;
 }
 function selecionarDiaCalendario(a, m, d) { ano = a; mes = m; diaSelecionado = d; fecharCalendario(); recalcularTotais(); renderizar(); }
 
@@ -800,7 +800,6 @@ setInterval(() => {
                 function fmtDiff(v) { const sinal = v > 0 ? '+' : ''; const txt = sinal + v.toFixed(1) + 'h'; let arrow, cls; if (v > 0.5) { arrow = '▲'; cls = 'up'; } else if (v < -0.5) { arrow = '▼'; cls = 'down'; } else { arrow = '—'; cls = 'same'; } return `<span class="cmp-diff ${cls}">${arrow} ${txt}</span>`; }
                 const nomeMesAnt = mesesNomes[mAnt].substring(0,3);
 
-                // ===== NOVO: Resumo do Mês =====
                 const resumo = calcularResumoMes();
                 const saldoPositivo = resumo.saldo > 0;
                 const saldoNegativo = resumo.saldo < 0;
@@ -969,7 +968,8 @@ setInterval(() => {
                                 <div class="day-number">${diaSelecionado.toString().padStart(2,'0')}<small>/${(mes+1).toString().padStart(2,'0')}</small></div>
                                 <div class="day-meta"><div class="day-weekday"><i class="fa-regular fa-calendar day-info-icon"></i>${nomeDiaSel} • ${ano}</div>${(isHoje || feriadoDia || isFer) ? `<div class="day-badges">${isHoje ? '<span class="badge-hoje">HOJE</span>' : ''}${feriadoDia ? `<span class="badge-feriado">${feriadoDia}</span>` : ''}${isFer ? '<span class="badge-ferias">🏖️ FÉRIAS</span>' : ''}</div>` : ''}</div>
                             </div>
-                            ${!isHoje ? `<button class="btn-hoje-quick" onclick="irParaHoje()" title="Ir para hoje"><i class="fa-solid fa-calendar-day"></i> HOJE</button>` : `<button class="day-nav-btn" onclick="mudarDia(1)" title="Próximo dia"><i class="fa-solid fa-chevron-right"></i></button>`}
+                            <button class="day-nav-btn" onclick="mudarDia(1)" title="Próximo dia"><i class="fa-solid fa-chevron-right"></i></button>
+                            ${!isHoje ? `<button class="btn-hoje-quick" onclick="irParaHoje()" title="Ir para hoje"><i class="fa-solid fa-calendar-day"></i> HOJE</button>` : ''}
                             <div id="calendar-popover" class="calendar-popover"></div>
                         </div>
                         ${podeMarcar100 ? `<div class="action-row full"><button class="btn-100-neon ${isManual100 ? 'active' : ''}" onclick="toggleFeriadoManualDoDia()" title="${isManual100 ? 'Remover marcação 100%' : 'Marcar dia como 100%'}"><i class="fa-solid fa-bolt"></i><span>${isManual100 ? '100% Ativo' : 'Marcar 100%'}</span><span class="badge-off">${isManual100 ? 'ATIVO' : '100%'}</span></button></div>` : ''}
