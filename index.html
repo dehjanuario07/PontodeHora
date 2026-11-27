@@ -461,7 +461,6 @@
             };
         }
 
-        // ===== RESSUMO DO MÊS (restaurado) =====
         function calcularResumoMes() {
             const totalDias = diasNoMes(ano, mes);
             let diasUteis = 0;
@@ -508,7 +507,6 @@
             };
         }
 
-        // ===== RECEBIMENTOS DO ANO =====
         function calcularRecebimentosAno(anoRef, mesMax) {
             let soma = 0;
             let mesesComValor = 0;
@@ -617,7 +615,7 @@
                 doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(80, 80, 80); const splitObs = doc.splitTextToSize(obsText, 170); doc.text(splitObs, 20, finalYobs + 8);
             }
 
-            doc.save(`CheckPonto_v49_${mesesNomes[mes]}_${ano}.pdf`); 
+            doc.save(`CheckPonto_v50_${mesesNomes[mes]}_${ano}.pdf`); 
             mostrarToast("📄 PDF Exportado com Sucesso!");
         }
 
@@ -1065,7 +1063,7 @@
 
             document.getElementById('app').innerHTML = `<div class="container">
                 <header class="header-card">
-                    <div class="header-row-1"><div class="futuristic-logo"><svg viewBox="0 0 1024 620" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="neonBlue" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#39C6FF"/><stop offset="100%" stop-color="#2E5BFF"/></linearGradient><linearGradient id="neonPurple" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#C77DFF"/><stop offset="100%" stop-color="#7B2EFF"/></linearGradient><linearGradient id="textGradient" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#3ACDFF"/><stop offset="100%" stop-color="#B15CFF"/></linearGradient><filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="15" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><circle cx="512" cy="310" r="220" stroke="url(#neonBlue)" stroke-width="26" fill="none" filter="url(#glow)" stroke-dasharray="1200" stroke-dashoffset="140"/><path d="M680 120 A220 220 0 0 1 785 280" stroke="url(#neonPurple)" stroke-width="30" fill="none" stroke-linecap="round" filter="url(#glow)"/><path d="M430 315 L505 390 L675 230" stroke="url(#textGradient)" stroke-width="42" stroke-linecap="round" stroke-linejoin="round" fill="none" filter="url(#glow)"/><rect x="500" y="120" width="14" height="42" rx="7" fill="#46CFFF" filter="url(#glow)"/><rect x="500" y="458" width="14" height="42" rx="7" fill="#46CFFF" filter="url(#glow)"/><rect x="328" y="292" width="42" height="14" rx="7" fill="#46CFFF" filter="url(#glow)"/><rect x="654" y="292" width="42" height="14" rx="7" fill="#B15CFF" filter="url(#glow)"/><rect x="675" y="405" width="52" height="120" rx="10" fill="url(#neonBlue)" filter="url(#glow)"/><rect x="740" y="355" width="52" height="170" rx="10" fill="#7F8BFF" filter="url(#glow)"/><rect x="805" y="300" width="52" height="225" rx="10" fill="url(#neonPurple)" filter="url(#glow)"/><path d="M650 530 Q760 570 880 515" stroke="url(#neonBlue)" stroke-width="10" fill="none" stroke-linecap="round" filter="url(#glow)"/></svg></div><h1 class="brand-title">Check Ponto <span class="version-tag">v4.9</span></h1></div>
+                    <div class="header-row-1"><div class="futuristic-logo"><svg viewBox="0 0 1024 620" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="neonBlue" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#39C6FF"/><stop offset="100%" stop-color="#2E5BFF"/></linearGradient><linearGradient id="neonPurple" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#C77DFF"/><stop offset="100%" stop-color="#7B2EFF"/></linearGradient><linearGradient id="textGradient" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#3ACDFF"/><stop offset="100%" stop-color="#B15CFF"/></linearGradient><filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="15" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><circle cx="512" cy="310" r="220" stroke="url(#neonBlue)" stroke-width="26" fill="none" filter="url(#glow)" stroke-dasharray="1200" stroke-dashoffset="140"/><path d="M680 120 A220 220 0 0 1 785 280" stroke="url(#neonPurple)" stroke-width="30" fill="none" stroke-linecap="round" filter="url(#glow)"/><path d="M430 315 L505 390 L675 230" stroke="url(#textGradient)" stroke-width="42" stroke-linecap="round" stroke-linejoin="round" fill="none" filter="url(#glow)"/><rect x="500" y="120" width="14" height="42" rx="7" fill="#46CFFF" filter="url(#glow)"/><rect x="500" y="458" width="14" height="42" rx="7" fill="#46CFFF" filter="url(#glow)"/><rect x="328" y="292" width="42" height="14" rx="7" fill="#46CFFF" filter="url(#glow)"/><rect x="654" y="292" width="42" height="14" rx="7" fill="#B15CFF" filter="url(#glow)"/><rect x="675" y="405" width="52" height="120" rx="10" fill="url(#neonBlue)" filter="url(#glow)"/><rect x="740" y="355" width="52" height="170" rx="10" fill="#7F8BFF" filter="url(#glow)"/><rect x="805" y="300" width="52" height="225" rx="10" fill="url(#neonPurple)" filter="url(#glow)"/><path d="M650 530 Q760 570 880 515" stroke="url(#neonBlue)" stroke-width="10" fill="none" stroke-linecap="round" filter="url(#glow)"/></svg></div><h1 class="brand-title">Check Ponto <span class="version-tag">v5.0</span></h1></div>
                     <div class="date-stepper-big"><button class="btn-nav" onclick="mudarMes(-1)"><i class="fa-solid fa-chevron-left"></i></button><div class="date-display-big">${mesesNomes[mes]} ${ano}</div><button class="btn-nav" onclick="mudarMes(1)"><i class="fa-solid fa-chevron-right"></i></button></div>
                     <div class="header-summary"><div class="header-summary-item normal"><div class="hs-label">Normal</div><div class="hs-value">${minToHora(cacheTotais.normal)}</div></div><div class="header-summary-item he50"><div class="hs-label">HE 50%</div><div class="hs-value">${minToHora(cacheTotais.extra50)}</div></div><div class="header-summary-item he100"><div class="hs-label">HE 100%</div><div class="hs-value">${minToHora(cacheTotais.extra100)}</div></div></div>
                     <div class="header-row-4"><button class="btn-primary" onclick="salvar()">💾 SALVAR</button></div>
@@ -1099,7 +1097,7 @@
         };
 
         window.exportarBackup = function() {
-            const dados = { _meta: { app: 'CheckPonto', versao: 'v4.9', exportadoEm: new Date().toISOString(), chave: CHAVE_ATUAL }, registros: registros, jornadaDiaria: jornadaDiaria, valorHoraNormal: valorHoraNormal, salarioBaseMensal: salarioBaseMensal, observacoes: observacoes, ferias: ferias, extras: extras, cargaHorariaSemanal: cargaHorariaSemanal, salariosRecebidos: salariosRecebidos };
+            const dados = { _meta: { app: 'CheckPonto', versao: 'v5.0', exportadoEm: new Date().toISOString(), chave: CHAVE_ATUAL }, registros: registros, jornadaDiaria: jornadaDiaria, valorHoraNormal: valorHoraNormal, salarioBaseMensal: salarioBaseMensal, observacoes: observacoes, ferias: ferias, extras: extras, cargaHorariaSemanal: cargaHorariaSemanal, salariosRecebidos: salariosRecebidos };
             const json = JSON.stringify(dados, null, 2); const blob = new Blob([json], { type: 'text/plain;charset=utf-8' }); const url = URL.createObjectURL(blob);
             const data = new Date(); const dia = data.getDate().toString().padStart(2,'0'); const mesStr = (data.getMonth() + 1).toString().padStart(2,'0'); const anoStr = data.getFullYear(); const hora = data.getHours().toString().padStart(2,'0'); const min = data.getMinutes().toString().padStart(2,'0');
             const a = document.createElement('a'); a.href = url; a.download = `CheckPonto_Backup_${anoStr}-${mesStr}-${dia}_${hora}${min}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); mostrarToast('📥 Backup .json exportado!');
